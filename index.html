@@ -14,6 +14,22 @@
   .update-banner a { color: #fff; font-weight: 500; text-decoration: underline; margin-left: 12px; }
   .update-banner.hidden { display: none; }
 
+  /* 버전 히스토리 팝업 */
+  .ver-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 9998; display: none; }
+  .ver-modal-bg.open { display: flex; }
+  .ver-modal { background: #fff; border-radius: 16px; padding: 1.75rem; width: 460px; max-width: 92vw; max-height: 80vh; overflow-y: auto; }
+  body.dark .ver-modal { background: #242424; }
+  .ver-modal h2 { font-size: 17px; font-weight: 500; margin-bottom: 1rem; }
+  .ver-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ver-table th { text-align: left; color: #888780; font-weight: 400; padding: 6px 8px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+  body.dark .ver-table th { border-color: rgba(255,255,255,0.08); }
+  .ver-table td { padding: 8px 8px; border-bottom: 0.5px solid rgba(0,0,0,0.05); color: #2c2c2a; vertical-align: top; line-height: 1.6; }
+  body.dark .ver-table td { border-color: rgba(255,255,255,0.05); color: #e8e6df; }
+  .ver-table tr:last-child td { border-bottom: none; }
+  .ver-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #e6f1fb; color: #185fa5; font-weight: 500; white-space: nowrap; }
+  .ver-close { margin-top: 1.25rem; width: 100%; background: transparent; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 8px; font-size: 13px; color: #888780; }
+  body.dark .ver-close { border-color: rgba(255,255,255,0.12); }
+
   /* Name Modal */
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
   .modal { background: #fff; border-radius: 16px; padding: 2rem; width: 340px; max-width: 90vw; }
@@ -187,6 +203,24 @@
 </head>
 <body>
 
+<!-- 버전 히스토리 팝업 -->
+<div class="ver-modal-bg" id="verModalBg" onclick="if(event.target===this)closeVerModal()">
+  <div class="ver-modal">
+    <h2>업데이트 히스토리</h2>
+    <table class="ver-table">
+      <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="ver-badge">v1.0</span></td>
+          <td style="white-space:nowrap;color:#888780">2026-04-13</td>
+          <td>최초 배포 — 주간/야간 체크리스트, 실시간 공유, 기록 보기, 버전 관리</td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="ver-close" onclick="closeVerModal()">닫기</button>
+  </div>
+</div>
+
 <!-- 업데이트 배너 -->
 <div class="update-banner hidden" id="updateBanner">
   <span>새 버전이 있습니다!</span>
@@ -222,7 +256,8 @@
   </div>
   <div class="header-right">
     <div class="version-info">
-      v<span id="currentVer">1.0</span> · 업데이트 2026-04-13
+      <span style="cursor:pointer;text-decoration:underline;color:#185fa5" onclick="openVerModal()">v<span id="currentVer">1.0</span></span>
+      · 업데이트 2026-04-13
       &nbsp;|&nbsp;
       <a href="https://raw.githubusercontent.com/akali-eng/ops-checklist/main/index.html" download="업무확인.html">최신버전 다운로드</a>
     </div>
@@ -637,7 +672,10 @@ function render() {
   }).join('');
 }
 
-document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+window.openVerModal = function() { document.getElementById('verModalBg').classList.add('open'); };
+window.closeVerModal = function() { document.getElementById('verModalBg').classList.remove('open'); };
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVerModal(); });
 loadName(); checkVersion(); listenToday('day'); listenToday('night'); listenHistory();
 </script>
 </body>
