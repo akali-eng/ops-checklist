@@ -259,7 +259,7 @@
       <span style="cursor:pointer;text-decoration:underline;color:#185fa5" onclick="openVerModal()">v<span id="currentVer">1.0</span></span>
       · 업데이트 2026-04-13
       &nbsp;|&nbsp;
-      <a href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html">최신버전 다운로드</a>
+      <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="header-btns">
       <button class="btn-dark" onclick="toggleDark()">다크</button>
@@ -376,6 +376,11 @@ async function checkVersion() {
 }
 
 // 이름
+function checkAdminUI() {
+  const dl = document.getElementById('adminDownload');
+  if (dl) dl.style.display = myName === 'akira' ? 'inline' : 'none';
+}
+
 window.saveName = function() {
   const v = document.getElementById('nameInput').value.trim();
   if (!v) return;
@@ -383,6 +388,7 @@ window.saveName = function() {
   localStorage.setItem('ops-username', v);
   document.getElementById('modalBg').style.display = 'none';
   document.getElementById('usernameTag').textContent = '접속자: ' + myName + ' (클릭하여 변경)';
+  checkAdminUI();
 };
 window.changeName = function() {
   document.getElementById('nameInput').value = myName;
@@ -392,7 +398,11 @@ window.changeName = function() {
 function loadName() {
   myName = localStorage.getItem('ops-username') || '';
   if (!myName) document.getElementById('modalBg').style.display = 'flex';
-  else { document.getElementById('modalBg').style.display = 'none'; document.getElementById('usernameTag').textContent = '접속자: ' + myName + ' (클릭하여 변경)'; }
+  else {
+    document.getElementById('modalBg').style.display = 'none';
+    document.getElementById('usernameTag').textContent = '접속자: ' + myName + ' (클릭하여 변경)';
+    checkAdminUI();
+  }
 }
 
 function getStatus(t) {
