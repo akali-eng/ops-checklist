@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>업무 확인 (보안 강화)</title>
+<title>업무 확인</title>
 <style>
-  /* 스타일 시트는 기존과 동일하게 유지됩니다 (생략 가능하나 전체 코드 제공을 위해 포함) */
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f5; color: #2c2c2a; min-height: 100vh; padding: 1.5rem; transition: background 0.2s, color 0.2s; }
   body.dark { background: #1a1a1a; color: #e8e6df; }
@@ -15,17 +14,52 @@
   .ver-modal-bg.open { display: flex; }
   .ver-modal { background: #fff; border-radius: 16px; padding: 1.75rem; width: 460px; max-width: 92vw; max-height: 80vh; overflow-y: auto; }
   body.dark .ver-modal { background: #242424; }
+  .ver-modal h2 { font-size: 17px; font-weight: 500; margin-bottom: 1rem; }
+  .ver-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ver-table th { text-align: left; color: #888780; font-weight: 400; padding: 6px 8px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+  .ver-table td { padding: 8px 8px; border-bottom: 0.5px solid rgba(0,0,0,0.05); color: #2c2c2a; vertical-align: top; }
+  .ver-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #e6f1fb; color: #185fa5; font-weight: 500; }
+  .ver-close { margin-top: 1.25rem; width: 100%; background: transparent; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 8px; font-size: 13px; color: #888780; cursor: pointer; }
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
   .modal { background: #fff; border-radius: 16px; padding: 2rem; width: 340px; max-width: 90vw; }
   body.dark .modal { background: #242424; }
+  .modal h2 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: #888780; margin-bottom: 1.25rem; }
+  .modal input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f9f8f5; font-size: 15px; color: #2c2c2a; outline: none; margin-bottom: 12px; }
+  body.dark .modal input { background: #1a1a1a; color: #e8e6df; }
+  .modal-btn { width: 100%; background: #185fa5; border: none; border-radius: 8px; padding: 10px; font-size: 14px; color: #fff; cursor: pointer; }
   .tab-switch { display: flex; margin-bottom: 1.5rem; background: #ece9e2; border-radius: 12px; padding: 4px; width: fit-content; }
   body.dark .tab-switch { background: #2e2e2e; }
-  .tab-btn { padding: 8px 22px; border-radius: 9px; border: none; font-size: 14px; cursor: pointer; transition: all 0.18s; }
+  .tab-btn { padding: 8px 22px; border-radius: 9px; border: none; font-size: 14px; color: #888780; background: transparent; cursor: pointer; transition: all 0.18s; }
   .tab-btn.active { background: #fff; font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  body.dark .tab-btn.active { background: #3a3a3a; color: #e8e6df; }
+  .tab-btn.day.active { color: #185fa5; }
+  .tab-btn.night.active { color: #533ab7; }
+  .tab-btn.history.active { color: #3b6d11; }
   .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+  .header-left h1 { font-size: 24px; font-weight: 500; }
+  .header-left .subdate { font-size: 13px; color: #888780; margin-top: 4px; }
+  .header-left .username-tag { font-size: 13px; color: #185fa5; margin-top: 4px; cursor: pointer; }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .version-info { font-size: 11px; color: #888780; }
+  .header-btns { display: flex; gap: 8px; }
+  .btn-dark, .btn-reset, .btn-add-day, .btn-add-night { border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer; border: none; }
+  .btn-dark { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); }
+  body.dark .btn-dark { background: #242424; color: #fff; border-color: rgba(255,255,255,0.12); }
+  .btn-reset { background: transparent; border: 0.5px solid rgba(220,60,60,0.35); color: #a32d2d; }
+  .btn-add-day { background: #185fa5; color: #fff; }
+  .btn-add-night { background: #533ab7; color: #fff; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.25rem; }
   .stat-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem; }
   body.dark .stat-card { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .stat-label { font-size: 12px; color: #888780; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 500; }
+  .progress-wrap { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+  body.dark .progress-wrap { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .progress-bar-bg { background: #f1efe8; border-radius: 99px; height: 8px; overflow: hidden; margin-top: 8px; }
+  .progress-bar { height: 100%; transition: width 0.4s ease; }
+  .bar-day { background: #1d9e75; }
+  .bar-night { background: #7f77dd; }
   .todo-list { display: flex; flex-direction: column; gap: 6px; }
   .todo-item { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 0.8rem 1.1rem; display: flex; align-items: flex-start; gap: 12px; }
   body.dark .todo-item { background: #242424; border-color: rgba(255,255,255,0.1); }
@@ -33,34 +67,54 @@
   .chk-prog { background: #ef9f27; border-color: #ef9f27!important; }
   .chk-done-day { background: #1d9e75; border-color: #1d9e75!important; }
   .chk-done-night { background: #7f77dd; border-color: #7f77dd!important; }
+  .status-badge { font-size: 11px; padding: 2px 10px; border-radius: 99px; min-width: 44px; text-align: center; }
+  .badge-미확인 { background: #f1efe8; color: #5f5e5a; }
+  .badge-진행 { background: #faeeda; color: #854f0b; }
+  .badge-완료 { background: #e1f5ee; color: #0f6e56; }
+  .add-form { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem; display: none; }
+  .add-form.open { display: block; }
+  body.dark .add-form { background: #242424; }
+  .add-form input { width: 100%; padding: 8px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 10px; outline: none; }
 </style>
 </head>
 <body>
 
-<div class="modal-bg" id="modalBg"><div class="modal"><h2>이름 입력</h2><input type="text" id="nameInput" placeholder="예: 홍길동"><button class="modal-btn" onclick="saveName()">확인</button></div></div>
+<div class="modal-bg" id="modalBg"><div class="modal"><h2>이름을 입력해 주세요</h2><p>한 번만 입력하면 기억됩니다.</p><input type="text" id="nameInput" placeholder="예) 홍길동" maxlength="10" onkeydown="if(event.key==='Enter') saveName()"><button class="modal-btn" onclick="saveName()">확인</button></div></div>
+
 <div class="tab-switch">
   <button class="tab-btn day active" onclick="switchTab('day')">주간</button>
   <button class="tab-btn night" onclick="switchTab('night')">야간</button>
-  <button class="tab-btn history" onclick="switchTab('history')">기록</button>
+  <button class="tab-btn history" onclick="switchTab('history')">기록 보기</button>
 </div>
+
 <div class="header">
-  <div class="header-left"><h1 id="pageTitle">주간 업무 확인</h1><div id="usernameTag" onclick="changeName()"></div></div>
-  <div class="header-btns">
-    <button class="btn-dark" onclick="toggleDark()">다크모드</button>
-    <button class="btn-reset" onclick="resetCheck()">초기화</button>
-    <button id="btnAdd" class="btn-add-day" onclick="toggleForm()">+ 추가</button>
+  <div class="header-left"><h1 id="pageTitle">주간 업무 확인</h1><div class="subdate" id="dateLabel"></div><div class="username-tag" id="usernameTag" onclick="changeName()"></div></div>
+  <div class="header-right">
+    <div class="header-btns">
+      <button class="btn-dark" onclick="toggleDark()">다크모드</button>
+      <button class="btn-reset" id="btnReset" onclick="resetCheck()">초기화</button>
+      <button id="btnAdd" class="btn-add-day" onclick="toggleForm()">+ 추가</button>
+    </div>
   </div>
 </div>
+
+<div class="add-form" id="addForm"><input type="text" id="newText" placeholder="업무 내용 입력..."><button class="btn-add-day" onclick="addTodo()">항목 추가</button></div>
+
 <div id="todoPage">
   <div class="stats">
-    <div class="stat-card"><div>전체</div><div id="s-total">0</div></div>
-    <div class="stat-card"><div>미확인</div><div id="s-none">0</div></div>
-    <div class="stat-card"><div>진행</div><div id="s-prog">0</div></div>
-    <div class="stat-card"><div>완료</div><div id="s-done">0</div></div>
+    <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value" id="s-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">미확인</div><div class="stat-value" id="s-none">0</div></div>
+    <div class="stat-card"><div class="stat-label">진행 중</div><div class="stat-value" id="s-prog">0</div></div>
+    <div class="stat-card"><div class="stat-label">완료</div><div class="stat-value" id="s-done">0</div></div>
   </div>
-  <div class="todo-list" id="todoList"><div class="connecting">인증 확인 중...</div></div>
+  <div class="progress-wrap">
+    <div>완료율 <span id="pctLabel">0%</span></div>
+    <div class="progress-bar-bg"><div class="progress-bar bar-day" id="progressBar" style="width:0%"></div></div>
+  </div>
+  <div class="todo-list" id="todoList"><div style="text-align:center; padding:2rem; color:#888;">데이터를 불러오는 중...</div></div>
 </div>
-<div id="historyPage"></div>
+
+<div id="historyPage" style="display:none; padding:1rem; text-align:center; color:#888;">기록 데이터 로딩 중...</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
@@ -81,40 +135,90 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-// [핵심 추가] 인증 상태 감시 및 자동 익명 로그인
+// [중요] 인증 상태 확인 후 앱 시작
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("인증 성공 UID:", user.uid);
-    startApp(); // 인증 성공 후 데이터 로딩 시작
+    console.log("인증 성공:", user.uid);
+    initApp();
   } else {
-    signInAnonymously(auth).catch(err => alert("데이터베이스 접속 인증 실패: " + err.message));
+    signInAnonymously(auth).catch(err => console.error("인증 에러:", err));
   }
 });
 
-function startApp() {
-  loadName();
-  listenToday('day');
-  listenToday('night');
-  listenHistory();
-}
-
-// --- 이후 기존 로직과 동일하게 유지 (필요한 기능들) ---
 const now = new Date();
 const cutoff = new Date(now); cutoff.setHours(5,0,0,0);
 const baseDate = now < cutoff ? new Date(now.getTime() - 86400000) : now;
 const today = baseDate.toISOString().split('T')[0];
 let curTab = 'day', myName = '', todayData = { day: [], night: [] };
 
+function initApp() {
+  document.getElementById('dateLabel').textContent = today;
+  loadName();
+  listenToday('day');
+  listenToday('night');
+}
+
 function listenToday(tab) {
   onValue(ref(db, `todos/${tab}/${today}`), snap => {
     const val = snap.val();
-    if (!val) return; // 데이터 없으면 생성 로직(생략) 호출 가능
+    if (!val) { 
+      const defs = tab === 'day' ? ["인수인계 확인","웹 방치건 확인","호크아이 확인","인원 배치","체크리스트 기입"] : ["야간 인수인계","차량 대수 확인","자동출고지시 확인"];
+      const obj = {};
+      defs.forEach((text, i) => { const id = `${tab}-${i+1}`; obj[id] = { id, text, order: i, progBy: {}, doneBy: null }; });
+      set(ref(db, `todos/${tab}/${today}`), obj);
+      return;
+    }
     todayData[tab] = Object.values(val).sort((a,b) => (a.order||0)-(b.order||0));
     if (curTab === tab) render();
   });
 }
 
-// (기타 render, toggleProg, toggleDone 등 기존 함수들...)
+function render() {
+  const todos = todayData[curTab] || [];
+  const list = document.getElementById('todoList');
+  const doneCount = todos.filter(t => t.doneBy).length;
+  const pct = todos.length ? Math.round(doneCount/todos.length*100) : 0;
+  
+  document.getElementById('s-total').textContent = todos.length;
+  document.getElementById('s-done').textContent = doneCount;
+  document.getElementById('pctLabel').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  list.innerHTML = todos.map(t => {
+    const isDone = !!t.doneBy;
+    const status = isDone ? '완료' : (Object.keys(t.progBy || {}).length > 0 ? '진행' : '미확인');
+    return `
+      <div class="todo-item">
+        <div style="flex:1">
+          <div style="${isDone?'text-decoration:line-through;color:#888':''}">${t.text}</div>
+          <div style="font-size:11px; color:#185fa5; margin-top:4px">${isDone ? t.doneBy + ' 완료' : Object.values(t.progBy || {}).join(', ')}</div>
+        </div>
+        <div class="status-badge badge-${status}">${status}</div>
+        <div style="display:flex; gap:10px">
+          <button onclick="toggleProg('${t.id}')" style="padding:4px 8px; border-radius:4px; border:1px solid #ccc; cursor:pointer">진행</button>
+          <button onclick="toggleDone('${t.id}')" style="padding:4px 8px; background:#185fa5; color:#white; border-radius:4px; border:none; cursor:pointer">완료</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.toggleProg = function(id) {
+  if (!myName) return alert('이름을 입력하세요');
+  const t = todayData[curTab].find(x => x.id === id);
+  if (!t || t.doneBy) return;
+  const k = myName.replace(/[.#$[\]]/g, '_');
+  const pb = t.progBy || {};
+  if (pb[k]) remove(ref(db, `todos/${curTab}/${today}/${id}/progBy/${k}`));
+  else update(ref(db, `todos/${curTab}/${today}/${id}/progBy`), { [k]: myName });
+};
+
+window.toggleDone = function(id) {
+  if (!myName) return alert('이름을 입력하세요');
+  const t = todayData[curTab].find(x => x.id === id);
+  if (!t) return;
+  update(ref(db, `todos/${curTab}/${today}/${id}`), { doneBy: t.doneBy ? null : myName });
+};
+
 window.saveName = function() {
   const v = document.getElementById('nameInput').value.trim();
   if (!v) return;
@@ -123,6 +227,11 @@ window.saveName = function() {
   document.getElementById('modalBg').style.display = 'none';
   document.getElementById('usernameTag').textContent = '접속자: ' + myName;
 };
+
+window.changeName = function() {
+  document.getElementById('modalBg').style.display = 'flex';
+};
+
 function loadName() {
   myName = localStorage.getItem('ops-username') || '';
   if (!myName) document.getElementById('modalBg').style.display = 'flex';
@@ -131,7 +240,32 @@ function loadName() {
     document.getElementById('usernameTag').textContent = '접속자: ' + myName;
   }
 }
-// ... [나머지 렌더링 및 기능 코드는 기존 index.txt 소스를 그대로 사용하세요] ...
+
+window.switchTab = function(tab) {
+  curTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.tab-btn.'+tab).classList.add('active');
+  document.getElementById('todoPage').style.display = (tab==='history'?'none':'block');
+  document.getElementById('historyPage').style.display = (tab==='history'?'block':'none');
+  render();
+};
+
+window.toggleDark = function() { document.body.classList.toggle('dark'); };
+window.toggleForm = function() { document.getElementById('addForm').classList.toggle('open'); };
+window.addTodo = function() {
+  const text = document.getElementById('newText').value.trim();
+  if (!text) return;
+  const id = `${curTab}-custom-${Date.now()}`;
+  set(ref(db, `todos/${curTab}/${today}/${id}`), { id, text, order: todayData[curTab].length, progBy: {}, doneBy: null });
+  document.getElementById('newText').value = ''; 
+  toggleForm();
+};
+window.resetCheck = function() {
+  if (!confirm('초기화할까요?')) return;
+  const updates = {};
+  todayData[curTab].forEach(t => { updates[`todos/${curTab}/${today}/${t.id}/progBy`] = null; updates[`todos/${curTab}/${today}/${t.id}/doneBy`] = null; });
+  update(ref(db), updates);
+};
 </script>
 </body>
 </html>
