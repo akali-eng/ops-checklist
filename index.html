@@ -565,6 +565,11 @@ window.setPeriod = function(days, btn) {
   document.querySelectorAll('.hp-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active'); renderHistory();
 };
+window.toggleHistoryCard = function(header) {
+  header.querySelector('.history-chevron').classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+};
+
 window.toggleHistorySubtab = function(date, tab) {
   const wrap = document.getElementById('htable-'+date);
   document.getElementById('hstab-day-'+date)?.classList.remove('active-day');
