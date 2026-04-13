@@ -199,6 +199,11 @@
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
         <tr>
+          <td><span class="ver-badge">v1.0.4</span></td>
+          <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+          <td>드래그 순서 변경 시 다음날에도 순서 유지</td>
+        </tr>
+        <tr>
           <td><span class="ver-badge">v1.0.3</span></td>
           <td style="white-space:nowrap;color:#888780">2026-04-14</td>
           <td>팀원 추가 항목 매일 지속 기능 추가 (삭제 시 영구 제거)</td>
@@ -258,7 +263,7 @@
   </div>
   <div class="header-right">
     <div class="version-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.0.3</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.0.4</span>
       · 업데이트 2026-04-14
       &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
@@ -363,6 +368,7 @@ let myName = '', dragSrcId = null;
 let todayData = { day: [], night: [] };
 let allHistory = { day: {}, night: {} };
 let customItems = { day: {}, night: {} };
+let savedOrder = { day: [], night: [] };
 
 const CHK_SVG = `<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const DRAG_SVG = `<svg width="12" height="16" viewBox="0 0 12 16" fill="none"><circle cx="3" cy="3" r="1.5" fill="currentColor"/><circle cx="9" cy="3" r="1.5" fill="currentColor"/><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="9" cy="8" r="1.5" fill="currentColor"/><circle cx="3" cy="13" r="1.5" fill="currentColor"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/></svg>`;
@@ -509,24 +515,34 @@ function getStatus(t) {
 
 function initDefaults(tab) {
   const defs = tab === 'day' ? DAY_DEFAULTS : NIGHT_DEFAULTS;
-  const obj = {};
+  const allItems = {};
+  // 기본 항목 생성
   defs.forEach((text, i) => {
     const id = `${tab}-${i+1}`;
-    obj[id] = { id, text, order: i, progBy: {}, doneBy: null };
+    allItems[id] = { id, text, order: i, progBy: {}, doneBy: null };
   });
-  // 영구 커스텀 항목도 함께 포함
-  const customs = customItems[tab] || {};
-  const offset = defs.length;
-  Object.values(customs).sort((a,b) => (a.order||0)-(b.order||0)).forEach((c, i) => {
-    obj[c.id] = { id: c.id, text: c.text, order: offset + i, progBy: {}, doneBy: null, custom: true };
+  // 커스텀 항목 추가
+  Object.values(customItems[tab] || {}).forEach((c, i) => {
+    allItems[c.id] = { id: c.id, text: c.text, order: defs.length + i, progBy: {}, doneBy: null, custom: true };
   });
-  set(ref(db, `todos/${tab}/${today}`), obj);
+  // 저장된 순서가 있으면 적용
+  const order = savedOrder[tab];
+  if (order && order.length > 0) {
+    const idList = order.filter(id => allItems[id]); // 유효한 ID만
+    // 새로 추가된 항목은 뒤에 붙임
+    const extra = Object.keys(allItems).filter(id => !idList.includes(id));
+    [...idList, ...extra].forEach((id, i) => { if (allItems[id]) allItems[id].order = i; });
+  }
+  set(ref(db, `todos/${tab}/${today}`), allItems);
 }
 
 function listenCustomItems() {
   ['day','night'].forEach(tab => {
     onValue(ref(db, `customItems/${tab}`), snap => {
       customItems[tab] = snap.val() || {};
+    });
+    onValue(ref(db, `itemOrder/${tab}`), snap => {
+      savedOrder[tab] = snap.val() || [];
     });
   });
 }
@@ -617,7 +633,10 @@ window._dDrop = function(e, targetId) {
   const [m] = list.splice(fi,1); list.splice(ti,0,m);
   const updates = {};
   list.forEach((t,i) => { updates[`todos/${curTab}/${today}/${t.id}/order`] = i; });
-  update(ref(db), updates); dragSrcId = null;
+  update(ref(db), updates);
+  // 순서 영구 저장
+  set(ref(db, `itemOrder/${curTab}`), list.map(t => t.id));
+  dragSrcId = null;
 };
 window._dEnd = function() { dragSrcId = null; document.querySelectorAll('.todo-item').forEach(el => el.classList.remove('dragging','drag-over-day','drag-over-night')); };
 
