@@ -529,6 +529,7 @@ window.switchTab = function(tab) {
   } else {
     const isDay = tab === 'day';
     document.getElementById('pageTitle').textContent = isDay ? '주간 업무 확인' : '야간 업무 확인';
+    document.getElementById('dateLabel').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}) + ' (업무일: ' + today + ')';
     document.getElementById('btnAdd').className = isDay ? 'btn-add-day' : 'btn-add-night';
     document.getElementById('btnSave').className = isDay ? 'btn-save-day' : 'btn-save-night';
     document.getElementById('progressBar').className = 'progress-bar '+(isDay?'bar-day':'bar-night');
