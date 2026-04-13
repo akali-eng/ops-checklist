@@ -349,10 +349,12 @@ const NIGHT_DEFAULTS = [
   "인원 충원 필요 확인","로케이션 둘러보고 재고조회 하기","배차 접수하기","자동출고지시 키고 퇴근"
 ];
 
-// 05:00 기준 날짜
+// 05:00 기준 날짜 (한국 시간 KST = UTC+9)
 const now = new Date();
-const cutoff = new Date(now); cutoff.setHours(5,0,0,0);
-const baseDate = now < cutoff ? new Date(now.getTime() - 86400000) : now;
+const kstOffset = 9 * 60 * 60 * 1000;
+const kstNow = new Date(now.getTime() + kstOffset);
+const kstHour = kstNow.getUTCHours();
+const baseDate = kstHour < 5 ? new Date(kstNow.getTime() - 86400000) : kstNow;
 const today = baseDate.toISOString().split('T')[0];
 
 let curTab = 'day', curFilter = '전체', historyTabFilter = '전체', periodDays = 7;
