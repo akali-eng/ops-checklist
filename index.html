@@ -318,6 +318,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8",
@@ -334,6 +335,21 @@ const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/m
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app); 
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // 인증(로그인)이 완료된 후에만 데이터를 불러옵니다.
+    console.log("익명 인증 성공:", user.uid);
+    initApp(); // 기존에 바로 실행하던 함수들을 하나로 묶어 호출
+  } else {
+    // 로그인이 안 되어 있다면 익명 로그인 시도
+    signInAnonymously(auth).catch((error) => {
+      console.error("인증 실패:", error);
+      alert("데이터베이스 연결을 위한 인증에 실패했습니다.");
+    });
+  }
+});
 
 const DAY_DEFAULTS = [
   "인수인계 확인","웹 방치건 확인","컨플루언스 인력 기입","호크아이 확인","인원 배치",
