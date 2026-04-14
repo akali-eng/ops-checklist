@@ -6,8 +6,26 @@
 <title>업무 확인</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f5; color: #2c2c2a; min-height: 100vh; padding: 1.5rem; transition: background 0.2s, color 0.2s; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f5; color: #2c2c2a; min-height: 100vh; transition: background 0.2s, color 0.2s; }
   body.dark { background: #1a1a1a; color: #e8e6df; }
+
+  /* 로그인 페이지 */
+  #loginPage { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1.5rem; }
+  .login-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 16px; padding: 2rem; width: 360px; max-width: 100%; }
+  body.dark .login-card { background: #242424; border-color: rgba(255,255,255,0.1); }
+  .login-card h1 { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .login-card p { font-size: 13px; color: #888780; margin-bottom: 1.5rem; }
+  .login-field { margin-bottom: 12px; }
+  .login-field label { font-size: 12px; color: #888780; display: block; margin-bottom: 5px; }
+  .login-field input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f9f8f5; font-size: 14px; color: #2c2c2a; font-family: inherit; outline: none; }
+  body.dark .login-field input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
+  .login-field input:focus { border-color: #185fa5; }
+  .login-btn { width: 100%; background: #185fa5; border: none; border-radius: 8px; padding: 11px; font-size: 14px; font-weight: 500; color: #fff; cursor: pointer; font-family: inherit; margin-top: 4px; }
+  .login-btn:hover { background: #0c447c; }
+  .login-error { font-size: 13px; color: #a32d2d; margin-top: 10px; text-align: center; min-height: 18px; }
+
+  /* 메인 앱 */
+  #appPage { display: none; padding: 1.5rem; }
 
   .update-banner { background: #185fa5; color: #fff; padding: 10px 1.5rem; margin: -1.5rem -1.5rem 1.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
   .update-banner a { color: #fff; font-weight: 500; text-decoration: underline; margin-left: 12px; }
@@ -28,16 +46,6 @@
   .ver-close { margin-top: 1.25rem; width: 100%; background: transparent; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 8px; font-size: 13px; color: #888780; cursor: pointer; font-family: inherit; }
   body.dark .ver-close { border-color: rgba(255,255,255,0.12); }
 
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-  .modal-bg.hidden { display: none; }
-  .modal { background: #fff; border-radius: 16px; padding: 2rem; width: 340px; max-width: 90vw; }
-  body.dark .modal { background: #242424; }
-  .modal h2 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
-  .modal p { font-size: 13px; color: #888780; margin-bottom: 1.25rem; }
-  .modal input { width: 100%; padding: 10px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #f9f8f5; font-size: 15px; color: #2c2c2a; font-family: inherit; outline: none; margin-bottom: 12px; }
-  body.dark .modal input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
-  .modal-btn { width: 100%; background: #185fa5; border: none; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 500; color: #fff; cursor: pointer; font-family: inherit; }
-
   .tab-switch { display: flex; margin-bottom: 1.5rem; background: #ece9e2; border-radius: 12px; padding: 4px; width: fit-content; }
   body.dark .tab-switch { background: #2e2e2e; }
   .tab-btn { padding: 8px 22px; border-radius: 9px; border: none; font-size: 14px; font-weight: 400; color: #888780; background: transparent; cursor: pointer; font-family: inherit; transition: all 0.18s; }
@@ -50,8 +58,7 @@
   .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
   .header-left h1 { font-size: 24px; font-weight: 500; }
   .header-left .subdate { font-size: 13px; color: #888780; margin-top: 4px; }
-  .header-left .username-tag { font-size: 13px; color: #185fa5; margin-top: 4px; cursor: pointer; }
-  .header-left .username-tag:hover { text-decoration: underline; }
+  .header-left .username-tag { font-size: 13px; color: #185fa5; margin-top: 4px; }
   .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
   .version-info { font-size: 11px; color: #888780; text-align: right; }
   .version-info a { color: #185fa5; text-decoration: none; font-size: 11px; }
@@ -60,6 +67,8 @@
   button { cursor: pointer; font-family: inherit; }
   .btn-dark { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 6px 14px; font-size: 13px; color: #2c2c2a; }
   body.dark .btn-dark { background: #242424; border-color: rgba(255,255,255,0.12); color: #e8e6df; }
+  .btn-logout { background: transparent; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 6px 14px; font-size: 13px; color: #888780; }
+  body.dark .btn-logout { border-color: rgba(255,255,255,0.12); color: #888780; }
   .btn-add-day { background: #185fa5; border: none; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: #fff; }
   .btn-add-night { background: #533ab7; border: none; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: #fff; }
   .btn-reset { background: transparent; border: 0.5px solid rgba(220,60,60,0.35); border-radius: 8px; padding: 6px 14px; font-size: 13px; color: #a32d2d; }
@@ -191,140 +200,158 @@
 </head>
 <body>
 
-<!-- 버전 히스토리 팝업 -->
-<div class="ver-modal-bg" id="verModalBg">
-  <div class="ver-modal">
-    <h2>업데이트 히스토리</h2>
-    <table class="ver-table">
-      <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><span class="ver-badge">v1.0.4</span></td>
-          <td style="white-space:nowrap;color:#888780">2026-04-14</td>
-          <td>드래그 순서 변경 시 다음날에도 순서 유지</td>
-        </tr>
-        <tr>
-          <td><span class="ver-badge">v1.0.3</span></td>
-          <td style="white-space:nowrap;color:#888780">2026-04-14</td>
-          <td>팀원 추가 항목 매일 지속 기능 추가 (삭제 시 영구 제거)</td>
-        </tr>
-        <tr>
-          <td><span class="ver-badge">v1.0.2</span></td>
-          <td style="white-space:nowrap;color:#888780">2026-04-14</td>
-          <td>기록 펼치기 버그 수정, 초기 날짜 표시 오류 수정, 코드 안정화</td>
-        </tr>
-        <tr>
-          <td><span class="ver-badge">v1.0.1</span></td>
-          <td style="white-space:nowrap;color:#888780">2026-04-14</td>
-          <td>한국 시간 기준 날짜 계산 수정, 관리자 다운로드 기능 추가</td>
-        </tr>
-        <tr>
-          <td><span class="ver-badge">v1.0.0</span></td>
-          <td style="white-space:nowrap;color:#888780">2026-04-13</td>
-          <td>최초 배포 — 주간/야간 체크리스트, 실시간 공유, 기록 보기, 버전 관리</td>
-        </tr>
-      </tbody>
-    </table>
-    <button class="ver-close" id="verCloseBtn">닫기</button>
+<!-- 로그인 페이지 -->
+<div id="loginPage">
+  <div class="login-card">
+    <h1>업무 확인 시스템</h1>
+    <p>계속하려면 로그인해 주세요</p>
+    <div class="login-field">
+      <label>이메일</label>
+      <input type="email" id="loginEmail" placeholder="이메일 입력">
+    </div>
+    <div class="login-field">
+      <label>비밀번호</label>
+      <input type="password" id="loginPw" placeholder="비밀번호 입력">
+    </div>
+    <button class="login-btn" id="loginBtn">로그인</button>
+    <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<!-- 업데이트 배너 -->
-<div class="update-banner hidden" id="updateBanner">
-  <span>새 버전이 있습니다!</span>
-  <div>
+<!-- 메인 앱 -->
+<div id="appPage">
+
+  <!-- 버전 히스토리 팝업 -->
+  <div class="ver-modal-bg" id="verModalBg">
+    <div class="ver-modal">
+      <h2>업데이트 히스토리</h2>
+      <table class="ver-table">
+        <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="ver-badge">v1.1.0</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+            <td>Firebase 로그인 인증 추가 — 팀원 계정으로만 접속 가능</td>
+          </tr>
+          <tr>
+            <td><span class="ver-badge">v1.0.4</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+            <td>드래그 순서 변경 시 다음날에도 순서 유지</td>
+          </tr>
+          <tr>
+            <td><span class="ver-badge">v1.0.3</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+            <td>팀원 추가 항목 매일 지속 기능 추가</td>
+          </tr>
+          <tr>
+            <td><span class="ver-badge">v1.0.2</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+            <td>기록 펼치기 버그 수정, 초기 날짜 표시 오류 수정</td>
+          </tr>
+          <tr>
+            <td><span class="ver-badge">v1.0.1</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-14</td>
+            <td>한국 시간 기준 날짜 계산 수정, 관리자 다운로드 기능 추가</td>
+          </tr>
+          <tr>
+            <td><span class="ver-badge">v1.0.0</span></td>
+            <td style="white-space:nowrap;color:#888780">2026-04-13</td>
+            <td>최초 배포 — 주간/야간 체크리스트, 실시간 공유, 기록 보기, 버전 관리</td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="ver-close" id="verCloseBtn">닫기</button>
+    </div>
+  </div>
+
+  <!-- 업데이트 배너 -->
+  <div class="update-banner hidden" id="updateBanner">
+    <span>새 버전이 있습니다!</span>
     <a href="https://akali-eng.github.io/ops-checklist/" target="_blank">페이지 새로고침</a>
   </div>
-</div>
 
-<!-- 이름 입력 팝업 -->
-<div class="modal-bg hidden" id="modalBg">
-  <div class="modal">
-    <h2>이름을 입력해 주세요</h2>
-    <p>체크 시 이름이 표시됩니다. 한 번만 입력하면 기억됩니다.</p>
-    <input type="text" id="nameInput" placeholder="예) 홍길동" maxlength="10">
-    <button class="modal-btn" id="nameConfirmBtn">확인</button>
+  <!-- 탭 -->
+  <div class="tab-switch">
+    <button class="tab-btn day active" id="tabDay">주간</button>
+    <button class="tab-btn night" id="tabNight">야간</button>
+    <button class="tab-btn history" id="tabHistory">기록 보기</button>
   </div>
-</div>
 
-<!-- 탭 -->
-<div class="tab-switch">
-  <button class="tab-btn day active" id="tabDay">주간</button>
-  <button class="tab-btn night" id="tabNight">야간</button>
-  <button class="tab-btn history" id="tabHistory">기록 보기</button>
-</div>
-
-<!-- 헤더 -->
-<div class="header">
-  <div class="header-left">
-    <h1 id="pageTitle">주간 업무 확인</h1>
-    <div class="subdate" id="dateLabel"></div>
-    <div class="username-tag" id="usernameTag"></div>
-  </div>
-  <div class="header-right">
-    <div class="version-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.0.4</span>
-      · 업데이트 2026-04-14
-      &nbsp;|&nbsp;
-      <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-left">
+      <h1 id="pageTitle">주간 업무 확인</h1>
+      <div class="subdate" id="dateLabel"></div>
+      <div class="username-tag" id="usernameTag"></div>
     </div>
-    <div class="header-btns">
-      <button class="btn-dark" id="btnDark">다크</button>
-      <button class="btn-reset" id="btnReset">체크 초기화</button>
-      <button id="btnAdd" class="btn-add-day">+ 항목 추가</button>
+    <div class="header-right">
+      <div class="version-info">
+        <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.1.0</span>
+        · 업데이트 2026-04-14
+        &nbsp;|&nbsp;
+        <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
+      </div>
+      <div class="header-btns">
+        <button class="btn-dark" id="btnDark">다크</button>
+        <button class="btn-reset" id="btnReset">체크 초기화</button>
+        <button id="btnAdd" class="btn-add-day">+ 항목 추가</button>
+        <button class="btn-logout" id="btnLogout">로그아웃</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 추가 폼 -->
-<div class="add-form" id="addForm">
-  <label>새 업무 항목</label>
-  <input type="text" id="newText" placeholder="업무 내용 입력...">
-  <div class="add-form-btns">
-    <button class="btn-cancel" id="btnCancel">취소</button>
-    <button id="btnSave" class="btn-save-day">추가</button>
-  </div>
-</div>
-
-<!-- 업무 페이지 -->
-<div id="todoPage">
-  <div class="stats">
-    <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value" id="s-total" style="color:#378add">0</div></div>
-    <div class="stat-card"><div class="stat-label">미확인</div><div class="stat-value" id="s-none" style="color:#888780">0</div></div>
-    <div class="stat-card"><div class="stat-label">진행 중</div><div class="stat-value" id="s-prog" style="color:#ef9f27">0</div></div>
-    <div class="stat-card"><div class="stat-label">완료</div><div class="stat-value" id="s-done">0</div></div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-header"><span>완료율</span><span class="pct" id="pctLabel">0%</span></div>
-    <div class="progress-bar-bg"><div class="progress-bar bar-day" id="progressBar" style="width:0%"></div></div>
-  </div>
-  <div class="filters">
-    <button class="filter-btn active-day" id="fAll">전체</button>
-    <button class="filter-btn" id="fNone">미확인</button>
-    <button class="filter-btn" id="fProg">진행</button>
-    <button class="filter-btn" id="fDone">완료</button>
-  </div>
-  <div class="todo-list" id="todoList"><div class="connecting">Firebase 연결 중...</div></div>
-</div>
-
-<!-- 기록 페이지 -->
-<div id="historyPage">
-  <div class="history-filter-row">
-    <button class="hf-btn active" id="hfAll">전체</button>
-    <button class="hf-btn" id="hfDay">주간만</button>
-    <button class="hf-btn" id="hfNight">야간만</button>
-    <div class="hf-period">
-      <button class="hp-btn active" id="hp7">7일</button>
-      <button class="hp-btn" id="hp30">30일</button>
-      <button class="hp-btn" id="hpAll">전체</button>
+  <!-- 추가 폼 -->
+  <div class="add-form" id="addForm">
+    <label>새 업무 항목</label>
+    <input type="text" id="newText" placeholder="업무 내용 입력...">
+    <div class="add-form-btns">
+      <button class="btn-cancel" id="btnCancel">취소</button>
+      <button id="btnSave" class="btn-save-day">추가</button>
     </div>
   </div>
-  <div id="historyList"><div class="history-empty">기록을 불러오는 중...</div></div>
+
+  <!-- 업무 페이지 -->
+  <div id="todoPage">
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value" id="s-total" style="color:#378add">0</div></div>
+      <div class="stat-card"><div class="stat-label">미확인</div><div class="stat-value" id="s-none" style="color:#888780">0</div></div>
+      <div class="stat-card"><div class="stat-label">진행 중</div><div class="stat-value" id="s-prog" style="color:#ef9f27">0</div></div>
+      <div class="stat-card"><div class="stat-label">완료</div><div class="stat-value" id="s-done">0</div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header"><span>완료율</span><span class="pct" id="pctLabel">0%</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar bar-day" id="progressBar" style="width:0%"></div></div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active-day" id="fAll">전체</button>
+      <button class="filter-btn" id="fNone">미확인</button>
+      <button class="filter-btn" id="fProg">진행</button>
+      <button class="filter-btn" id="fDone">완료</button>
+    </div>
+    <div class="todo-list" id="todoList"><div class="connecting">Firebase 연결 중...</div></div>
+  </div>
+
+  <!-- 기록 페이지 -->
+  <div id="historyPage">
+    <div class="history-filter-row">
+      <button class="hf-btn active" id="hfAll">전체</button>
+      <button class="hf-btn" id="hfDay">주간만</button>
+      <button class="hf-btn" id="hfNight">야간만</button>
+      <div class="hf-period">
+        <button class="hp-btn active" id="hp7">7일</button>
+        <button class="hp-btn" id="hp30">30일</button>
+        <button class="hp-btn" id="hpAll">전체</button>
+      </div>
+    </div>
+    <div id="historyList"><div class="history-empty">기록을 불러오는 중...</div></div>
+  </div>
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, update, remove } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8",
@@ -336,12 +363,13 @@ const firebaseConfig = {
   appId: "1:923814810991:web:1573a40b46d8657f68c49a"
 };
 
-const CURRENT_VERSION = "1.0.4";
+const CURRENT_VERSION = "1.1.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
-const ADMIN_NAME = "akira";
+const ADMIN_EMAIL = "akira.choi@techtaka.com"; // ← 본인 이메일로 변경해주세요
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 const DAY_DEFAULTS = [
   "인수인계 확인","웹 방치건 확인","컨플루언스 인력 기입","호크아이 확인","인원 배치",
@@ -373,11 +401,49 @@ let savedOrder = { day: [], night: [] };
 const CHK_SVG = `<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1 4L4 7.5L10 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const DRAG_SVG = `<svg width="12" height="16" viewBox="0 0 12 16" fill="none"><circle cx="3" cy="3" r="1.5" fill="currentColor"/><circle cx="9" cy="3" r="1.5" fill="currentColor"/><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="9" cy="8" r="1.5" fill="currentColor"/><circle cx="3" cy="13" r="1.5" fill="currentColor"/><circle cx="9" cy="13" r="1.5" fill="currentColor"/></svg>`;
 
-// 날짜 표시
-function setDateLabel() {
-  const dateStr = now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
-  document.getElementById('dateLabel').textContent = dateStr + ' (업무일: ' + today + ')';
+// 로그인 상태 감지
+onAuthStateChanged(auth, user => {
+  if (user) {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').style.display = 'block';
+    myName = user.email.split('@')[0];
+    document.getElementById('usernameTag').textContent = '접속자: ' + myName;
+    document.getElementById('adminDownload').style.display = user.email === ADMIN_EMAIL ? 'inline' : 'none';
+    setDateLabel();
+    checkVersion();
+    listenCustomItems();
+    listenToday('day');
+    listenToday('night');
+    listenHistory();
+  } else {
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('appPage').style.display = 'none';
+  }
+});
+
+// 로그인
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPw').focus(); });
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력해 주세요.'; return; }
+  document.getElementById('loginBtn').textContent = '로그인 중...';
+  signInWithEmailAndPassword(auth, email, pw)
+    .catch(err => {
+      document.getElementById('loginBtn').textContent = '로그인';
+      errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.';
+    });
 }
+
+// 로그아웃
+document.getElementById('btnLogout').addEventListener('click', () => {
+  if (confirm('로그아웃 하시겠어요?')) signOut(auth);
+});
 
 // 버전 체크
 async function checkVersion() {
@@ -388,38 +454,11 @@ async function checkVersion() {
   } catch(e) {}
 }
 
-// 이름 관련
-function updateNameUI() {
-  document.getElementById('usernameTag').textContent = '접속자: ' + myName + ' (클릭하여 변경)';
-  document.getElementById('adminDownload').style.display = myName === ADMIN_NAME ? 'inline' : 'none';
+// 날짜
+function setDateLabel() {
+  const dateStr = now.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+  document.getElementById('dateLabel').textContent = dateStr + ' (업무일: ' + today + ')';
 }
-
-function loadName() {
-  myName = localStorage.getItem('ops-username') || '';
-  if (!myName) {
-    document.getElementById('modalBg').classList.remove('hidden');
-  } else {
-    document.getElementById('modalBg').classList.add('hidden');
-    updateNameUI();
-  }
-}
-
-document.getElementById('nameConfirmBtn').addEventListener('click', () => {
-  const v = document.getElementById('nameInput').value.trim();
-  if (!v) return;
-  myName = v;
-  localStorage.setItem('ops-username', v);
-  document.getElementById('modalBg').classList.add('hidden');
-  updateNameUI();
-});
-document.getElementById('nameInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('nameConfirmBtn').click();
-});
-document.getElementById('usernameTag').addEventListener('click', () => {
-  document.getElementById('nameInput').value = myName;
-  document.getElementById('modalBg').classList.remove('hidden');
-  setTimeout(() => document.getElementById('nameInput').focus(), 50);
-});
 
 // 버전 팝업
 document.getElementById('verLink').addEventListener('click', () => document.getElementById('verModalBg').classList.add('open'));
@@ -436,7 +475,10 @@ document.getElementById('btnDark').addEventListener('click', () => {
 // 탭 전환
 function switchTab(tab) {
   curTab = tab;
-  ['day','night','history'].forEach(t => document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active'));
+  ['day','night','history'].forEach(t => {
+    const id = 'tab' + t.charAt(0).toUpperCase() + t.slice(1);
+    document.getElementById(id).classList.remove('active');
+  });
   document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
   const isTodo = tab === 'day' || tab === 'night';
   document.getElementById('todoPage').style.display = isTodo ? 'block' : 'none';
@@ -472,30 +514,31 @@ document.getElementById('btnAdd').addEventListener('click', () => {
   }
 });
 document.getElementById('btnCancel').addEventListener('click', () => document.getElementById('addForm').classList.remove('open'));
-document.getElementById('newText').addEventListener('keydown', e => { if (e.key === 'Enter') addTodo(); if (e.key === 'Escape') document.getElementById('addForm').classList.remove('open'); });
+document.getElementById('newText').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTodo();
+  if (e.key === 'Escape') document.getElementById('addForm').classList.remove('open');
+});
 document.getElementById('btnSave').addEventListener('click', addTodo);
 
 // 필터
 function resetFilters() {
-  ['fAll','fNone','fProg','fDone'].forEach(id => {
-    document.getElementById(id).className = 'filter-btn';
-  });
+  ['fAll','fNone','fProg','fDone'].forEach(id => document.getElementById(id).className = 'filter-btn');
   document.getElementById('fAll').classList.add('active-' + curTab);
 }
-document.getElementById('fAll').addEventListener('click', e => { curFilter='전체'; resetFilters(); render(); });
-document.getElementById('fNone').addEventListener('click', e => { curFilter='미확인'; resetFilters(); document.getElementById('fNone').classList.add('active-'+curTab); render(); });
-document.getElementById('fProg').addEventListener('click', e => { curFilter='진행'; resetFilters(); document.getElementById('fProg').classList.add('active-'+curTab); render(); });
-document.getElementById('fDone').addEventListener('click', e => { curFilter='완료'; resetFilters(); document.getElementById('fDone').classList.add('active-'+curTab); render(); });
+document.getElementById('fAll').addEventListener('click', () => { curFilter='전체'; resetFilters(); render(); });
+document.getElementById('fNone').addEventListener('click', () => { curFilter='미확인'; resetFilters(); document.getElementById('fNone').classList.add('active-'+curTab); render(); });
+document.getElementById('fProg').addEventListener('click', () => { curFilter='진행'; resetFilters(); document.getElementById('fProg').classList.add('active-'+curTab); render(); });
+document.getElementById('fDone').addEventListener('click', () => { curFilter='완료'; resetFilters(); document.getElementById('fDone').classList.add('active-'+curTab); render(); });
 
 // 기록 필터
-document.getElementById('hfAll').addEventListener('click', e => { historyTabFilter='전체'; ['hfAll','hfDay','hfNight'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
-document.getElementById('hfDay').addEventListener('click', e => { historyTabFilter='day'; ['hfAll','hfDay','hfNight'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
-document.getElementById('hfNight').addEventListener('click', e => { historyTabFilter='night'; ['hfAll','hfDay','hfNight'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
-document.getElementById('hp7').addEventListener('click', e => { periodDays=7; ['hp7','hp30','hpAll'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
-document.getElementById('hp30').addEventListener('click', e => { periodDays=30; ['hp7','hp30','hpAll'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
-document.getElementById('hpAll').addEventListener('click', e => { periodDays=0; ['hp7','hp30','hpAll'].forEach(id=>document.getElementById(id).classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hfAll').addEventListener('click', e => { historyTabFilter='전체'; document.querySelectorAll('.hf-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hfDay').addEventListener('click', e => { historyTabFilter='day'; document.querySelectorAll('.hf-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hfNight').addEventListener('click', e => { historyTabFilter='night'; document.querySelectorAll('.hf-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hp7').addEventListener('click', e => { periodDays=7; document.querySelectorAll('.hp-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hp30').addEventListener('click', e => { periodDays=30; document.querySelectorAll('.hp-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
+document.getElementById('hpAll').addEventListener('click', e => { periodDays=0; document.querySelectorAll('.hp-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); renderHistory(); });
 
-// 초기화
+// 초기화 버튼
 document.getElementById('btnReset').addEventListener('click', () => {
   if (!confirm('현재 탭의 모든 체크를 초기화할까요?')) return;
   const updates = {};
@@ -516,20 +559,16 @@ function getStatus(t) {
 function initDefaults(tab) {
   const defs = tab === 'day' ? DAY_DEFAULTS : NIGHT_DEFAULTS;
   const allItems = {};
-  // 기본 항목 생성
   defs.forEach((text, i) => {
     const id = `${tab}-${i+1}`;
     allItems[id] = { id, text, order: i, progBy: {}, doneBy: null };
   });
-  // 커스텀 항목 추가
   Object.values(customItems[tab] || {}).forEach((c, i) => {
     allItems[c.id] = { id: c.id, text: c.text, order: defs.length + i, progBy: {}, doneBy: null, custom: true };
   });
-  // 저장된 순서가 있으면 적용
   const order = savedOrder[tab];
   if (order && order.length > 0) {
-    const idList = order.filter(id => allItems[id]); // 유효한 ID만
-    // 새로 추가된 항목은 뒤에 붙임
+    const idList = order.filter(id => allItems[id]);
     const extra = Object.keys(allItems).filter(id => !idList.includes(id));
     [...idList, ...extra].forEach((id, i) => { if (allItems[id]) allItems[id].order = i; });
   }
@@ -538,12 +577,8 @@ function initDefaults(tab) {
 
 function listenCustomItems() {
   ['day','night'].forEach(tab => {
-    onValue(ref(db, `customItems/${tab}`), snap => {
-      customItems[tab] = snap.val() || {};
-    });
-    onValue(ref(db, `itemOrder/${tab}`), snap => {
-      savedOrder[tab] = snap.val() || [];
-    });
+    onValue(ref(db, `customItems/${tab}`), snap => { customItems[tab] = snap.val() || {}; });
+    onValue(ref(db, `itemOrder/${tab}`), snap => { savedOrder[tab] = snap.val() || []; });
   });
 }
 
@@ -571,17 +606,14 @@ function addTodo() {
   const id = `${curTab}-custom-${Date.now()}`;
   const order = todayData[curTab].length;
   const item = { id, text, order, progBy: {}, doneBy: null, custom: true };
-  // 오늘 데이터에 저장
   set(ref(db, `todos/${curTab}/${today}/${id}`), item);
-  // 영구 커스텀 항목에도 저장
   set(ref(db, `customItems/${curTab}/${id}`), { id, text, order });
   document.getElementById('newText').value = '';
   document.getElementById('addForm').classList.remove('open');
 }
 
-// 전역 함수 (인라인 onclick용)
+// 전역 함수
 window._toggleProg = function(id) {
-  if (!myName) { alert('이름을 먼저 입력해 주세요.'); return; }
   const t = todayData[curTab].find(x => x.id === id); if (!t || t.doneBy) return;
   const k = myName.replace(/[.#$[\]]/g, '_');
   const pb = t.progBy || {};
@@ -590,7 +622,6 @@ window._toggleProg = function(id) {
 };
 
 window._toggleDone = function(id) {
-  if (!myName) { alert('이름을 먼저 입력해 주세요.'); return; }
   const t = todayData[curTab].find(x => x.id === id); if (!t) return;
   if (t.doneBy && t.doneBy !== myName) { alert(`'${t.doneBy}'님이 이미 완료 처리했습니다.`); return; }
   update(ref(db, `todos/${curTab}/${today}/${id}`), { doneBy: t.doneBy === myName ? null : myName });
@@ -602,20 +633,19 @@ window._startEdit = function(id) {
   el.innerHTML = `<input class="todo-text-input" id="ei-${id}" value="${t.text.replace(/"/g,'&quot;')}" onblur="window._saveEdit('${id}')" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape')window._cancelEdit();">`;
   document.getElementById('ei-' + id).focus();
 };
-
 window._saveEdit = function(id) {
   const inp = document.getElementById('ei-' + id); if (!inp) return;
   const val = inp.value.trim();
-  if (val) update(ref(db, `todos/${curTab}/${today}/${id}`), { text: val });
-  else render();
+  if (val) {
+    update(ref(db, `todos/${curTab}/${today}/${id}`), { text: val });
+    if (id.includes('custom')) update(ref(db, `customItems/${curTab}/${id}`), { text: val });
+  } else render();
 };
-
 window._cancelEdit = function() { render(); };
 
 window._removeTodo = function(id) {
   if (!confirm('항목을 삭제할까요?')) return;
   remove(ref(db, `todos/${curTab}/${today}/${id}`));
-  // 커스텀 항목이면 영구 저장소에서도 삭제
   if (id.includes('custom')) remove(ref(db, `customItems/${curTab}/${id}`));
 };
 
@@ -634,7 +664,6 @@ window._dDrop = function(e, targetId) {
   const updates = {};
   list.forEach((t,i) => { updates[`todos/${curTab}/${today}/${t.id}/order`] = i; });
   update(ref(db), updates);
-  // 순서 영구 저장
   set(ref(db, `itemOrder/${curTab}`), list.map(t => t.id));
   dragSrcId = null;
 };
@@ -644,14 +673,10 @@ window._toggleHistoryCard = function(date) {
   document.getElementById('hchevron-'+date).classList.toggle('open');
   document.getElementById('hsubtabs-'+date).classList.toggle('open');
 };
-
 window._toggleHistorySubtab = function(date, tab) {
-  ['day','night'].forEach(t => {
-    const btn = document.getElementById('hstab-'+t+'-'+date);
-    if (btn) btn.classList.remove('active-day','active-night');
-  });
-  const activeBtn = document.getElementById('hstab-'+tab+'-'+date);
-  if (activeBtn) activeBtn.classList.add('active-'+tab);
+  ['day','night'].forEach(t => { const b = document.getElementById('hstab-'+t+'-'+date); if (b) b.classList.remove('active-day','active-night'); });
+  const btn = document.getElementById('hstab-'+tab+'-'+date);
+  if (btn) btn.classList.add('active-'+tab);
   document.getElementById('htable-'+date).innerHTML = buildTableRows(date, tab);
 };
 
@@ -680,7 +705,6 @@ function renderHistory() {
   if (historyTabFilter === 'day') allDates = allDates.filter(d => allHistory.day[d]);
   if (historyTabFilter === 'night') allDates = allDates.filter(d => allHistory.night[d]);
   if (!allDates.length) { list.innerHTML = '<div class="history-empty">해당 기간에 기록이 없습니다</div>'; return; }
-
   list.innerHTML = allDates.map(date => {
     const hasDay = !!allHistory.day[date] && historyTabFilter !== 'night';
     const hasNight = !!allHistory.night[date] && historyTabFilter !== 'day';
@@ -765,15 +789,6 @@ function render() {
     </div>`;
   }).join('');
 }
-
-// 초기화
-setDateLabel();
-loadName();
-checkVersion();
-listenCustomItems();
-listenToday('day');
-listenToday('night');
-listenHistory();
 </script>
 </body>
 </html>
