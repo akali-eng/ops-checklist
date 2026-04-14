@@ -236,6 +236,8 @@ body.dark .gf-btn { background: #242424; border-color: rgba(255,255,255,0.1); }
 .gf-btn.active-pri-high { background: #a32d2d; color: #fff; border-color: #a32d2d; font-weight: 500; }
 .gf-btn.active-pri-mid { background: #854f0b; color: #fff; border-color: #854f0b; font-weight: 500; }
 .gf-btn.active-pri-low { background: #0f6e56; color: #fff; border-color: #0f6e56; font-weight: 500; }
+.gf-btn.active-pri-urgent { background: #a32d2d; color: #fff; border-color: #a32d2d; font-weight: 500; }
+.urgent-icon { display: inline-flex; align-items: center; vertical-align: middle; margin-right: 3px; color: #e24b4a; }
 .gf-div { width: 1px; height: 22px; background: rgba(0,0,0,0.1); }
 body.dark .gf-div { background: rgba(255,255,255,0.1); }
 .gp-row { margin-left: auto; display: flex; gap: 6px; }
@@ -554,6 +556,7 @@ body.dark .sheet-content-text { color: #e8e6df; }
     <button class="gf-btn" id="gfHigh">높음</button>
     <button class="gf-btn" id="gfMid">중간</button>
     <button class="gf-btn" id="gfLow">낮음</button>
+    <button class="gf-btn" id="gfUrgent">⚠ 임박</button>
     <div class="gp-row" id="goalPeriodRow" style="display:none">
       <button class="gp-btn active" id="gp30">30일</button>
       <button class="gp-btn" id="gp90">90일</button>
@@ -798,11 +801,12 @@ document.getElementById('hpAll').addEventListener('click',e=>{ hPeriod=0; qsa('.
 function setGoalStatusFilter(f,btn){ goalStatusFilter=f; qsa('.gf-btn',b=>{ if(['gfActive','gfDone'].includes(b.id)) b.classList.remove('active-goal'); }); btn.classList.add('active-goal'); document.getElementById('goalPeriodRow').style.display=f==='done'?'flex':'none'; renderGoalStats(); renderGoals(); }
 document.getElementById('gfActive').addEventListener('click',e=>setGoalStatusFilter('active',e.target));
 document.getElementById('gfDone').addEventListener('click',e=>setGoalStatusFilter('done',e.target));
-function setGoalPriFilter(f,btn){ goalPriFilter=f; ['gfPriAll','gfHigh','gfMid','gfLow'].forEach(id=>{ const b=document.getElementById(id); b.classList.remove('active-pri-high','active-pri-mid','active-pri-low'); }); if(f==='high') btn.classList.add('active-pri-high'); else if(f==='mid') btn.classList.add('active-pri-mid'); else if(f==='low') btn.classList.add('active-pri-low'); renderGoals(); }
+function setGoalPriFilter(f,btn){ goalPriFilter=f; ['gfPriAll','gfHigh','gfMid','gfLow','gfUrgent'].forEach(id=>{ const b=document.getElementById(id); if(b) b.classList.remove('active-pri-high','active-pri-mid','active-pri-low','active-pri-urgent'); }); if(f==='high') btn.classList.add('active-pri-high'); else if(f==='mid') btn.classList.add('active-pri-mid'); else if(f==='low') btn.classList.add('active-pri-low'); else if(f==='urgent') btn.classList.add('active-pri-urgent'); renderGoals(); }
 document.getElementById('gfPriAll').addEventListener('click',e=>setGoalPriFilter('all',e.target));
 document.getElementById('gfHigh').addEventListener('click',e=>setGoalPriFilter('high',e.target));
 document.getElementById('gfMid').addEventListener('click',e=>setGoalPriFilter('mid',e.target));
 document.getElementById('gfLow').addEventListener('click',e=>setGoalPriFilter('low',e.target));
+document.getElementById('gfUrgent').addEventListener('click',e=>setGoalPriFilter('urgent',e.target));
 document.getElementById('gp30').addEventListener('click',e=>{ goalPeriod=30; qsa('.gp-btn',b=>b.classList.remove('active')); e.target.classList.add('active'); renderGoals(); });
 document.getElementById('gp90').addEventListener('click',e=>{ goalPeriod=90; qsa('.gp-btn',b=>b.classList.remove('active')); e.target.classList.add('active'); renderGoals(); });
 document.getElementById('gpAll').addEventListener('click',e=>{ goalPeriod=0; qsa('.gp-btn',b=>b.classList.remove('active')); e.target.classList.add('active'); renderGoals(); });
@@ -901,14 +905,17 @@ function groupByDate(items, dateKey){
 function renderGoals(){
   const list=document.getElementById('goalsList');
   let goals=Object.values(goalsData);
+  const thr3=new Date(baseDate.getTime()+3*86400000).toISOString().split('T')[0];
   if(goalStatusFilter==='active'){
     goals=goals.filter(g=>!g.doneBy);
-    if(goalPriFilter!=='all') goals=goals.filter(g=>(g.priority||'mid')===goalPriFilter);
+    if(goalPriFilter==='urgent') goals=goals.filter(g=>g.deadline&&g.deadline<=thr3);
+    else if(goalPriFilter!=='all') goals=goals.filter(g=>(g.priority||'mid')===goalPriFilter);
     const priO={high:0,mid:1,low:2};
     goals.sort((a,b)=>(priO[a.priority||'mid']||1)-(priO[b.priority||'mid']||1)||(a.deadline||'9999').localeCompare(b.deadline||'9999'));
   } else {
     goals=goals.filter(g=>g.doneBy);
-    if(goalPriFilter!=='all') goals=goals.filter(g=>(g.priority||'mid')===goalPriFilter);
+    if(goalPriFilter==='urgent') goals=goals.filter(g=>g.deadline&&g.deadline<=thr3);
+    else if(goalPriFilter!=='all') goals=goals.filter(g=>(g.priority||'mid')===goalPriFilter);
     if(goalPeriod>0){ const cut=new Date(baseDate.getTime()-goalPeriod*86400000).toISOString().split('T')[0]; goals=goals.filter(g=>(g.doneAt||'')>=cut); }
     goals.sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
   }
@@ -924,7 +931,9 @@ function renderGoals(){
       const badgeTxt=status==='done'?'완료':status==='prog'?'진행':'미확인';
       const pri=PRI[g.priority||'mid'];
       const isOverdue=g.deadline&&g.deadline<today&&!g.doneBy;
+      const isUrgent=g.deadline&&g.deadline<=thr3&&!g.doneBy;
       const deadlineStr=g.deadline?`기한: <span class="${isOverdue?'deadline-red':''}">${g.deadline}${isOverdue?' (초과)':''}</span>`:'';
+      const urgentIcon=isUrgent?`<span class="urgent-icon" title="기한 임박"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>`:'';
       const progNames=g.progBy?Object.values(g.progBy):[];
       const isDone=!!g.doneBy, isMyDone=g.doneBy===myName;
       const progChecked=progNames.includes(myName)||isDone, doneDisabled=isDone&&!isMyDone;
@@ -936,7 +945,7 @@ function renderGoals(){
         <div class="goal-header">
           <div class="goal-dot ${dotCls}"></div>
           <div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')">
-            <div class="goal-title ${isDone?'done-title':''}">${g.title}</div>
+            <div class="goal-title ${isDone?'done-title':''}">${urgentIcon}${g.title}</div>
             <div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>
           </div>
           <div class="goal-right">
@@ -972,7 +981,6 @@ function renderGoals(){
     return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`;
   }).join('');
 
-  // 댓글 렌더링
   goals.forEach(g=>{ if(document.getElementById('gbody-'+g.id)?.classList.contains('open')) renderComments(g.id); });
 }
 
