@@ -945,7 +945,7 @@ function renderGoals(){
         <div class="goal-header">
           <div class="goal-dot ${dotCls}"></div>
           <div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')">
-            <div class="goal-title ${isDone?'done-title':''}">${urgentIcon}${g.title}</div>
+            <div class="goal-title ${isDone?'done-title':''}">${urgentIcon}${g.title}${(()=>{ const cnt=Object.keys(commentsData[g.id]||{}).length; return cnt>0?` <span style="font-size:12px;color:#888780;font-weight:400">(${cnt})</span>`:''; })()}</div>
             <div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>
           </div>
           <div class="goal-right">
