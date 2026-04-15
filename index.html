@@ -903,7 +903,7 @@ function renderCalPanel(dateStr){
           <span style="font-size:14px;font-weight:500;color:#2c2c2a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${g.title}</span>
         </div>
         <div style="font-size:11px;color:#854f0b;">등록: ${g.createdAt} (${g.createdBy})</div>
-        <div style="font-size:12px;color:#854f0b;margin-top:4px;cursor:pointer;text-decoration:underline;" onclick="switchTab('goals')">센터 목표 탭에서 보기 →</div>
+        <div style="font-size:12px;color:#854f0b;margin-top:4px;cursor:pointer;text-decoration:underline;" onclick="window._goToGoals()">센터 목표 탭에서 보기 →</div>
       </div>`;
     }).join('');
     if(events.length>0) html+=`<div style="height:0.5px;background:rgba(0,0,0,0.08);margin:10px 0;"></div>`;
@@ -928,6 +928,7 @@ function renderCalPanel(dateStr){
   listEl.innerHTML=html;
 }
 
+window._goToGoals=function(){ switchTab('goals'); };
 window._calSelectDate=function(dateStr){
   selectedCalDate=dateStr;
   qsa('.cal-cell',c=>c.classList.remove('selected'));
