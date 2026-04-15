@@ -952,16 +952,27 @@ function renderCalPanel(dateStr){
   // 일정 섹션
   if(events.length>0){
     if(deadlineGoals.length>0) html+=`<div style="font-size:11px;font-weight:500;color:#0c447c;margin-bottom:8px;"><span style="background:#e6f1fb;border-radius:4px;padding:2px 8px;">일정</span></div>`;
-    html+=events.map(e=>`
-      <div class="cal-event-item">
+    html+=events.map(e=>{
+      const cmtCount=Object.keys(calCommentsData[dateStr]?.[e.id]||{}).length;
+      const cmtLabel=cmtCount>0?` (${cmtCount})`:'';
+      return `<div class="cal-event-item">
         <div class="cal-event-title">${e.title}</div>
         ${e.content?`<div class="cal-event-content">${e.content}</div>`:''}
         <div class="cal-event-meta">등록: ${e.createdAt||''} (${e.createdBy})</div>
         <div class="cal-event-actions">
           <button class="cal-ev-btn" onclick="openCalEdit('${dateStr}','${e.id}')">수정</button>
           <button class="cal-ev-btn cal-ev-del" onclick="window._calDeleteEvent('${dateStr}','${e.id}')">삭제</button>
+          <button class="cal-ev-btn" onclick="window._calToggleComments('${dateStr}','${e.id}')">댓글${cmtLabel}</button>
         </div>
-      </div>`).join('');
+        <div id="cal-cmts-${e.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.06);">
+          <div id="cal-clist-${e.id}"></div>
+          <div class="comment-form" style="margin-top:8px;">
+            <input class="comment-input" type="text" id="cal-cinput-${e.id}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._calAddComment('${dateStr}','${e.id}')">
+            <button class="comment-submit" onclick="window._calAddComment('${dateStr}','${e.id}')">등록</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   if(!html) html='<div class="cal-no-events">등록된 일정이 없습니다</div>';
