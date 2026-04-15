@@ -315,7 +315,7 @@ body.dark .cal-nav-btn { background: #242424; border-color: rgba(255,255,255,0.1
 .cal-day-label { text-align: center; font-size: 12px; color: #888780; padding: 6px 0; font-weight: 500; }
 .cal-day-label.sun { color: #e24b4a; }
 .cal-day-label.sat { color: #185fa5; }
-.cal-cell { min-height: 80px; background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.cal-cell { min-height: 100px; background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 6px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
 body.dark .cal-cell { background: #242424; border-color: rgba(255,255,255,0.07); }
 .cal-cell:hover { border-color: #185fa5; }
 .cal-cell.today { border-color: #185fa5; background: #e6f1fb; }
@@ -329,6 +329,10 @@ body.dark .cal-date-num { color: #e8e6df; }
 .cal-date-num.sat-num { color: #185fa5; }
 .cal-chip { font-size: 10px; background: #e6f1fb; color: #0c447c; border-radius: 4px; padding: 1px 5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
 body.dark .cal-chip { background: rgba(24,95,165,0.2); color: #85b7eb; }
+.cal-chip-goal { font-size: 10px; background: #faeeda; color: #854f0b; border-radius: 4px; padding: 1px 5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.5; }
+body.dark .cal-chip-goal { background: rgba(239,159,39,0.2); color: #ef9f27; }
+.cal-chip-goal-urgent { background: #fcebeb; color: #a32d2d; }
+body.dark .cal-chip-goal-urgent { background: rgba(226,75,74,0.2); color: #f09595; }
 .cal-more { font-size: 10px; color: #888780; padding-left: 2px; }
 
 /* 일정 패널 */
@@ -852,13 +856,18 @@ function renderCalendar(){
   for(let d=1;d<=daysInMonth;d++){
     const dateStr=calDateStr(calYear,calMonth,d);
     const events=Object.values(calendarData[dateStr]||{}).sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''));
+    // 마감 목표 수 계산
+    const deadlineGoals=Object.values(goalsData).filter(g=>g.deadline===dateStr&&!g.doneBy);
+    const thr3=new Date(baseDate.getTime()+3*86400000).toISOString().split('T')[0];
+    const isUrgentDate=dateStr<=thr3&&dateStr>=today;
     const isToday=dateStr===todayKst;
     const isSel=dateStr===selectedCalDate;
     const dow=(firstDay+d-1)%7;
     const dowCls=dow===0?'sun-num':dow===6?'sat-num':'';
-    const hasEvents=events.length>0;
+    const hasEvents=events.length>0||deadlineGoals.length>0;
     let chips='';
-    if(hasEvents){ events.slice(0,2).forEach(e=>{ chips+=`<div class="cal-chip">${e.title}</div>`; }); if(events.length>2) chips+=`<div class="cal-more">+${events.length-2}개 더</div>`; }
+    if(deadlineGoals.length>0){ chips+=`<div class="cal-chip-goal ${isUrgentDate?'cal-chip-goal-urgent':''}">⏰ 마감 ${deadlineGoals.length}건</div>`; }
+    if(hasEvents){ events.slice(0,3).forEach(e=>{ chips+=`<div class="cal-chip">${e.title}</div>`; }); if(events.length>3) chips+=`<div class="cal-more">+${events.length-3}개 더</div>`; }
     html+=`<div class="cal-cell ${isToday?'today':''} ${isSel?'selected':''} ${hasEvents?'has-events':''}" onclick="window._calSelectDate('${dateStr}')">
       <div class="cal-date-num ${dowCls}">${d}</div>${chips}
     </div>`;
