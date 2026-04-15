@@ -55,7 +55,8 @@ body.dark .edit-modal input, body.dark .edit-modal textarea, body.dark .edit-mod
 .edit-modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 
 .tab-row { display: flex; align-items: center; margin-bottom: 1.5rem; gap: 8px; flex-wrap: wrap; }
-.tab-sw { display: flex; background: #ece9e2; border-radius: 12px; padding: 4px; }
+.tab-sw { display: flex; background: #ece9e2; border-radius: 12px; padding: 4px; position: relative; }
+.tab-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; border-radius: 99px; font-size: 10px; font-weight: 500; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; pointer-events: none; z-index: 1; }
 body.dark .tab-sw { background: #2e2e2e; }
 .tab-btn { padding: 8px 14px; border-radius: 9px; border: none; font-size: 13px; font-weight: 400; color: #888780; background: transparent; cursor: pointer; font-family: inherit; transition: all 0.18s; white-space: nowrap; }
 .tab-btn.active { background: #fff; font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
@@ -483,7 +484,7 @@ body.dark .sheet-content-text { color: #e8e6df; }
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn goals" id="tabGoals">센터 목표</button></div>
   <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn calendar" id="tabCalendar">센터 일정</button></div>
+  <div class="tab-sw" id="calTabSw"><button class="tab-btn calendar" id="tabCalendar">센터 일정</button></div>
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn sheets" id="tabSheets">공유 시트</button></div>
 </div>
@@ -834,10 +835,49 @@ function initDefaults(tab){
 function listenCustomItems(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`customItems/${tab}`),s=>{ customItems[tab]=s.val()||{}; }); onValue(ref(db,`itemOrder/${tab}`),s=>{ savedOrder[tab]=s.val()||[]; }); }); }
 function listenToday(tab){ onValue(ref(db,`todos/${tab}/${today}`),s=>{ const v=s.val(); if(!v){initDefaults(tab);return;} todayData[tab]=Object.values(v).sort((a,b)=>(a.order||0)-(b.order||0)); if(curTab===tab) render(); }); }
 function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='history') renderHistory(); }); }); }
-function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} }); }
+function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); }); }
 function listenSheets(){ onValue(ref(db,'sheets'),s=>{ sheetsData=s.val()||{}; if(curTab==='sheets') renderSheets(); }); }
 function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.val()||{}; qsa('.goal-body.open',el=>{ const gid=el.id.replace('gbody-',''); renderComments(gid); }); }); }
-function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); }); }
+function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); }); }
+
+function updateCalBadge(){
+  const sw=document.getElementById('calTabSw'); if(!sw) return;
+  sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
+  const thr3=new Date(baseDate.getTime()+3*86400000).toISOString().split('T')[0];
+  const thr7=new Date(baseDate.getTime()+7*86400000).toISOString().split('T')[0];
+  let cnt3=0, cnt7=0;
+  Object.entries(calendarData).forEach(([date,events])=>{
+    if(date<today) return;
+    const cnt=Object.keys(events||{}).length;
+    if(date<=thr3) cnt3+=cnt;
+    else if(date<=thr7) cnt7+=cnt;
+  });
+  // 마감 목표도 포함
+  Object.values(goalsData).forEach(g=>{
+    if(!g.deadline||g.doneBy) return;
+    if(g.deadline<today) return;
+    if(g.deadline<=thr3) cnt3++;
+    else if(g.deadline<=thr7) cnt7++;
+  });
+  if(cnt3>0&&cnt7>0){
+    const b3=document.createElement('div');
+    b3.className='tab-badge'; b3.textContent=cnt3;
+    b3.style.cssText='background:#e24b4a;top:-5px;right:-5px;';
+    sw.appendChild(b3);
+    const b7=document.createElement('div');
+    b7.className='tab-badge'; b7.textContent=cnt7;
+    b7.style.cssText='background:#ef9f27;top:-5px;right:18px;';
+    sw.appendChild(b7);
+  } else if(cnt3>0){
+    const b=document.createElement('div');
+    b.className='tab-badge'; b.textContent=cnt3;
+    b.style.background='#e24b4a'; sw.appendChild(b);
+  } else if(cnt7>0){
+    const b=document.createElement('div');
+    b.className='tab-badge'; b.textContent=cnt7;
+    b.style.background='#ef9f27'; sw.appendChild(b);
+  }
+}
 
 function addTodo(){ const text=document.getElementById('newText').value.trim(); if(!text) return; const id=`${curTab}-custom-${Date.now()}`, item={id,text,order:todayData[curTab].length,progBy:{},doneBy:null,custom:true}; set(ref(db,`todos/${curTab}/${today}/${id}`),item); set(ref(db,`customItems/${curTab}/${id}`),{id,text,order:item.order}); document.getElementById('newText').value=''; document.getElementById('addForm').classList.remove('open'); }
 function addGoal(){ const title=document.getElementById('goalTitle').value.trim(); if(!title){alert('목표 제목을 입력해 주세요.');return;} const nr=push(ref(db,'goals')); set(nr,{id:nr.key,title,content:document.getElementById('goalContent').value.trim(),priority:document.getElementById('goalPriority').value,deadline:document.getElementById('goalDeadline').value||null,slackUrl:document.getElementById('goalSlack').value.trim(),createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,progBy:{},doneBy:null,doneAt:null}); ['goalTitle','goalContent','goalSlack'].forEach(id=>document.getElementById(id).value=''); document.getElementById('goalPriority').value='mid'; document.getElementById('goalDeadline').value=''; document.getElementById('goalForm').classList.remove('open'); }
