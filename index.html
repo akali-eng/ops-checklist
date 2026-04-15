@@ -655,7 +655,7 @@ let goalStatusFilter='active', goalPriFilter='all', goalPeriod=30;
 let myName='', dragSrcId=null, sheetDragId=null;
 let todayData={day:[],night:[]}, allHistory={day:{},night:{}};
 let customItems={day:{},night:{}}, savedOrder={day:[],night:[]};
-let goalsData={}, sheetsData={}, commentsData={}, calendarData={};
+let goalsData={}, sheetsData={}, commentsData={}, calendarData={}, calCommentsData={};
 let calYear=kstNow.getUTCFullYear(), calMonth=kstNow.getUTCMonth();
 let selectedCalDate=null, editState=null;
 
@@ -677,7 +677,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
     listenCustomItems(); listenToday('day'); listenToday('night');
-    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar();
+    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments();
   } else {
     document.getElementById('loginPage').style.display='flex';
     document.getElementById('appPage').style.display='none';
@@ -1003,7 +1003,26 @@ function addCalEvent(){
   set(nr,{id:nr.key,title,content:document.getElementById('calEventContent').value.trim(),createdBy:myName,createdAt:kstDateTimeStr()});
   document.getElementById('calEventTitle').value=''; document.getElementById('calEventContent').value='';
 }
-window._calDeleteEvent=function(dateStr,eventId){ if(!confirm('일정을 삭제할까요?')) return; remove(ref(db,`calendarEvents/${dateStr}/${eventId}`)); };
+window._calDeleteEvent=function(dateStr,eventId){ if(!confirm('일정을 삭제할까요?')) return; remove(ref(db,`calendarEvents/${dateStr}/${eventId}`)); remove(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); };
+
+function listenCalComments(){ onValue(ref(db,'calendarEventComments'),s=>{ calCommentsData=s.val()||{}; if(selectedCalDate) renderCalPanel(selectedCalDate); }); }
+
+function renderCalComments(dateStr,eventId){
+  const el=document.getElementById('cal-clist-'+eventId); if(!el) return;
+  const cmts=Object.values(calCommentsData[dateStr]?.[eventId]||{}).sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''));
+  if(!cmts.length){el.innerHTML='<div style="font-size:12px;color:#888780;padding:6px 0;">첫 댓글을 남겨보세요</div>';return;}
+  el.innerHTML=cmts.map(c=>{ const isMe=c.author===myName; return `<div class="comment-item"><div class="comment-avatar">${c.author.slice(0,1).toUpperCase()}</div><div class="comment-body"><div class="comment-meta"><strong>${c.author}</strong> · ${c.createdAt||''}${c.editedAt?' (수정됨)':''}</div><div class="comment-text" id="cal-ctext-${c.id}">${c.text}</div>${isMe?`<div class="comment-actions"><button class="comment-btn" onclick="window._calEditComment('${dateStr}','${eventId}','${c.id}')">수정</button><button class="comment-btn" onclick="window._calDeleteComment('${dateStr}','${eventId}','${c.id}')">삭제</button></div>`:''}</div></div>`; }).join('');
+}
+window._calToggleComments=function(dateStr,eventId){
+  const el=document.getElementById('cal-cmts-'+eventId); if(!el) return;
+  const isOpen=el.style.display!=='none';
+  el.style.display=isOpen?'none':'block';
+  if(!isOpen) renderCalComments(dateStr,eventId);
+};
+window._calAddComment=function(dateStr,eventId){ const inp=document.getElementById('cal-cinput-'+eventId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); inp.value=''; };
+window._calEditComment=function(dateStr,eventId,commentId){ const el=document.getElementById('cal-ctext-'+commentId); if(!el) return; const cur=calCommentsData[dateStr]?.[eventId]?.[commentId]; if(!cur) return; el.innerHTML=`<input style="width:100%;padding:4px 8px;border-radius:6px;border:0.5px solid #185fa5;background:#f9f8f5;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none;" id="cal-cedit-${commentId}" value="${cur.text.replace(/"/g,'&quot;')}"><div style="display:flex;gap:6px;margin-top:4px;"><button class="comment-btn" onclick="window._calSaveComment('${dateStr}','${eventId}','${commentId}')">저장</button><button class="comment-btn" onclick="renderCalComments('${dateStr}','${eventId}')">취소</button></div>`; document.getElementById('cal-cedit-'+commentId)?.focus(); };
+window._calSaveComment=function(dateStr,eventId,commentId){ const inp=document.getElementById('cal-cedit-'+commentId); if(!inp) return; const val=inp.value.trim(); if(!val) return; update(ref(db,`calendarEventComments/${dateStr}/${eventId}/${commentId}`),{text:val,editedAt:kstDateTimeStr()}); };
+window._calDeleteComment=function(dateStr,eventId,commentId){ if(!confirm('댓글을 삭제할까요?')) return; remove(ref(db,`calendarEventComments/${dateStr}/${eventId}/${commentId}`)); };
 
 // 업데이트 버튼
 window._itemUpdate=function(type,id){ const data=type==='goal'?goalsData[id]:sheetsData[id]; if(!data) return; const prev=data.lastUpdatedAt||data.createdAt||today; update(ref(db,`${type==='goal'?'goals':'sheets'}/${id}`),{lastUpdatedAt:today,prevUpdatedAt:prev!==today?prev:(data.prevUpdatedAt||prev)}); };
