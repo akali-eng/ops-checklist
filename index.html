@@ -907,7 +907,7 @@ function renderCalendar(){
     const hasEvents=events.length>0||deadlineGoals.length>0;
     let chips='';
     if(deadlineGoals.length>0){ chips+=`<div class="cal-chip-goal ${isUrgentDate?'cal-chip-goal-urgent':''}">⏰ 마감 ${deadlineGoals.length}건</div>`; }
-    if(hasEvents){ events.slice(0,3).forEach(e=>{ chips+=`<div class="cal-chip">${e.title}</div>`; }); if(events.length>3) chips+=`<div class="cal-more">+${events.length-3}개 더</div>`; }
+    if(hasEvents){ events.slice(0,3).forEach(e=>{ const cc=Object.keys(calCommentsData[dateStr]?.[e.id]||{}).length; chips+=`<div class="cal-chip">${e.title}${cc>0?` <span style="opacity:0.7">(${cc})</span>`:''}</div>`; }); if(events.length>3) chips+=`<div class="cal-more">+${events.length-3}개 더</div>`; }
     html+=`<div class="cal-cell ${isToday?'today':''} ${isSel?'selected':''} ${hasEvents?'has-events':''}" onclick="window._calSelectDate('${dateStr}')">
       <div class="cal-date-num ${dowCls}">${d}</div>${chips}
     </div>`;
@@ -1016,7 +1016,7 @@ function addCalEvent(){
 }
 window._calDeleteEvent=function(dateStr,eventId){ if(!confirm('일정을 삭제할까요?')) return; remove(ref(db,`calendarEvents/${dateStr}/${eventId}`)); remove(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); };
 
-function listenCalComments(){ onValue(ref(db,'calendarEventComments'),s=>{ calCommentsData=s.val()||{}; if(selectedCalDate) renderCalPanel(selectedCalDate); }); }
+function listenCalComments(){ onValue(ref(db,'calendarEventComments'),s=>{ calCommentsData=s.val()||{}; if(curTab==='calendar'){ renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); } }); }
 
 function renderCalComments(dateStr,eventId){
   const el=document.getElementById('cal-clist-'+eventId); if(!el) return;
