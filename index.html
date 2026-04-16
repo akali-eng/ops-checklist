@@ -365,7 +365,18 @@ body.dark .cal-add-form input, body.dark .cal-add-form textarea { background: #1
 .cal-add-btn { background: #0c447c; border: none; border-radius: 8px; padding: 7px 18px; font-size: 13px; font-weight: 500; color: #fff; }
 .cal-no-events { font-size: 13px; color: #888780; text-align: center; padding: 1rem 0; }
 
-/* 공유 시트 */
+/* 공유 시트 검색 */
+.sheet-search-wrap { position: relative; margin-bottom: 12px; }
+.sheet-search-input { width: 100%; padding: 9px 36px 9px 14px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.12); background: #fff; font-size: 14px; color: #2c2c2a; font-family: inherit; outline: none; transition: border-color 0.15s; }
+body.dark .sheet-search-input { background: #242424; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.sheet-search-input:focus { border-color: #0f6e56; }
+.sheet-search-input::placeholder { color: #b8b5ac; }
+.sheet-search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #b8b5ac; line-height: 1; padding: 2px 4px; display: none; }
+.sheet-search-clear.visible { display: block; }
+.sheet-search-count { font-size: 12px; color: #888780; margin-bottom: 10px; }
+.sheet-highlight { background: #fffbe0; border-radius: 2px; color: #854f0b; font-weight: 500; }
+body.dark .sheet-highlight { background: rgba(239,159,39,0.25); color: #ef9f27; }
+
 #sheetsPage { display: none; }
 .sheet-list { display: flex; flex-direction: column; gap: 8px; }
 .sheet-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; }
@@ -449,6 +460,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.6.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-16</td><td>공유 시트 검색 — 제목·내용 동시 검색, 검색어 하이라이트, 내용 매칭 시 자동 펼침</td></tr>
         <tr><td><span class="ver-badge">v1.5.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-15</td><td>센터 일정 탭 추가 — 월별 달력, 날짜별 일정 등록/수정/삭제, 달력에 일정 미리보기</td></tr>
         <tr><td><span class="ver-badge">v1.4.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-15</td><td>목표·시트 수정, 댓글, 업데이트 버튼, 날짜 그룹, 되돌리기, 우선순위 필터·현황판</td></tr>
         <tr><td><span class="ver-badge">v1.3.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-14</td><td>센터목표 우선순위·기한, 공유시트 탭</td></tr>
@@ -520,8 +532,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.5.0</span>
-      · 업데이트 2026-04-15 &nbsp;|&nbsp;
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.6.0</span>
+      · 업데이트 2026-04-16 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
@@ -640,6 +652,11 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 
 <!-- 공유 시트 -->
 <div id="sheetsPage">
+  <div class="sheet-search-wrap">
+    <input type="text" class="sheet-search-input" id="sheetSearchInput" placeholder="제목 또는 내용으로 검색...">
+    <button class="sheet-search-clear" id="sheetSearchClear" onclick="window._clearSheetSearch()">×</button>
+  </div>
+  <div class="sheet-search-count" id="sheetSearchCount" style="display:none"></div>
   <div class="sheet-list" id="sheetList"><div class="sheets-empty">시트를 불러오는 중...</div></div>
 </div>
 
@@ -651,7 +668,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.5.0";
+const CURRENT_VERSION = "1.6.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -675,6 +692,7 @@ function setDateLabel(){ const s=new Date(nowMs).toLocaleDateString('ko-KR',{yea
 let curTab='day', curFilter='전체', htFilter='전체', hPeriod=7;
 let goalStatusFilter='active', goalPriFilter='all', goalPeriod=30;
 let myName='', dragSrcId=null, sheetDragId=null;
+let sheetQuery='';
 let todayData={day:[],night:[]}, allHistory={day:{},night:{}};
 let customItems={day:{},night:{}}, savedOrder={day:[],night:[]};
 let goalsData={}, sheetsData={}, commentsData={}, calendarData={}, calCommentsData={};
@@ -1159,7 +1177,31 @@ window._editComment=function(goalId,commentId){ const el=document.getElementById
 window._saveComment=function(goalId,commentId){ const inp=document.getElementById('cedit-'+commentId); if(!inp) return; const val=inp.value.trim(); if(!val) return; update(ref(db,`goalComments/${goalId}/${commentId}`),{text:val,editedAt:kstDateTimeStr()}); };
 window._deleteComment=function(goalId,commentId){ if(!confirm('댓글을 삭제할까요?')) return; remove(ref(db,`goalComments/${goalId}/${commentId}`)); };
 
-function renderSheets(){ const list=document.getElementById('sheetList'); const sheets=Object.values(sheetsData).sort((a,b)=>(b.lastUpdatedAt||b.createdAt||'').localeCompare(a.lastUpdatedAt||a.createdAt||'')||(a.order||0)-(b.order||0)); if(!sheets.length){list.innerHTML='<div class="sheets-empty">등록된 공유 시트가 없습니다</div>';return;} const groups=groupByDate(sheets,'lastUpdatedAt'); list.innerHTML=groups.map(([date,items])=>{ const dateLabel=date===today?`${date} (오늘)`:date; const cards=items.map(s=>{ const canUndo=s.lastUpdatedAt===today; return `<div class="sheet-card" id="scard-${s.id}" draggable="true" ondragstart="window._sDragStart(event,'${s.id}')" ondragover="window._sDragOver(event,'${s.id}')" ondrop="window._sDrop(event,'${s.id}')" ondragend="window._sDragEnd()"><div class="sheet-header"><div class="sheet-drag">${DRAG_DOTS}</div><div class="sheet-icon">${SHEET_ICO}</div><div class="sheet-info" onclick="window._sheetToggle('${s.id}')"><div class="sheet-title">${s.title}</div><div class="sheet-meta">등록: ${s.createdAt} (${s.createdBy})</div></div><div class="sheet-right"><button class="sheet-open-btn" onclick="window.open('${s.url}','_blank')">열기 →</button><button class="btn-update" onclick="window._itemUpdate('sheet','${s.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('sheet','${s.id}')">${UNDO_ICO}</button>`:''}<span class="sheet-chev" id="schev-${s.id}">▾</span><button class="btn-edit-sm" onclick="openSheetEdit('${s.id}')">수정</button><button class="btn-del-sm" onclick="window._sheetDelete('${s.id}')">×</button></div></div><div class="sheet-body" id="sbody-${s.id}">${s.content?`<div class="sheet-content-text">${s.content}</div>`:'<div style="font-size:13px;color:#888780">내용 없음</div>'}</div></div>`; }).join(''); return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`; }).join(''); }
+function highlight(text,q){ if(!q||!text) return text||''; const escaped=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return text.replace(new RegExp(escaped,'gi'),m=>`<span class="sheet-highlight">${m}</span>`); }
+function renderSheets(){
+  const list=document.getElementById('sheetList');
+  const countEl=document.getElementById('sheetSearchCount');
+  let sheets=Object.values(sheetsData).sort((a,b)=>(b.lastUpdatedAt||b.createdAt||'').localeCompare(a.lastUpdatedAt||a.createdAt||'')||(a.order||0)-(b.order||0));
+  const q=sheetQuery.trim().toLowerCase();
+  if(q){ sheets=sheets.filter(s=>(s.title||'').toLowerCase().includes(q)||(s.content||'').toLowerCase().includes(q)); }
+  if(countEl){ if(q){countEl.style.display='block';countEl.textContent=`검색 결과: ${sheets.length}건`;}else{countEl.style.display='none';} }
+  if(!sheets.length){list.innerHTML=`<div class="sheets-empty">${q?'검색 결과가 없습니다':'등록된 공유 시트가 없습니다'}</div>`;return;}
+  const groups=groupByDate(sheets,'lastUpdatedAt');
+  list.innerHTML=groups.map(([date,items])=>{
+    const dateLabel=date===today?`${date} (오늘)`:date;
+    const cards=items.map(s=>{
+      const canUndo=s.lastUpdatedAt===today;
+      const titleHtml=q?highlight(s.title,sheetQuery.trim()):s.title;
+      const bodyHtml=s.content?(q?highlight(s.content,sheetQuery.trim()):s.content):'';
+      const bodyOpen=q&&s.content&&s.content.toLowerCase().includes(sheetQuery.trim().toLowerCase())?'open':'';
+      return `<div class="sheet-card" id="scard-${s.id}" draggable="true" ondragstart="window._sDragStart(event,'${s.id}')" ondragover="window._sDragOver(event,'${s.id}')" ondrop="window._sDrop(event,'${s.id}')" ondragend="window._sDragEnd()"><div class="sheet-header"><div class="sheet-drag">${DRAG_DOTS}</div><div class="sheet-icon">${SHEET_ICO}</div><div class="sheet-info" onclick="window._sheetToggle('${s.id}')"><div class="sheet-title">${titleHtml}</div><div class="sheet-meta">등록: ${s.createdAt} (${s.createdBy})</div></div><div class="sheet-right"><button class="sheet-open-btn" onclick="window.open('${s.url}','_blank')">열기 →</button><button class="btn-update" onclick="window._itemUpdate('sheet','${s.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('sheet','${s.id}')">${UNDO_ICO}</button>`:''}<span class="sheet-chev ${bodyOpen}" id="schev-${s.id}">▾</span><button class="btn-edit-sm" onclick="openSheetEdit('${s.id}')">수정</button><button class="btn-del-sm" onclick="window._sheetDelete('${s.id}')">×</button></div></div><div class="sheet-body ${bodyOpen}" id="sbody-${s.id}">${bodyHtml?`<div class="sheet-content-text">${bodyHtml}</div>`:'<div style="font-size:13px;color:#888780">내용 없음</div>'}</div></div>`;
+    }).join('');
+    return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`;
+  }).join('');
+}
+// 검색 이벤트
+document.getElementById('sheetSearchInput').addEventListener('input',function(){ sheetQuery=this.value; document.getElementById('sheetSearchClear')?.classList.toggle('visible',sheetQuery.length>0); renderSheets(); });
+window._clearSheetSearch=function(){ sheetQuery=''; const inp=document.getElementById('sheetSearchInput'); if(inp){inp.value='';inp.focus();} document.getElementById('sheetSearchClear')?.classList.remove('visible'); renderSheets(); };
 window._sheetToggle=function(id){ document.getElementById('schev-'+id)?.classList.toggle('open'); document.getElementById('sbody-'+id)?.classList.toggle('open'); };
 window._sheetDelete=function(id){ if(!confirm('시트를 삭제할까요?')) return; remove(ref(db,`sheets/${id}`)); };
 window._sDragStart=function(e,id){ sheetDragId=id; e.dataTransfer.effectAllowed='move'; document.getElementById('scard-'+id)?.classList.add('dragging'); };
