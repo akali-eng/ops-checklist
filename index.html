@@ -393,6 +393,28 @@ body.dark .sheet-content-text { color: #e8e6df; }
 .sheet-chev.open { transform: rotate(180deg); }
 .sheets-empty { text-align: center; color: #888780; padding: 3rem; font-size: 14px; }
 
+/* 새 댓글 N 뱃지 */
+.cmt-new-badge { display: inline-block; font-size: 9px; font-weight: 700; color: #fff; background: #e24b4a; border-radius: 99px; padding: 1px 5px; margin-left: 3px; vertical-align: middle; line-height: 1.5; letter-spacing: 0.2px; }
+
+/* 목표 진행률 - 목록 뷰 */
+.goal-prog-wrap { display: flex; align-items: center; gap: 7px; margin-top: 6px; }
+.goal-prog-bar-bg { width: 100px; height: 5px; background: #f1efe8; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
+body.dark .goal-prog-bar-bg { background: #3a3a3a; }
+.goal-prog-bar-fill { height: 100%; border-radius: 99px; transition: width 0.35s ease, background 0.35s ease; }
+.goal-prog-pct { font-size: 11px; color: #888780; white-space: nowrap; font-weight: 500; }
+.goal-prog-pct.done { color: #1d9e75; }
+
+/* 목표 진행률 - 확장 뷰 */
+.prog-ctrl-wrap { display: flex; flex-direction: column; gap: 8px; }
+.prog-quick-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.prog-quick-btn { padding: 4px 11px; border-radius: 99px; font-size: 12px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; color: #888780; font-family: inherit; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,0.12); color: #888780; }
+.prog-quick-btn:hover { border-color: #185fa5; color: #185fa5; }
+.prog-quick-btn.pqb-active { color: #fff; border-color: transparent; font-weight: 500; }
+.prog-slider-row { display: flex; align-items: center; gap: 10px; }
+.prog-slider { flex: 1; height: 4px; cursor: pointer; accent-color: #185fa5; }
+.prog-slider-val { font-size: 13px; font-weight: 600; min-width: 38px; text-align: right; }
+
 @media (max-width: 640px) {
   .stats { grid-template-columns: repeat(2,1fr); }
   .goal-stats-bar { grid-template-columns: repeat(3,1fr); }
@@ -667,6 +689,35 @@ const URGENT_ICO=`<span class="urgent-icon"><svg width="13" height="13" viewBox=
 
 function qsa(sel,fn){ document.querySelectorAll(sel).forEach(fn); }
 
+// ── 댓글 업무일 / N 뱃지 ──────────────────────────────────────────
+// 업무일 기준: KST 오전 5시 이전은 전날로 처리 (기존 로직과 동일)
+const yesterday = new Date(baseDate.getTime()-86400000).toISOString().split('T')[0];
+function getCommentBizDay(kstStr){
+  if(!kstStr) return '';
+  const [dp,tp]=kstStr.split(' ');
+  if(!tp) return dp;
+  const h=parseInt(tp.split(':')[0]);
+  if(h<5){ const d=new Date(dp+'T00:00:00'); d.setDate(d.getDate()-1); return d.toISOString().split('T')[0]; }
+  return dp;
+}
+// 목표 댓글 중 "오늘 or 어제 업무일" 에 작성된 새 댓글 존재 여부
+function hasNewGoalCmt(goalId){
+  return Object.values(commentsData[goalId]||{}).some(c=>getCommentBizDay(c.createdAt)>=yesterday);
+}
+// 캘린더 이벤트 댓글 중 새 댓글 존재 여부
+function hasNewCalCmt(dateStr,eventId){
+  return Object.values(calCommentsData[dateStr]?.[eventId]||{}).some(c=>getCommentBizDay(c.createdAt)>=yesterday);
+}
+
+// ── 진행률 색상 ───────────────────────────────────────────────────
+function progColor(p){
+  if(!p||p===0) return '#d8d5cc';
+  if(p<=30) return '#ef9f27';
+  if(p<=70) return '#185fa5';
+  if(p<100) return '#1d9e75';
+  return '#1d9e75';
+}
+
 // 로그인
 onAuthStateChanged(auth, user => {
   if(user){
@@ -907,7 +958,7 @@ function renderCalendar(){
     const hasEvents=events.length>0||deadlineGoals.length>0;
     let chips='';
     if(deadlineGoals.length>0){ chips+=`<div class="cal-chip-goal ${isUrgentDate?'cal-chip-goal-urgent':''}">⏰ 마감 ${deadlineGoals.length}건</div>`; }
-    if(hasEvents){ events.slice(0,3).forEach(e=>{ const cc=Object.keys(calCommentsData[dateStr]?.[e.id]||{}).length; chips+=`<div class="cal-chip">${e.title}${cc>0?` <span style="opacity:0.7">(${cc})</span>`:''}</div>`; }); if(events.length>3) chips+=`<div class="cal-more">+${events.length-3}개 더</div>`; }
+    if(hasEvents){ events.slice(0,3).forEach(e=>{ const cc=Object.keys(calCommentsData[dateStr]?.[e.id]||{}).length; const hasNewC=hasNewCalCmt(dateStr,e.id); chips+=`<div class="cal-chip">${e.title}${cc>0?` <span style="opacity:0.7">(${cc})</span>`:''}${hasNewC?'<span class="cmt-new-badge">N</span>':''}</div>`; }); if(events.length>3) chips+=`<div class="cal-more">+${events.length-3}개 더</div>`; }
     html+=`<div class="cal-cell ${isToday?'today':''} ${isSel?'selected':''} ${hasEvents?'has-events':''}" onclick="window._calSelectDate('${dateStr}')">
       <div class="cal-date-num ${dowCls}">${d}</div>${chips}
     </div>`;
@@ -955,6 +1006,7 @@ function renderCalPanel(dateStr){
     html+=events.map(e=>{
       const cmtCount=Object.keys(calCommentsData[dateStr]?.[e.id]||{}).length;
       const cmtLabel=cmtCount>0?` (${cmtCount})`:'';
+      const hasNewC=hasNewCalCmt(dateStr,e.id);
       return `<div class="cal-event-item">
         <div class="cal-event-title">${e.title}</div>
         ${e.content?`<div class="cal-event-content">${e.content}</div>`:''}
@@ -962,7 +1014,7 @@ function renderCalPanel(dateStr){
         <div class="cal-event-actions">
           <button class="cal-ev-btn" onclick="openCalEdit('${dateStr}','${e.id}')">수정</button>
           <button class="cal-ev-btn cal-ev-del" onclick="window._calDeleteEvent('${dateStr}','${e.id}')">삭제</button>
-          <button class="cal-ev-btn" onclick="window._calToggleComments('${dateStr}','${e.id}')">댓글${cmtLabel}</button>
+          <button class="cal-ev-btn" onclick="window._calToggleComments('${dateStr}','${e.id}')">댓글${cmtLabel}${hasNewC?'<span class="cmt-new-badge">N</span>':''}</button>
         </div>
         <div id="cal-cmts-${e.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.06);">
           <div id="cal-clist-${e.id}"></div>
@@ -1066,8 +1118,22 @@ function renderGoals(){
       const metaParts=[`등록: ${g.createdAt} (${g.createdBy})`,...(g.doneAt?['완료: '+g.doneAt]:[])];
       const canUndo=g.lastUpdatedAt===today;
       const cntRaw=Object.keys(commentsData[g.id]||{}).length;
-      const cntStr=cntRaw>0?` <span style="font-size:12px;color:#888780;font-weight:400">(${cntRaw})</span>`:'';
-      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div></div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}"><div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
+      const hasNew=hasNewGoalCmt(g.id);
+      const newBadge=hasNew?'<span class="cmt-new-badge">N</span>':'';
+      const cntStr=cntRaw>0?` <span style="font-size:12px;color:#888780;font-weight:400">(${cntRaw})${newBadge}</span>`:(hasNew?` <span>${newBadge}</span>`:'');
+      // 진행률
+      const prog=typeof g.progress==='number'?g.progress:null;
+      const progBarHtml=prog!==null&&prog>0?`<div class="goal-prog-wrap"><div class="goal-prog-bar-bg"><div class="goal-prog-bar-fill" style="width:${prog}%;background:${progColor(prog)}"></div></div><span class="goal-prog-pct${prog===100?' done':''}">${prog}%</span></div>`:'';
+      // 진행률 퀵버튼 & 슬라이더
+      const progQuickBtns=[0,25,50,75,100].map(v=>{
+        const isActive=(prog||0)===v;
+        let bg='',col='';
+        if(v===0){bg='#f1efe8';col='#888780';}else if(v<=30){bg='#fff4e0';col='#854f0b';}else if(v<=70){bg='#e6f1fb';col='#185fa5';}else if(v<100){bg='#e1f5ee';col='#0f6e56';}else{bg='#1d9e75';col='#fff';}
+        return `<button class="prog-quick-btn${isActive?' pqb-active':''}" style="${isActive?`background:${bg};color:${col};border-color:${bg}`:''}" onclick="window._setGoalProgress('${g.id}',${v})">${v===0?'미시작':v+'%'}</button>`;
+      }).join('');
+      const sliderCol=progColor(prog||0);
+      const progSection=`<div class="gb-section"><div class="gb-label">진행률</div><div class="prog-ctrl-wrap"><div class="prog-quick-row">${progQuickBtns}</div><div class="prog-slider-row"><input type="range" class="prog-slider" min="0" max="100" step="5" value="${prog||0}" style="accent-color:${sliderCol}" oninput="window._updateProgDisplay(this,'${g.id}')" onchange="window._setGoalProgress('${g.id}',parseInt(this.value))"><span class="prog-slider-val" id="pval-${g.id}" style="color:${sliderCol}">${prog||0}%</span></div></div></div>`;
+      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>${progBarHtml}</div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}">${progSection}<div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
     }).join('');
     return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`;
   }).join('');
@@ -1078,6 +1144,14 @@ window._goalToggle=function(id){ document.getElementById('gchev-'+id)?.classList
 window._goalToggleProg=function(id){ const g=goalsData[id]; if(!g||g.doneBy) return; const k=myName.replace(/[.#$[\]]/g,'_'), pb=g.progBy||{}; if(pb[k]) remove(ref(db,`goals/${id}/progBy/${k}`)); else update(ref(db,`goals/${id}/progBy`),{[k]:myName}); };
 window._goalToggleDone=function(id){ const g=goalsData[id]; if(!g) return; if(g.doneBy&&g.doneBy!==myName){alert(`'${g.doneBy}'님이 이미 완료 처리했습니다.`);return;} update(ref(db,`goals/${id}`),g.doneBy===myName?{doneBy:null,doneAt:null}:{doneBy:myName,doneAt:today}); };
 window._goalDelete=function(id){ if(!confirm('목표를 삭제할까요?')) return; remove(ref(db,`goals/${id}`)); remove(ref(db,`goalComments/${id}`)); };
+window._setGoalProgress=function(id,val){ update(ref(db,`goals/${id}`),{progress:val}); };
+window._updateProgDisplay=function(el,id){
+  const v=parseInt(el.value);
+  const col=progColor(v);
+  el.style.accentColor=col;
+  const pval=document.getElementById('pval-'+id);
+  if(pval){pval.textContent=v+'%';pval.style.color=col;}
+};
 
 function renderComments(goalId){ const el=document.getElementById('comments-'+goalId); if(!el) return; const cmts=Object.values(commentsData[goalId]||{}).sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||'')); if(!cmts.length){el.innerHTML='<div style="font-size:12px;color:#888780;margin-bottom:8px">첫 댓글을 남겨보세요</div>';return;} el.innerHTML=cmts.map(c=>{ const isMe=c.author===myName; return `<div class="comment-item"><div class="comment-avatar">${c.author.slice(0,1).toUpperCase()}</div><div class="comment-body"><div class="comment-meta"><strong>${c.author}</strong> · ${c.createdAt||''}${c.editedAt?' (수정됨)':''}</div><div class="comment-text" id="ctext-${c.id}">${c.text}</div>${isMe?`<div class="comment-actions"><button class="comment-btn" onclick="window._editComment('${goalId}','${c.id}')">수정</button><button class="comment-btn" onclick="window._deleteComment('${goalId}','${c.id}')">삭제</button></div>`:''}</div></div>`; }).join(''); }
 window._addComment=function(goalId){ const inp=document.getElementById('cinput-'+goalId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`goalComments/${goalId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); inp.value=''; };
