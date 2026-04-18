@@ -552,7 +552,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn sheets" id="tabSheets">공유 시트</button></div>
   <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문추세</button></div>
+  <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문현황</button></div>
 </div>
 
 <!-- 헤더 -->
@@ -879,7 +879,7 @@ function switchTab(tab){
     renderSheets();
   } else if(tab==='trend'){
     document.getElementById('trendPage').style.display='block';
-    document.getElementById('pageTitle').textContent='주문추세'; setDateLabel();
+    document.getElementById('pageTitle').textContent='주문현황'; setDateLabel();
     renderTrendToday(); renderTrendHistory();
   }
 }
@@ -1025,7 +1025,7 @@ function trendDataRow(date,metricFn){
 }
 
 function buildTrendTable(metricFn){
-  const dates=Object.keys(trendData).sort().reverse().slice(0,8);
+  const dates=Object.keys(trendData).sort().slice(0,8);
   if(!dates.length)return'<div class="trend-loading">데이터 없음</div>';
   return`<div class="trend-table-wrap"><table class="trend-table">${trendHdrRow()}${dates.map(d=>trendDataRow(d,metricFn)).join('')}</table></div>`;
 }
