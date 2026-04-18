@@ -1,0 +1,25 @@
+name: 출고 운영 지표 수집
+
+on:
+  schedule:
+    # KST 08:04 ~ 02:04 매시 실행 (UTC 23:04, 00:04 ~ 17:04)
+    - cron: '4 0-17,23 * * *'
+  workflow_dispatch:   # 수동 실행 (테스트용)
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 출고 지표 수집 및 Firebase 저장
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          FIREBASE_DB_SECRET: ${{ secrets.FIREBASE_DB_SECRET }}
+          FIREBASE_DB_URL: https://ops-checklist-e9790-default-rtdb.firebaseio.com
+          SLACK_CHANNEL_ID: C06P23H3AJJ
+        run: node scripts/fetch-ops.js
