@@ -2,9 +2,11 @@ name: 출고 운영 지표 수집
 
 on:
   schedule:
-    # KST 08:04 ~ 02:04 매시 실행 (UTC 23:04, 00:04 ~ 17:04)
-    - cron: '4 0-17,23 * * *'
-  workflow_dispatch:   # 수동 실행 (테스트용)
+    # 백업용 — GitHub Actions 스케줄러 지연 대비
+    - cron: '30 0-17,23 * * *'
+  workflow_dispatch:      # 수동 실행
+  repository_dispatch:
+    types: [scheduled-fetch]   # cron-job.org 에서 호출
 
 jobs:
   fetch:
