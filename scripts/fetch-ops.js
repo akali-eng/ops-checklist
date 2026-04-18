@@ -30,27 +30,42 @@ function opDate(kst) {
 
 // ── 메시지 파싱 ───────────────────────────────────────────────
 function parseMsg(text) {
-  if (!text || !text.includes('출고 현황')) return null;
+  if (!text) return null;
 
-  // 시각 추출: "(Beta) 2026/04/18 22:00 기준"
-  const hourMatch = text.match(/\(Beta\)[^\n]*?(\d{2}):\d{2}\s*기준/);
-  if (!hourMatch) return null;
+  // 운영 가이드 메시지인지 확인 (두 가지 포맷 모두 처리)
+  const isOpsMsg = text.includes('출고 현황') || text.includes('출고 운영 가이드');
+  if (!isOpsMsg) return null;
+
+  // 시각 추출: "(Beta) 2026/04/18 22:00 기준" 또는 "\[(Beta) 2026/04/19 00:00 기준"
+  const hourMatch = text.match(/\(?Beta\)?[^\n]*?(\d{2}):\d{2}\s*기준/);
+  if (!hourMatch) {
+    console.log('  시각 추출 실패 — 메시지 첫 줄:', text.split('\n')[0].slice(0, 80));
+    return null;
+  }
   const hour = parseInt(hourMatch[1], 10);
 
   // 도착보장 / 일반 수치 추출
-  const daTot  = text.match(/도착보장[^\n]*총\s*(\d+)건/)?.[1];
-  const daDone = text.match(/도착보장[^\n]*출고완료\s*(\d+)건/)?.[1];
-  const ilTot  = text.match(/일반\s*:\s*총\s*(\d+)건/)?.[1];
-  const ilDone = text.match(/일반\s*:[^\n]*출고완료\s*(\d+)건/)?.[1];
-  const pack   = text.match(/운영중인 패킹장\s*:\s*(\d+)대/)?.[1];
+  const daTot  = text.match(/도착보장[^\n]*총\s*(\d[\d,]+)건/)?.[1]?.replace(',', '');
+  const daDone = text.match(/도착보장[^\n]*출고완료\s*(\d[\d,]+)건/)?.[1]?.replace(',', '');
+  const ilTot  = text.match(/일반\s*:\s*총\s*(\d[\d,]+)건/)?.[1]?.replace(',', '');
+  const ilDone = text.match(/일반\s*:[^\n]*출고완료\s*(\d[\d,]+)건/)?.[1]?.replace(',', '');
 
-  if (!daTot || !ilTot) return null;
+  if (!daTot || !ilTot) {
+    console.log('  출고 현황 수치 추출 실패 — 도착보장:', daTot, '/ 일반:', ilTot);
+    return null;
+  }
+
+  // 패킹장 추출 — 00:00 메시지는 "예측 실패" 포맷이라 없을 수 있음
+  const packMatch = text.match(/(?:현재\s*)?운영\s*(?:중인\s*)?패킹장\s*:\s*(\d+)\s*대/);
+  const pack = packMatch ? parseInt(packMatch[1], 10) : 0;
+
+  console.log(`  추출: 도착보장총=${daTot} 완료=${daDone} / 일반총=${ilTot} 완료=${ilDone} / 패킹장=${pack}대`);
 
   return {
     hour,
-    total : parseInt(daTot)  + parseInt(ilTot),
-    done  : parseInt(daDone || 0) + parseInt(ilDone || 0),
-    pack  : parseInt(pack   || 0),
+    total: parseInt(daTot)      + parseInt(ilTot),
+    done : parseInt(daDone || 0) + parseInt(ilDone || 0),
+    pack,
   };
 }
 
@@ -83,9 +98,9 @@ async function main() {
   const tsStr = now.toISOString().replace('T', ' ').slice(0, 16) + ' KST';
   console.log(`  실행 시각: ${tsStr}  /  운영일자: ${date}`);
 
-  // Slack 최근 메시지 읽기
+  // Slack 최근 메시지 읽기 (여유있게 10개)
   const slackRes = await fetch(
-    `https://slack.com/api/conversations.history?channel=${CHANNEL_ID}&limit=5`,
+    `https://slack.com/api/conversations.history?channel=${CHANNEL_ID}&limit=10`,
     { headers: { Authorization: `Bearer ${SLACK_TOKEN}` } }
   );
   const slackJson = await slackRes.json();
@@ -95,11 +110,23 @@ async function main() {
     process.exit(1);
   }
 
-  // 첫 번째로 파싱 가능한 메시지 사용
+  console.log(`  슬랙 메시지 ${slackJson.messages?.length ?? 0}개 수신`);
+
+  // 현재 KST 시간과 가장 가까운 정각 메시지를 찾기
+  const kstHour = now.getUTCHours(); // kstNow()는 UTC+9 offset이 적용된 Date이므로 getUTCHours() = KST 시
   let parsed = null;
   for (const msg of slackJson.messages ?? []) {
-    parsed = parseMsg(msg.text ?? '');
-    if (parsed) break;
+    const txt = msg.text ?? '';
+    const p = parseMsg(txt);
+    if (!p) continue;
+    // 현재 KST 시각 기준 최대 2시간 이내 메시지만 사용
+    const diff = ((kstHour - p.hour) + 24) % 24;
+    if (diff > 2) {
+      console.log(`  ${p.hour}시 메시지는 현재 시각(${kstHour}시)과 차이가 크므로 스킵`);
+      continue;
+    }
+    parsed = p;
+    break;
   }
 
   if (!parsed) {
