@@ -978,7 +978,7 @@ function calcTrendMetrics(date,hi){
   const hk=String(h).padStart(2,'0');
   const cur=trendData[date]?.[hk];
   if(!cur) return null;
-  const{total,done,pack}=cur;
+  const{total,done,waiting,pack}=cur;
   let pt=null,pd=null;
   if(hi>0){
     const ph=TREND_HOURS[hi-1];
@@ -986,7 +986,7 @@ function calcTrendMetrics(date,hi){
     const prev=trendData[date]?.[phk];
     if(prev){pt=prev.total;pd=prev.done;}
   }
-  const rem=total-done;
+  const rem=waiting!==undefined?waiting:(total-done); // 신규: waiting 필드 우선, 구버전 호환
   const hd=pd!==null?done-pd:null;
   const ord=pt!==null?total-pt:null;
   const pph=(hd!==null&&pack>0)?Math.round(hd/pack*10)/10:null;
