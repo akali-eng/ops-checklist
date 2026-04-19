@@ -1017,18 +1017,20 @@ function calcTrendMetrics(date,hi){
   const cur=trendData[date]?.[hk];
   if(!cur) return null;
   const{total,done,waiting,pack}=cur;
-  let pt=null,pd=null;
+  let pt=null,pd=null,prevPack=null;
   if(hi>0){
     const ph=TREND_HOURS[hi-1];
     const phk=String(ph).padStart(2,'0');
     const prev=trendData[date]?.[phk];
-    if(prev){pt=prev.total;pd=prev.done;}
+    if(prev){pt=prev.total;pd=prev.done;prevPack=prev.pack;}
   }
-  const rem=waiting!==undefined?waiting:(total-done); // 신규: waiting 필드 우선, 구버전 호환
+  const rem=waiting!==undefined?waiting:(total-done);
   const hd=pd!==null?done-pd:null;
   const ord=pt!==null?total-pt:null;
-  const pph=(hd!==null&&pack>0)?Math.round(hd/pack*10)/10:null;
-  return{rem,hd,ord,pph,pack};
+  // PPH: 현재 패킹장 0이면 직전 시간 패킹장 수 사용, 둘 다 0이면 null
+  let effectivePack=pack>0?pack:(prevPack>0?prevPack:0);
+  const pph=(hd!==null&&effectivePack>0)?Math.round(hd/effectivePack*10)/10:null;
+  return{rem,hd,ord,pph,pack,effectivePack};
 }
 
 function trendCellOrd(v){
@@ -1042,8 +1044,8 @@ function trendCellHD(v){
   if(v>500)return`<span class="tc-good">${v}</span>`;
   return v;
 }
-function trendCellPPH(pph,pack){
-  if(pph===null||pack===0)return`<span style="color:#c8c5bc">-</span>`;
+function trendCellPPH(pph){
+  if(pph===null)return`<span style="color:#c8c5bc">-</span>`;
   return pph;
 }
 
@@ -1087,7 +1089,7 @@ function renderTrendHistory(){
     `<div class="trend-mblock"><div class="trend-mblock-title">1. 주문인입</div>${TREND_LEGEND_ORD}${buildTrendTable(m=>trendCellOrd(m.ord))}</div>`+
     `<div class="trend-mblock"><div class="trend-mblock-title">2. 시간당 출고완료</div>${TREND_LEGEND_HD}${buildTrendTable(m=>trendCellHD(m.hd))}</div>`+
     `<div class="trend-mblock"><div class="trend-mblock-title">3. 잔여물량</div>${buildTrendTable(m=>m.rem!==null?m.rem:'<span style="color:#c8c5bc">-</span>')}</div>`+
-    `<div class="trend-mblock"><div class="trend-mblock-title">4. PPH (패킹 인당 생산성)</div><div class="trend-legend"><span style="color:#c8c5bc">패킹장 0대 = -</span></div>${buildTrendTable(m=>trendCellPPH(m.pph,m.pack))}</div>`;
+    `<div class="trend-mblock"><div class="trend-mblock-title">4. PPH (패킹 인당 생산성)</div><div class="trend-legend"><span style="color:#c8c5bc">패킹장 0대이고 직전 시간도 0대면 -</span></div>${buildTrendTable(m=>trendCellPPH(m.pph))}</div>`;
 }
 
 function renderTrendToday(){
@@ -1114,7 +1116,7 @@ function renderTrendToday(){
     const isLast=i===sortedHours.length-1;
     html+=`<tr${isLast?' style="background:var(--color-background-secondary,#f9f8f5)"':''}>`;
     html+=`<td style="text-align:left;color:#888780;font-weight:${isLast?500:400}">${h}:00${isLast?' ★':''}</td>`;
-    html+=`<td>${trendCellOrd(m.ord)}</td><td>${trendCellHD(m.hd)}</td><td>${m.rem!==null?m.rem:'-'}</td><td>${trendCellPPH(m.pph,m.pack)}</td>`;
+    html+=`<td>${trendCellOrd(m.ord)}</td><td>${trendCellHD(m.hd)}</td><td>${m.rem!==null?m.rem:'-'}</td><td>${trendCellPPH(m.pph)}</td>`;
     html+='</tr>';
   });
   html+='</tbody></table>';
