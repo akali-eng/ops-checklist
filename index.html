@@ -737,6 +737,7 @@ let myName='', dragSrcId=null, sheetDragId=null;
 let sheetQuery='';
 let todayData={day:[],night:[]}, allHistory={day:{},night:{}};
 let customItems={day:{},night:{}}, savedOrder={day:[],night:[]};
+let defaultItemsData={day:{},night:{}}; // Firebase에서 관리하는 기본 항목
 let goalsData={}, sheetsData={}, commentsData={}, calendarData={}, calCommentsData={};
 let calYear=kstNow.getUTCFullYear(), calMonth=kstNow.getUTCMonth();
 let selectedCalDate=null, editState=null;
@@ -942,20 +943,44 @@ document.getElementById('calEventTitle').addEventListener('keydown',e=>{ if(e.ke
 // Firebase
 function getStatus(t){ if(t.doneBy) return '완료'; if(t.progBy&&Object.keys(t.progBy).length>0) return '진행'; return '미확인'; }
 function initDefaults(tab){
-  const defs=tab==='day'?DAY_DEF:NIGHT_DEF, all={};
-  defs.forEach((text,i)=>{ const id=`${tab}-${i+1}`; all[id]={id,text,order:i,progBy:{},doneBy:null}; });
-  Object.values(customItems[tab]||{}).forEach((c,i)=>{ all[c.id]={id:c.id,text:c.text,order:defs.length+i,progBy:{},doneBy:null,custom:true}; });
+  // Firebase에서 관리되는 기본 항목 사용 (하드코딩 배열 대신)
+  const defItems=defaultItemsData[tab];
+  const all={};
+  // id 번호 순으로 정렬 후 order 부여
+  const sorted=Object.entries(defItems).sort((a,b)=>{
+    const ai=parseInt(a[0].split('-').pop())||0;
+    const bi=parseInt(b[0].split('-').pop())||0;
+    return ai-bi;
+  });
+  sorted.forEach(([id,text],i)=>{ all[id]={id,text,order:i,progBy:{},doneBy:null}; });
+  Object.values(customItems[tab]||{}).forEach((c,i)=>{ all[c.id]={id:c.id,text:c.text,order:sorted.length+i,progBy:{},doneBy:null,custom:true}; });
   const ord=savedOrder[tab]; if(ord&&ord.length>0){ const idl=ord.filter(id=>all[id]); const ex=Object.keys(all).filter(id=>!idl.includes(id)); [...idl,...ex].forEach((id,i)=>{ if(all[id]) all[id].order=i; }); }
   set(ref(db,`todos/${tab}/${today}`),all);
 }
 function initCustomItemsThenToday(){
-  // customItems + savedOrder 둘 다 받아야 listenToday 실행
-  // → 새 날 initDefaults 시점에 팀원이 추가한 항목이 반드시 포함됨
-  const ready={dayI:false,dayO:false,nightI:false,nightO:false};
+  // defaultItems + customItems + savedOrder 모두 받은 후 listenToday 실행
+  const ready={dayI:false,dayO:false,dayD:false,nightI:false,nightO:false,nightD:false};
   function tryStart(tab){
-    const ok=tab==='day'?(ready.dayI&&ready.dayO):(ready.nightI&&ready.nightO);
+    const ok=tab==='day'?(ready.dayI&&ready.dayO&&ready.dayD):(ready.nightI&&ready.nightO&&ready.nightD);
     if(ok) listenToday(tab);
   }
+  // 기본 항목: Firebase에서 관리. 없으면 하드코딩 배열로 초기화
+  ['day','night'].forEach(tab=>{
+    onValue(ref(db,`defaultItems/${tab}`),s=>{
+      const val=s.val();
+      if(!val){
+        const defs=tab==='day'?DAY_DEF:NIGHT_DEF;
+        const obj={};
+        defs.forEach((text,i)=>{obj[`${tab}-${i+1}`]=text;});
+        set(ref(db,`defaultItems/${tab}`),obj);
+        defaultItemsData[tab]=obj;
+      } else {
+        defaultItemsData[tab]=val;
+      }
+      if(tab==='day'  &&!ready.dayD)  {ready.dayD=true;   tryStart('day');}
+      if(tab==='night'&&!ready.nightD){ready.nightD=true; tryStart('night');}
+    });
+  });
   onValue(ref(db,'customItems/day'),   s=>{ customItems.day  =s.val()||{}; if(!ready.dayI)  {ready.dayI=true;   tryStart('day');}   else if(curTab==='day') render(); });
   onValue(ref(db,'itemOrder/day'),     s=>{ savedOrder.day   =s.val()||[]; if(!ready.dayO)  {ready.dayO=true;   tryStart('day');} });
   onValue(ref(db,'customItems/night'), s=>{ customItems.night=s.val()||{}; if(!ready.nightI){ready.nightI=true; tryStart('night');} else if(curTab==='night') render(); });
@@ -1410,7 +1435,7 @@ window._sDragEnd=function(){ sheetDragId=null; qsa('.sheet-card',el=>el.classLis
 window._toggleProg=function(id){ const t=todayData[curTab].find(x=>x.id===id); if(!t||t.doneBy) return; const k=myName.replace(/[.#$[\]]/g,'_'),pb=t.progBy||{}; if(pb[k]) remove(ref(db,`todos/${curTab}/${today}/${id}/progBy/${k}`)); else update(ref(db,`todos/${curTab}/${today}/${id}/progBy`),{[k]:myName}); };
 window._toggleDone=function(id){ const t=todayData[curTab].find(x=>x.id===id); if(!t) return; if(t.doneBy&&t.doneBy!==myName){alert(`'${t.doneBy}'님이 이미 완료 처리했습니다.`);return;} update(ref(db,`todos/${curTab}/${today}/${id}`),{doneBy:t.doneBy===myName?null:myName}); };
 window._startEdit=function(id){ const t=todayData[curTab].find(x=>x.id===id); if(!t) return; document.getElementById('text-'+id).innerHTML=`<input class="todo-text-input" id="ei-${id}" value="${t.text.replace(/"/g,'&quot;')}" onblur="window._saveEdit('${id}')" onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape')window._cancelEdit();">`; document.getElementById('ei-'+id)?.focus(); };
-window._saveEdit=function(id){ const inp=document.getElementById('ei-'+id); if(!inp) return; const val=inp.value.trim(); if(val){update(ref(db,`todos/${curTab}/${today}/${id}`),{text:val});if(id.includes('custom'))update(ref(db,`customItems/${curTab}/${id}`),{text:val});}else render(); };
+window._saveEdit=function(id){ const inp=document.getElementById('ei-'+id); if(!inp) return; const val=inp.value.trim(); if(val){ update(ref(db,`todos/${curTab}/${today}/${id}`),{text:val}); if(id.includes('custom')) update(ref(db,`customItems/${curTab}/${id}`),{text:val}); else if(/^(day|night)-\d+$/.test(id)) set(ref(db,`defaultItems/${curTab}/${id}`),val); }else render(); };
 window._cancelEdit=function(){render();};
 window._removeTodo=function(id){ if(!confirm('항목을 삭제할까요?')) return; remove(ref(db,`todos/${curTab}/${today}/${id}`)); if(id.includes('custom')) remove(ref(db,`customItems/${curTab}/${id}`)); };
 window._dStart=function(e,id){dragSrcId=id;e.dataTransfer.effectAllowed='move';document.getElementById('item-'+id)?.classList.add('dragging');};
