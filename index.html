@@ -787,8 +787,9 @@ onAuthStateChanged(auth, user => {
     document.getElementById('usernameTag').textContent='접속자: '+myName;
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
-    listenCustomItems(); listenToday('day'); listenToday('night');
     listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend();
+    // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
+    initCustomItemsThenToday();
   } else {
     document.getElementById('loginPage').style.display='flex';
     document.getElementById('appPage').style.display='none';
@@ -947,7 +948,19 @@ function initDefaults(tab){
   const ord=savedOrder[tab]; if(ord&&ord.length>0){ const idl=ord.filter(id=>all[id]); const ex=Object.keys(all).filter(id=>!idl.includes(id)); [...idl,...ex].forEach((id,i)=>{ if(all[id]) all[id].order=i; }); }
   set(ref(db,`todos/${tab}/${today}`),all);
 }
-function listenCustomItems(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`customItems/${tab}`),s=>{ customItems[tab]=s.val()||{}; }); onValue(ref(db,`itemOrder/${tab}`),s=>{ savedOrder[tab]=s.val()||[]; }); }); }
+function initCustomItemsThenToday(){
+  // customItems + savedOrder 둘 다 받아야 listenToday 실행
+  // → 새 날 initDefaults 시점에 팀원이 추가한 항목이 반드시 포함됨
+  const ready={dayI:false,dayO:false,nightI:false,nightO:false};
+  function tryStart(tab){
+    const ok=tab==='day'?(ready.dayI&&ready.dayO):(ready.nightI&&ready.nightO);
+    if(ok) listenToday(tab);
+  }
+  onValue(ref(db,'customItems/day'),   s=>{ customItems.day  =s.val()||{}; if(!ready.dayI)  {ready.dayI=true;   tryStart('day');}   else if(curTab==='day') render(); });
+  onValue(ref(db,'itemOrder/day'),     s=>{ savedOrder.day   =s.val()||[]; if(!ready.dayO)  {ready.dayO=true;   tryStart('day');} });
+  onValue(ref(db,'customItems/night'), s=>{ customItems.night=s.val()||{}; if(!ready.nightI){ready.nightI=true; tryStart('night');} else if(curTab==='night') render(); });
+  onValue(ref(db,'itemOrder/night'),   s=>{ savedOrder.night =s.val()||[]; if(!ready.nightO){ready.nightO=true; tryStart('night');} });
+}
 function listenToday(tab){ onValue(ref(db,`todos/${tab}/${today}`),s=>{ const v=s.val(); if(!v){initDefaults(tab);return;} todayData[tab]=Object.values(v).sort((a,b)=>(a.order||0)-(b.order||0)); if(curTab===tab) render(); }); }
 function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='history') renderHistory(); }); }); }
 function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); }); }
@@ -1000,7 +1013,7 @@ function trendCellOrd(v){
 }
 function trendCellHD(v){
   if(v===null)return`<span style="color:#c8c5bc">-</span>`;
-  if(v<200)return`<span class="tc-bad">${v}</span>`;
+  if(v>0&&v<200)return`<span class="tc-bad">${v}</span>`;
   if(v>500)return`<span class="tc-good">${v}</span>`;
   return v;
 }
