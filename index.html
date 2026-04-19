@@ -546,13 +546,13 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <button class="tab-btn history" id="tabHistory">기록 보기</button>
   </div>
   <div class="tab-div"></div>
+  <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문현황</button></div>
+  <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn goals" id="tabGoals">센터 목표</button></div>
   <div class="tab-div"></div>
   <div class="tab-sw" id="calTabSw"><button class="tab-btn calendar" id="tabCalendar">센터 일정</button></div>
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn sheets" id="tabSheets">공유 시트</button></div>
-  <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문현황</button></div>
 </div>
 
 <!-- 헤더 -->
@@ -1054,7 +1054,11 @@ function renderTrendToday(){
   let html=`${TREND_LEGEND_ORD}${TREND_LEGEND_HD}<table class="trend-table" style="width:100%"><thead><tr>`;
   ['시간','주문인입','시간당 출고완료','잔여물량','PPH'].forEach((h,i)=>{ html+=`<th style="text-align:${i===0?'left':'right'}">${h}</th>`; });
   html+='</tr></thead><tbody>';
-  const sortedHours=Object.keys(todayRows).map(Number).sort((a,b)=>{ const oi=TREND_HOURS.indexOf(a),oj=TREND_HOURS.indexOf(b); return(oi===-1?99:oi)-(oj===-1?99:oj); });
+  // 오늘 탭: 운영 시간(08~02시)에 해당하는 데이터만 표시
+  // TREND_HOURS 순서 기준으로 정렬하고, 해당 배열에 없는 시간(03~07시)은 제외
+  const sortedHours=Object.keys(todayRows).map(Number)
+    .filter(h=>TREND_HOURS.includes(h))
+    .sort((a,b)=>{ const oi=TREND_HOURS.indexOf(a),oj=TREND_HOURS.indexOf(b); return oi-oj; });
   sortedHours.forEach((h,i)=>{
     const hk=String(h).padStart(2,'0');
     const hi=TREND_HOURS.indexOf(h);
