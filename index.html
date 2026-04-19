@@ -423,11 +423,11 @@ body.dark .trend-table th { background: #2a2a2a; }
 body.dark .trend-table tr.tr-today td { background: rgba(24,95,165,0.15); color: #85b7eb; }
 .trend-table tr.tr-today td:first-child { background: #e6f1fb; }
 body.dark .trend-table tr.tr-today td:first-child { background: rgba(24,95,165,0.15); }
-.tc-warn { display:inline-block; background: #fff4e0; color: #633806; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
-.tc-bad  { display:inline-block; background: #fcebeb; color: #791f1f; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
-.tc-good { display:inline-block; background: #e1f5ee; color: #085041; border-radius: 4px; padding: 1px 5px; font-size: 11px; }
+.tc-warn { display:inline-block; background: #ef9f27; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight:500; }
+.tc-bad  { display:inline-block; background: #e24b4a; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight:500; }
+.tc-good { display:inline-block; background: #1d9e75; color: #fff; border-radius: 4px; padding: 1px 6px; font-size: 11px; font-weight:500; }
 .trend-mblock { margin-bottom: 1.75rem; }
-.trend-mblock-title { font-size: 12px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
+.trend-mblock-title { font-size: 15px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 0.5px solid rgba(0,0,0,0.08); }
 body.dark .trend-mblock-title { border-color: rgba(255,255,255,0.08); }
 .trend-legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #888780; margin-bottom: 8px; }
 .trend-legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 3px; vertical-align: middle; }
@@ -1013,9 +1013,18 @@ function trendHdrRow(){
   return`<tr><th>운영일자</th>${TREND_HOURS.map(h=>`<th>${h}시</th>`).join('')}</tr>`;
 }
 
+const WEEK_KO=['일','월','화','수','목','금','토'];
+function trendDateLabel(date){
+  const d=new Date(date+'T12:00:00');
+  const dow=WEEK_KO[d.getDay()];
+  const mmdd=`${d.getMonth()+1}-${String(d.getDate()).padStart(2,'0')}`;
+  const isToday=date===today;
+  return isToday?`${mmdd} (${dow}) (오늘)`:`${mmdd} (${dow})`;
+}
+
 function trendDataRow(date,metricFn){
   const isToday=date===today;
-  const label=isToday?`${date.slice(5)} (오늘)`:date.slice(5);
+  const label=trendDateLabel(date);
   let r=`<tr${isToday?' class="tr-today"':''}><td>${label}</td>`;
   TREND_HOURS.forEach((_,hi)=>{
     const m=calcTrendMetrics(date,hi);
@@ -1030,8 +1039,8 @@ function buildTrendTable(metricFn){
   return`<div class="trend-table-wrap"><table class="trend-table">${trendHdrRow()}${dates.map(d=>trendDataRow(d,metricFn)).join('')}</table></div>`;
 }
 
-const TREND_LEGEND_ORD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#faeeda;border:0.5px solid #ef9f27"></span>주문인입 400건 초과</span></div>`;
-const TREND_LEGEND_HD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#fcebeb;border:0.5px solid #e24b4a"></span>200건 미만</span><span><span class="trend-legend-dot" style="background:#e1f5ee;border:0.5px solid #1d9e75"></span>500건 초과</span></div>`;
+const TREND_LEGEND_ORD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#ef9f27"></span>주문인입 400건 초과</span></div>`;
+const TREND_LEGEND_HD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#e24b4a"></span>200건 미만</span><span><span class="trend-legend-dot" style="background:#1d9e75"></span>500건 초과</span></div>`;
 
 function renderTrendHistory(){
   const el=document.getElementById('trendHistory');
@@ -1051,7 +1060,7 @@ function renderTrendToday(){
     el.innerHTML='<div class="trend-loading">오늘 데이터 없음 — GitHub Actions가 아직 실행되지 않았거나 오전 8시 이전입니다.</div>';
     return;
   }
-  let html=`${TREND_LEGEND_ORD}${TREND_LEGEND_HD}<table class="trend-table" style="width:100%"><thead><tr>`;
+  let html=`<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px">${trendDateLabel(today)}</div>${TREND_LEGEND_ORD}${TREND_LEGEND_HD}<table class="trend-table" style="width:100%"><thead><tr>`;
   ['시간','주문인입','시간당 출고완료','잔여물량','PPH'].forEach((h,i)=>{ html+=`<th style="text-align:${i===0?'left':'right'}">${h}</th>`; });
   html+='</tr></thead><tbody>';
   // 오늘 탭: 운영 시간(08~02시)에 해당하는 데이터만 표시
