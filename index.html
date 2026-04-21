@@ -473,6 +473,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   .cal-cell.has-events .cal-date-num::after { content: '•'; color: #185fa5; margin-left: 2px; }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -705,9 +706,58 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   <div class="trend-sub-tabs">
     <button class="tsub-btn active" id="trendBtnToday" onclick="window._trendTab('today')">오늘</button>
     <button class="tsub-btn" id="trendBtnHistory" onclick="window._trendTab('history')">기록</button>
+    <button class="tsub-btn" id="trendBtnAvg" onclick="window._trendTab('avg')">평균 인입량</button>
   </div>
   <div id="trendToday"><div class="trend-loading">데이터를 불러오는 중...</div></div>
   <div id="trendHistory" style="display:none"><div class="trend-loading">데이터를 불러오는 중...</div></div>
+  <div id="trendAvg" style="display:none">
+    <div style="font-size:13px;color:#888780;margin-bottom:12px">2026-03-16 ~ 2026-04-20 · 36일 기준 요일별 평균 주문인입량</div>
+    <div style="position:relative;height:440px;background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.07)">
+      <canvas id="trendAvgChart"></canvas>
+    </div>
+    <div style="font-size:11px;color:#b4b2a9;margin-top:8px;margin-bottom:1.25rem">※ 8:00 수치는 전날 새벽(약 2시 이후) 누적 주문이 포함된 값입니다.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+      <div style="background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.07)">
+        <div style="font-size:14px;font-weight:500;color:#2c2c2a;margin-bottom:1rem">요일별 피크 시간대 <span style="font-size:12px;font-weight:400;color:#888780">(9시 이후 기준)</span></div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr>
+            <th style="text-align:left;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">요일</th>
+            <th style="text-align:left;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">피크 시간</th>
+            <th style="text-align:right;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">평균 주문량</th>
+            <th style="text-align:right;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">표본</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#185fa5;margin-right:6px;vertical-align:middle"></span>월요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">16:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">521건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">6일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#1d9e75;margin-right:6px;vertical-align:middle"></span>화요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">12:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">578건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#7b3fc4;margin-right:6px;vertical-align:middle"></span>수요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">16:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">395건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#ef9f27;margin-right:6px;vertical-align:middle"></span>목요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">16:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">406건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#0c6e7a;margin-right:6px;vertical-align:middle"></span>금요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">16:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">424건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#cc7a44;margin-right:6px;vertical-align:middle"></span>토요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)">14:00</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">217건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#e24b4a;margin-right:6px;vertical-align:middle"></span>일요일</td><td style="padding:7px 8px">22:00</td><td style="padding:7px 8px;text-align:right;font-weight:500">334건</td><td style="padding:7px 8px;text-align:right;color:#888780">5일</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:1.25rem 1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.07)">
+        <div style="font-size:14px;font-weight:500;color:#2c2c2a;margin-bottom:1rem">요일별 일평균 총 주문인입</div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr>
+            <th style="text-align:left;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">요일</th>
+            <th style="text-align:right;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">일평균 총량</th>
+            <th style="text-align:right;color:#888780;font-weight:400;padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)">표본</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#185fa5;margin-right:6px;vertical-align:middle"></span>월요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">6,825건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">6일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#1d9e75;margin-right:6px;vertical-align:middle"></span>화요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">5,930건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#7b3fc4;margin-right:6px;vertical-align:middle"></span>수요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">5,898건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#ef9f27;margin-right:6px;vertical-align:middle"></span>목요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">5,694건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#0c6e7a;margin-right:6px;vertical-align:middle"></span>금요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">5,283건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05)"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#cc7a44;margin-right:6px;vertical-align:middle"></span>토요일</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;font-weight:500">3,296건</td><td style="padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.05);text-align:right;color:#888780">5일</td></tr>
+            <tr><td style="padding:7px 8px"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:#e24b4a;margin-right:6px;vertical-align:middle"></span>일요일</td><td style="padding:7px 8px;text-align:right;font-weight:500">4,737건</td><td style="padding:7px 8px;text-align:right;color:#888780">5일</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -1133,12 +1183,61 @@ function renderTrendToday(){
   el.innerHTML=html;
 }
 
+let avgChartInstance=null;
+function renderTrendAvg(){
+  if(avgChartInstance) return;
+  const canvas=document.getElementById('trendAvgChart');
+  if(!canvas||typeof Chart==='undefined') return;
+  const HOUR_LABELS=['8:00','9:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','0:00','1:00','2:00'];
+  const AVG={
+    1:[1470,249,376,448,422,325,348,516,521,236,226,219,245,279,311,319,279,36,0],
+    2:[1113,219,290,406,578,340,333,363,385,237,204,194,204,237,269,290,238,30,0],
+    3:[1318,247,315,358,352,291,329,387,395,225,206,185,208,238,285,281,240,38,0],
+    4:[1313,224,270,362,338,267,296,343,406,202,199,206,231,238,264,261,242,32,0],
+    5:[1229,209,274,302,324,264,287,329,424,233,195,174,172,195,206,227,214,25,0],
+    6:[754,141,176,213,209,192,217,180,194,157,159,164,148,168,190,34,0,0,0],
+    0:[1334,148,211,246,244,231,246,243,256,201,215,226,238,294,334,70,0,0,0],
+  };
+  const CNT={1:6,2:5,3:5,4:5,5:5,6:5,0:5};
+  const KO={0:'일',1:'월',2:'화',3:'수',4:'목',5:'금',6:'토'};
+  const CLR={1:'#185fa5',2:'#1d9e75',3:'#7b3fc4',4:'#ef9f27',5:'#0c6e7a',6:'#cc7a44',0:'#e24b4a'};
+  const ORDER=[1,2,3,4,5,6,0];
+  const datasets=ORDER.map(dow=>({
+    label:KO[dow]+'요일 (n='+CNT[dow]+')',
+    data:AVG[dow],
+    borderColor:CLR[dow],
+    backgroundColor:CLR[dow]+'18',
+    borderWidth:2,pointRadius:3,pointHoverRadius:5,tension:0.3,fill:false,
+  }));
+  avgChartInstance=new Chart(canvas,{
+    type:'line',
+    data:{labels:HOUR_LABELS,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{font:{size:12},padding:14,usePointStyle:true}},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,0.97)',borderColor:'rgba(0,0,0,0.08)',borderWidth:1,
+          titleColor:'#2c2c2a',bodyColor:'#444',padding:10,
+          callbacks:{label:ctx=>' '+ctx.dataset.label.split(' ')[0]+': '+ctx.parsed.y.toLocaleString()+'건'}
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:12},color:'#888780'},border:{color:'rgba(0,0,0,0.1)'}},
+        y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:12},color:'#888780',callback:v=>v.toLocaleString()+'건'},border:{color:'rgba(0,0,0,0.1)'}}
+      }
+    }
+  });
+}
 window._trendTab=function(t){
   trendSubTab=t;
-  ['today','history'].forEach(s=>{
-    document.getElementById('trend'+s.charAt(0).toUpperCase()+s.slice(1)).style.display=s===t?'block':'none';
+  ['today','history','avg'].forEach(s=>{
+    const el=document.getElementById('trend'+s.charAt(0).toUpperCase()+s.slice(1));
+    if(el) el.style.display=s===t?'block':'none';
     document.getElementById('trendBtn'+s.charAt(0).toUpperCase()+s.slice(1))?.classList.toggle('active',s===t);
   });
+  if(t==='avg') renderTrendAvg();
 };
 function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.val()||{}; qsa('.goal-body.open',el=>{ const gid=el.id.replace('gbody-',''); renderComments(gid); }); }); }
 function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); }); }
