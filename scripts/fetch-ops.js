@@ -52,12 +52,14 @@ function parseMsg(text) {
   const daLine = text.match(/도착보장[^\n]+/)?.[0] ?? '';
   const daTot  = daLine.match(/총\s*([\d,]+)건/)?.[1]?.replace(/,/g, '');
   const daWait = daLine.match(/출고대기\s*([\d,]+)건/)?.[1]?.replace(/,/g, '') ?? '0';
-  const daDone = daLine.match(/출고완료\s*([\d,]+)건/)?.[1]?.replace(/,/g, '') ?? '0';
+  const daDone   = daLine.match(/출고완료\s*([\d,]+)건/)?.[1]?.replace(/,/g, '') ?? '0';
+  const daCancel = daLine.match(/취소\s*([\d,]+)건/)?.[1]?.replace(/,/g, '')   ?? '0';
 
-  const ilLine = text.match(/일반\s*:[^\n]+/)?.[0] ?? '';
-  const ilTot  = ilLine.match(/총\s*([\d,]+)건/)?.[1]?.replace(/,/g, '');
-  const ilWait = ilLine.match(/출고대기\s*([\d,]+)건/)?.[1]?.replace(/,/g, '') ?? '0';
-  const ilDone = ilLine.match(/출고완료\s*([\d,]+)건/)?.[1]?.replace(/,/g, '') ?? '0';
+  const ilLine   = text.match(/일반\s*:[^\n]+/)?.[0] ?? '';
+  const ilTot    = ilLine.match(/총\s*([\d,]+)건/)?.[1]?.replace(/,/g, '');
+  const ilWait   = ilLine.match(/출고대기\s*([\d,]+)건/)?.[1]?.replace(/,/g, '')  ?? '0';
+  const ilDone   = ilLine.match(/출고완료\s*([\d,]+)건/)?.[1]?.replace(/,/g, '')  ?? '0';
+  const ilCancel = ilLine.match(/취소\s*([\d,]+)건/)?.[1]?.replace(/,/g, '')     ?? '0';
 
   if (!daTot || !ilTot) {
     console.log('  [파싱실패] 총 건수 추출 불가 — 도착보장:', daTot, '/ 일반:', ilTot);
@@ -69,14 +71,15 @@ function parseMsg(text) {
 
   const result = {
     hour,
-    total  : parseInt(daTot)  + parseInt(ilTot),
-    done   : parseInt(daDone) + parseInt(ilDone),
-    waiting: parseInt(daWait) + parseInt(ilWait),
+    total  : parseInt(daTot)    + parseInt(ilTot),
+    done   : parseInt(daDone)   + parseInt(ilDone),
+    waiting: parseInt(daWait)   + parseInt(ilWait),
+    cancel : parseInt(daCancel) + parseInt(ilCancel),
     pack,
   };
 
   const isFail = text.includes('예측에 실패');
-  console.log(`  [파싱성공] ${hour}시 | total=${result.total} done=${result.done} waiting=${result.waiting} pack=${result.pack}${isFail ? ' (예측실패 포맷)' : ''}`);
+  console.log(`  [파싱성공] ${hour}시 | total=${result.total} done=${result.done} waiting=${result.waiting} cancel=${result.cancel} pack=${result.pack}${isFail ? ' (예측실패 포맷)' : ''}`);
   return result;
 }
 
@@ -105,6 +108,20 @@ async function main() {
   const tsStr = now.toISOString().replace('T', ' ').slice(0, 16) + ' KST';
   console.log(`  실행 시각: ${tsStr} (KST ${kstH}시) / 운영일자: ${date}`);
 
+  // 봇을 채널에 자동 입장 (public 채널 + channels:join 스코프 필요)
+  // 이미 멤버인 경우에도 에러 없이 통과됨
+  const joinRes  = await fetch('https://slack.com/api/conversations.join', {
+    method : 'POST',
+    headers: { Authorization: `Bearer ${SLACK_TOKEN}`, 'Content-Type': 'application/json' },
+    body   : JSON.stringify({ channel: CHANNEL_ID })
+  });
+  const joinJson = await joinRes.json();
+  if (!joinJson.ok && joinJson.error !== 'already_in_channel') {
+    console.warn('  채널 join 실패 (무시하고 계속):', joinJson.error);
+  } else {
+    console.log('  채널 입장 확인');
+  }
+
   const slackRes  = await fetch(
     `https://slack.com/api/conversations.history?channel=${CHANNEL_ID}&limit=10`,
     { headers: { Authorization: `Bearer ${SLACK_TOKEN}` } }
@@ -132,6 +149,7 @@ async function main() {
     total  : parsed.total,
     done   : parsed.done,
     waiting: parsed.waiting,
+    cancel : parsed.cancel,
     pack   : parsed.pack,
     ts     : tsStr,
   });
