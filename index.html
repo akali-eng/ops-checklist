@@ -1094,13 +1094,13 @@ function calcTrendMetrics(date,hi){
 
 function trendCellOrd(v){
   if(v===null)return`<span style="color:#c8c5bc">-</span>`;
-  if(v>400)return`<span class="tc-warn">${v}</span>`;
+  if(v>450)return`<span class="tc-warn">${v}</span>`;
   return v;
 }
 function trendCellHD(v){
   if(v===null)return`<span style="color:#c8c5bc">-</span>`;
   if(v>0&&v<200)return`<span class="tc-bad">${v}</span>`;
-  if(v>500)return`<span class="tc-good">${v}</span>`;
+  if(v>550)return`<span class="tc-good">${v}</span>`;
   return v;
 }
 function trendCellPPH(pph){
@@ -1138,8 +1138,8 @@ function buildTrendTable(metricFn){
   return`<div class="trend-table-wrap"><table class="trend-table">${trendHdrRow()}${dates.map(d=>trendDataRow(d,metricFn)).join('')}</table></div>`;
 }
 
-const TREND_LEGEND_ORD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#ef9f27"></span>주문인입 400건 초과</span></div>`;
-const TREND_LEGEND_HD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#e24b4a"></span>200건 미만</span><span><span class="trend-legend-dot" style="background:#1d9e75"></span>500건 초과</span></div>`;
+const TREND_LEGEND_ORD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#ef9f27"></span>주문인입 450건 초과</span></div>`;
+const TREND_LEGEND_HD=`<div class="trend-legend"><span><span class="trend-legend-dot" style="background:#e24b4a"></span>200건 미만</span><span><span class="trend-legend-dot" style="background:#1d9e75"></span>550건 초과</span></div>`;
 
 function renderTrendHistory(){
   const el=document.getElementById('trendHistory');
@@ -1154,6 +1154,11 @@ function renderTrendHistory(){
 function renderTrendToday(){
   const el=document.getElementById('trendToday');
   if(!el) return;
+  const kstHour=kstNow.getUTCHours();
+  if(kstHour>=3&&kstHour<8){
+    el.innerHTML='<div class="trend-loading">전일 운영 종료 — 오전 8시부터 오늘 데이터가 갱신됩니다.</div>';
+    return;
+  }
   const todayRows=trendData[today];
   if(!todayRows||!Object.keys(todayRows).length){
     el.innerHTML='<div class="trend-loading">오늘 데이터 없음 — GitHub Actions가 아직 실행되지 않았거나 오전 8시 이전입니다.</div>';
