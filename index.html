@@ -1367,66 +1367,105 @@ window._trendTab=function(t){
 };
 
 // ── 투입인원 계산기 ──────────────────────────────────────────────
-let calcData={}; // Firebase에서 로드한 오늘의 계산기 입력값
+let calcData={}; // 일별 초기화 데이터 (ops-calc/{today})
+let calcSettings={}; // 영구 설정 (UPH, PPH)
+
+// 초기화 대상 필드 (업무 초기화 시 리셋)
+const CALC_DAILY_FIELDS=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
+// 영구 유지 필드
+const CALC_PERSIST_FIELDS=['calcUPH','calcPPH'];
 
 function listenCalcData(){
+  const dow=new Date(today+'T12:00:00').getDay();
+  const isWeekend=(dow===0||dow===6);
+  const dailyDefaults={calcDeadline:isWeekend?'00:00':'01:30'};
+  const persistDefaults={calcUPH:100,calcPPH:90};
+
+  // 일별 데이터 (업무 초기화마다 리셋)
   onValue(ref(db,`ops-calc/${today}`),s=>{
     calcData=s.val()||{};
-    // 입력 필드 복원 (UPH/PPH는 Firebase 값이 없으면 기본값 유지)
-    const dow=new Date(today+'T12:00:00').getDay();
-    const isWeekend=(dow===0||dow===6);
-    const defaults={calcUPH:100,calcPPH:90,calcDeadline:isWeekend?'00:00':'01:30'};
-    const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
-    fields.forEach(id=>{
+    CALC_DAILY_FIELDS.forEach(id=>{
       const el=document.getElementById(id);
       if(!el) return;
       if(calcData[id]!==undefined) el.value=calcData[id];
-      else if(defaults[id]!==undefined) el.value=defaults[id]; // 기본값
+      else if(dailyDefaults[id]!==undefined) el.value=dailyDefaults[id];
+      else el.value='';
+    });
+    renderCalc();
+  });
+
+  // 영구 설정 (UPH, PPH — 날짜 무관하게 유지)
+  onValue(ref(db,'ops-calc-settings'),s=>{
+    calcSettings=s.val()||{};
+    CALC_PERSIST_FIELDS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el) return;
+      if(calcSettings[id]!==undefined) el.value=calcSettings[id];
+      else if(persistDefaults[id]!==undefined) el.value=persistDefaults[id];
     });
     renderCalc();
   });
 }
 
 function saveCalcInputs(){
-  const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
-  const obj={};
-  fields.forEach(id=>{
+  // 일별 데이터 저장
+  const dailyObj={};
+  CALC_DAILY_FIELDS.forEach(id=>{
     const el=document.getElementById(id);
-    if(el&&el.value!=='') obj[id]=parseFloat(el.value);
+    if(el&&el.value!=='') dailyObj[id]=id==='calcDeadline'?el.value:parseFloat(el.value);
   });
-  update(ref(db,`ops-calc/${today}`),obj);
+  update(ref(db,`ops-calc/${today}`),dailyObj);
+  // 영구 설정 저장
+  const persistObj={};
+  CALC_PERSIST_FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!=='') persistObj[id]=parseFloat(el.value);
+  });
+  update(ref(db,'ops-calc-settings'),persistObj);
 }
 window.saveCalcInputs=saveCalcInputs;
 
 function getForecast(){
-  // 오늘 데이터에서 시간당 평균 주문인입 계산
   const todayRows=trendData[today];
   if(!todayRows) return null;
   const sortedHours=Object.keys(todayRows).map(Number)
     .filter(h=>TREND_HOURS.includes(h))
     .sort((a,b)=>TREND_HOURS.indexOf(a)-TREND_HOURS.indexOf(b));
+  if(!sortedHours.length) return null;
+
+  // 8시 시작 물량 = 도착보장총 + 일반총 - 취소합
+  const h8=todayRows['08'];
+  const startAmount=h8?(h8.total-(h8.cancel||0)):null;
+
+  // 시간당 평균 주문인입 (8시 이후 누적 인입 / 경과 시간)
   let totalOrd=0, count=0;
   sortedHours.forEach((h,i)=>{
     const hi=TREND_HOURS.indexOf(h);
     const m=calcTrendMetrics(today,hi);
     if(m&&m.ord!==null&&m.ord>0){totalOrd+=m.ord;count++;}
   });
-  if(!count) return null;
+  if(!count||startAmount===null) return null;
   const avgPerHour=totalOrd/count;
-  // 마감 시간 결정 (평일 24시=0시, 주말 22시)
+
+  // 마감 시간 결정 (평일 01:30, 주말 00:00)
   const dow=new Date(today+'T12:00:00').getDay();
   const isWeekend=(dow===0||dow===6);
-  const closingH=isWeekend?22:0; // 0 = 다음날 자정
+  const closingH=isWeekend?0:1;
+  const closingM=isWeekend?0:30;
+
+  // 남은 시간 계산 (현재 KST 기준)
   const nowH=kstNow.getUTCHours();
-  // 남은 시간 계산
-  let remaining;
-  if(closingH===0){ remaining=((24-nowH)+0); }
-  else { remaining=closingH-nowH; }
-  if(remaining<0) remaining=0;
-  // 현재까지 총 주문인입 누적
-  const curTotal=trendData[today]?.[String(sortedHours[sortedHours.length-1]).padStart(2,'0')]?.total||0;
-  const forecast=Math.round(curTotal+avgPerHour*remaining);
-  return{forecast,avgPerHour:Math.round(avgPerHour),remaining:Math.round(remaining*10)/10,closingH,isWeekend};
+  const nowM=kstNow.getUTCMinutes?kstNow.getUTCMinutes():0;
+  const closingMin=closingH*60+closingM;
+  const nowMin=nowH*60+nowM;
+  let diffMin=closingMin-nowMin;
+  if(diffMin<=0) diffMin+=24*60;
+  const remaining=Math.round(diffMin/6)/10; // 소수점 1자리 시간
+
+  // 예측 = 8시 시작 물량 + 평균 인입 × 남은 시간
+  const forecast=Math.round(startAmount+avgPerHour*remaining);
+  const closingLabel=isWeekend?'00:00':'01:30';
+  return{forecast,startAmount,avgPerHour:Math.round(avgPerHour),remaining,closingLabel,isWeekend};
 }
 
 function renderCalc(){
@@ -1437,7 +1476,7 @@ function renderCalc(){
   const fcSub=document.getElementById('calcForecastSub');
   if(fc&&fcCard&&fcVal){
     fcVal.textContent=fc.forecast.toLocaleString()+'건';
-    fcSub.textContent=`시간당 평균 ${fc.avgPerHour}건 × 잔여 ${fc.remaining}h | 마감 ${fc.closingH===0?'24:00':fc.closingH+':00'} (${fc.isWeekend?'주말':'평일'})`;
+    fcSub.textContent=`시작 ${fc.startAmount?.toLocaleString()}건 + 평균 ${fc.avgPerHour}건/h × 잔여 ${fc.remaining}h | 마감 ${fc.closingLabel} (${fc.isWeekend?'주말':'평일'})`;
     fcCard.style.display='block';
   }
   // 입력값 읽기
