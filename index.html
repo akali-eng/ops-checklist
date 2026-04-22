@@ -748,8 +748,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
       <!-- 출고 마감 / 쉬는시간 -->
       <div class="calc-grid">
         <div class="calc-field">
-          <label>출고 마감 시간 (시)</label>
-          <input type="number" id="calcDeadline" min="0" max="23" placeholder="예: 22" oninput="saveCalcInputs();renderCalc()">
+          <label>출고 마감 시간 <span style="font-size:10px;color:#b4b2a9">(평일 01:30 / 주말 00:00 자동입력)</span></label>
+          <input type="time" id="calcDeadline" oninput="saveCalcInputs();renderCalc()">
         </div>
         <div class="calc-field">
           <label>쉬는 시간 (분)</label>
@@ -1373,7 +1373,9 @@ function listenCalcData(){
   onValue(ref(db,`ops-calc/${today}`),s=>{
     calcData=s.val()||{};
     // 입력 필드 복원 (UPH/PPH는 Firebase 값이 없으면 기본값 유지)
-    const defaults={calcUPH:100,calcPPH:90};
+    const dow=new Date(today+'T12:00:00').getDay();
+    const isWeekend=(dow===0||dow===6);
+    const defaults={calcUPH:100,calcPPH:90,calcDeadline:isWeekend?'00:00':'01:30'};
     const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
     fields.forEach(id=>{
       const el=document.getElementById(id);
@@ -1439,9 +1441,9 @@ function renderCalc(){
     fcCard.style.display='block';
   }
   // 입력값 읽기
-  const deadline=parseFloat(document.getElementById('calcDeadline')?.value)||null;
+  const deadlineVal=document.getElementById('calcDeadline')?.value||''; // "HH:MM"
   const breakMin=parseFloat(document.getElementById('calcBreak')?.value)||0;
-  const breakH=breakMin/60; // 분을 시간으로 변환
+  const breakH=breakMin/60;
   const totalUnits=parseFloat(document.getElementById('calcTotalUnits')?.value)||null;
   const totalOrders=parseFloat(document.getElementById('calcTotalOrders')?.value)||null;
   const uph=parseFloat(document.getElementById('calcUPH')?.value)||null;
@@ -1454,17 +1456,25 @@ function renderCalc(){
   const resUPO=document.getElementById('resUPO');
   if(resUPO) resUPO.innerHTML=upo!==null?`${upo}<span class="calc-result-unit">개</span>`:`-<span class="calc-result-unit">개</span>`;
   document.getElementById('resUPOsub').textContent=upo!==null?`${totalUnits?.toLocaleString()}유닛 ÷ ${totalOrders?.toLocaleString()}주문`:'';
-  // 남은 업무시간
-  let remTime=null;
-  if(deadline!==null){
+  // 남은 업무시간 — HH:MM 기반 계산
+  let remTime=null, remTimeSub='마감시간을 입력하세요';
+  if(deadlineVal){
+    const [dh,dm]=deadlineVal.split(':').map(Number);
+    const deadlineMin=dh*60+dm;
     const nowH=kstNow.getUTCHours();
-    let diff=(deadline===0?24:deadline)-nowH-breakH;
-    if(diff<0) diff=0;
-    remTime=Math.round(diff*10)/10;
+    const nowM=kstNow.getUTCMinutes?kstNow.getUTCMinutes():0;
+    const nowMin=nowH*60+nowM;
+    // 마감이 현재보다 이른 경우(자정 넘은 시각) → 다음날로 처리
+    let diffMin=deadlineMin-nowMin;
+    if(diffMin<=0) diffMin+=24*60;
+    diffMin-=breakMin;
+    if(diffMin<0) diffMin=0;
+    remTime=Math.round(diffMin/6)/10; // 소수점 1자리
+    remTimeSub=`마감 ${deadlineVal} − 현재 ${String(nowH).padStart(2,'0')}:${String(nowM).padStart(2,'0')} − 휴식 ${breakMin}분`;
   }
   const resTime=document.getElementById('resTime');
   if(resTime) resTime.innerHTML=remTime!==null?`${remTime}<span class="calc-result-unit">h</span>`:`-<span class="calc-result-unit">h</span>`;
-  document.getElementById('resTimeSub').textContent=remTime!==null?`마감 ${deadline===0?'24:00':deadline+':00'} − 현재 − 휴식 ${breakMin}분`:'마감시간을 입력하세요';
+  document.getElementById('resTimeSub').textContent=remTimeSub;
   // 예측 주문수
   const forecastOrders=fc?fc.forecast:null;
   // 피킹인원
