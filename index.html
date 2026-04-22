@@ -752,8 +752,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
           <input type="number" id="calcDeadline" min="0" max="23" placeholder="예: 22" oninput="saveCalcInputs();renderCalc()">
         </div>
         <div class="calc-field">
-          <label>쉬는 시간 (시간)</label>
-          <input type="number" id="calcBreak" min="0" max="5" step="0.5" placeholder="예: 0.5" oninput="saveCalcInputs();renderCalc()">
+          <label>쉬는 시간 (분)</label>
+          <input type="number" id="calcBreak" min="0" max="300" step="15" placeholder="예: 30" oninput="saveCalcInputs();renderCalc()">
         </div>
       </div>
       <!-- 유닛/주문 -->
@@ -771,11 +771,11 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
       <div class="calc-grid">
         <div class="calc-field">
           <label>UPH (피킹 시간당 유닛)</label>
-          <input type="number" id="calcUPH" min="0" placeholder="예: 120" oninput="saveCalcInputs();renderCalc()">
+          <input type="number" id="calcUPH" min="0" placeholder="예: 100" value="100" oninput="saveCalcInputs();renderCalc()">
         </div>
         <div class="calc-field">
           <label>PPH (패킹 시간당 주문)</label>
-          <input type="number" id="calcPPH" min="0" placeholder="예: 80" oninput="saveCalcInputs();renderCalc()">
+          <input type="number" id="calcPPH" min="0" placeholder="예: 90" value="90" oninput="saveCalcInputs();renderCalc()">
         </div>
       </div>
       <div class="calc-divider"></div>
@@ -1273,7 +1273,7 @@ function renderTrendToday(){
   const el=document.getElementById('trendToday');
   if(!el) return;
   const kstHour=kstNow.getUTCHours();
-  if(kstHour>=3&&kstHour<8){
+  if(kstHour>=5&&kstHour<8){
     el.innerHTML='<div class="trend-loading">전일 운영 종료 — 오전 8시부터 오늘 데이터가 갱신됩니다.</div>';
     return;
   }
@@ -1372,11 +1372,14 @@ let calcData={}; // Firebase에서 로드한 오늘의 계산기 입력값
 function listenCalcData(){
   onValue(ref(db,`ops-calc/${today}`),s=>{
     calcData=s.val()||{};
-    // 입력 필드 복원
+    // 입력 필드 복원 (UPH/PPH는 Firebase 값이 없으면 기본값 유지)
+    const defaults={calcUPH:100,calcPPH:90};
     const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
     fields.forEach(id=>{
       const el=document.getElementById(id);
-      if(el&&calcData[id]!==undefined) el.value=calcData[id];
+      if(!el) return;
+      if(calcData[id]!==undefined) el.value=calcData[id];
+      else if(defaults[id]!==undefined) el.value=defaults[id]; // 기본값
     });
     renderCalc();
   });
@@ -1437,7 +1440,8 @@ function renderCalc(){
   }
   // 입력값 읽기
   const deadline=parseFloat(document.getElementById('calcDeadline')?.value)||null;
-  const breakH=parseFloat(document.getElementById('calcBreak')?.value)||0;
+  const breakMin=parseFloat(document.getElementById('calcBreak')?.value)||0;
+  const breakH=breakMin/60; // 분을 시간으로 변환
   const totalUnits=parseFloat(document.getElementById('calcTotalUnits')?.value)||null;
   const totalOrders=parseFloat(document.getElementById('calcTotalOrders')?.value)||null;
   const uph=parseFloat(document.getElementById('calcUPH')?.value)||null;
@@ -1460,7 +1464,7 @@ function renderCalc(){
   }
   const resTime=document.getElementById('resTime');
   if(resTime) resTime.innerHTML=remTime!==null?`${remTime}<span class="calc-result-unit">h</span>`:`-<span class="calc-result-unit">h</span>`;
-  document.getElementById('resTimeSub').textContent=remTime!==null?`마감 ${deadline===0?'24:00':deadline+':00'} − 현재 − 휴식 ${breakH}h`:'마감시간을 입력하세요';
+  document.getElementById('resTimeSub').textContent=remTime!==null?`마감 ${deadline===0?'24:00':deadline+':00'} − 현재 − 휴식 ${breakMin}분`:'마감시간을 입력하세요';
   // 예측 주문수
   const forecastOrders=fc?fc.forecast:null;
   // 피킹인원
