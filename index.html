@@ -440,6 +440,32 @@ body.dark .trend-mblock-title { border-color: rgba(255,255,255,0.08); }
 .trend-legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 3px; vertical-align: middle; }
 .trend-loading { text-align: center; color: #888780; padding: 3rem; font-size: 14px; }
 
+/* 투입인원 계산기 */
+.calc-section { margin-top: 1.75rem; border-top: 0.5px solid rgba(0,0,0,0.08); padding-top: 1.5rem; }
+body.dark .calc-section { border-color: rgba(255,255,255,0.08); }
+.calc-section-title { font-size: 15px; font-weight: 500; color: var(--color-text-secondary,#888780); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 1rem; }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+.calc-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+@media(max-width:600px){ .calc-grid,.calc-grid-3{ grid-template-columns:1fr 1fr; } }
+.calc-field { display: flex; flex-direction: column; gap: 4px; }
+.calc-field label { font-size: 11px; color: #888780; font-weight: 500; }
+.calc-field input { padding: 7px 10px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; text-align: right; }
+body.dark .calc-field input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.calc-field input:focus { border-color: #7b3fc4; }
+.calc-divider { height: 0.5px; background: rgba(0,0,0,0.06); margin: 1rem 0; }
+body.dark .calc-divider { background: rgba(255,255,255,0.06); }
+.calc-result-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 10px; margin-top: 1rem; }
+.calc-result-card { background: var(--color-background-secondary,#f9f8f5); border-radius: 10px; padding: 0.85rem 1rem; }
+.calc-result-label { font-size: 11px; color: #888780; margin-bottom: 4px; }
+.calc-result-value { font-size: 26px; font-weight: 500; line-height: 1.2; }
+.calc-result-unit { font-size: 12px; color: #888780; margin-left: 3px; }
+.calc-result-sub { font-size: 11px; color: #888780; margin-top: 4px; }
+.calc-forecast-card { background: #eeedfe; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1rem; }
+body.dark .calc-forecast-card { background: rgba(127,119,221,0.15); }
+.calc-forecast-label { font-size: 11px; color: #534ab7; margin-bottom: 2px; font-weight: 500; }
+.calc-forecast-value { font-size: 22px; font-weight: 500; color: #534ab7; }
+.calc-forecast-sub { font-size: 11px; color: #7f77dd; margin-top: 3px; }
+
 /* 새 댓글 N 뱃지 */
 .cmt-new-badge { display: inline-block; font-size: 9px; font-weight: 700; color: #fff; background: #e24b4a; border-radius: 99px; padding: 1px 5px; margin-left: 3px; vertical-align: middle; line-height: 1.5; letter-spacing: 0.2px; }
 
@@ -497,6 +523,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.8.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>주문현황 투입인원 계산기 — 마감 예측 물량, 피킹·패킹 필요 인원 자동 계산, 입력값 Firebase 유지</td></tr>
         <tr><td><span class="ver-badge">v1.7.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-18</td><td>주문추세 탭 추가 — GitHub Actions 자동 수집, 오늘/기록 뷰, 4개 지표 색상 표시</td></tr>
         <tr><td><span class="ver-badge">v1.6.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-16</td><td>공유 시트 검색 — 제목·내용 동시 검색, 검색어 하이라이트, 내용 매칭 시 자동 펼침</td></tr>
         <tr><td><span class="ver-badge">v1.5.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-15</td><td>센터 일정 탭 추가 — 월별 달력, 날짜별 일정 등록/수정/삭제, 달력에 일정 미리보기</td></tr>
@@ -572,8 +599,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.7.0</span>
-      · 업데이트 2026-04-18 &nbsp;|&nbsp;
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.8.0</span>
+      · 업데이트 2026-04-23 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
@@ -709,6 +736,97 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <button class="tsub-btn" id="trendBtnAvg" onclick="window._trendTab('avg')">평균 인입량</button>
   </div>
   <div id="trendToday"><div class="trend-loading">데이터를 불러오는 중...</div></div>
+  <div id="trendCalc" style="display:block">
+    <!-- 예측 물량 카드 -->
+    <div class="calc-forecast-card" id="calcForecastCard">
+      <div class="calc-forecast-label">마감 예측 주문량</div>
+      <div class="calc-forecast-value" id="calcForecastVal">-</div>
+      <div class="calc-forecast-sub" id="calcForecastSub"></div>
+    </div>
+    <div class="calc-section">
+      <div class="calc-section-title">투입 인원 계산</div>
+      <!-- 출고 마감 / 쉬는시간 -->
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>출고 마감 시간 (시)</label>
+          <input type="number" id="calcDeadline" min="0" max="23" placeholder="예: 22" oninput="saveCalcInputs();renderCalc()">
+        </div>
+        <div class="calc-field">
+          <label>쉬는 시간 (시간)</label>
+          <input type="number" id="calcBreak" min="0" max="5" step="0.5" placeholder="예: 0.5" oninput="saveCalcInputs();renderCalc()">
+        </div>
+      </div>
+      <!-- 유닛/주문 -->
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>총 유닛수</label>
+          <input type="number" id="calcTotalUnits" min="0" placeholder="예: 12000" oninput="saveCalcInputs();renderCalc()">
+        </div>
+        <div class="calc-field">
+          <label>총 주문수</label>
+          <input type="number" id="calcTotalOrders" min="0" placeholder="예: 4000" oninput="saveCalcInputs();renderCalc()">
+        </div>
+      </div>
+      <!-- UPH / PPH -->
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>UPH (피킹 시간당 유닛)</label>
+          <input type="number" id="calcUPH" min="0" placeholder="예: 120" oninput="saveCalcInputs();renderCalc()">
+        </div>
+        <div class="calc-field">
+          <label>PPH (패킹 시간당 주문)</label>
+          <input type="number" id="calcPPH" min="0" placeholder="예: 80" oninput="saveCalcInputs();renderCalc()">
+        </div>
+      </div>
+      <div class="calc-divider"></div>
+      <!-- 패킹대기 / 출고완료 -->
+      <div class="calc-section-title" style="font-size:13px;margin-bottom:0.75rem">현재 현황 입력</div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>패킹대기 유닛수</label>
+          <input type="number" id="calcWaitUnits" min="0" placeholder="0" oninput="saveCalcInputs();renderCalc()">
+        </div>
+        <div class="calc-field">
+          <label>패킹대기 주문수</label>
+          <input type="number" id="calcWaitOrders" min="0" placeholder="0" oninput="saveCalcInputs();renderCalc()">
+        </div>
+      </div>
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>출고완료 유닛수</label>
+          <input type="number" id="calcDoneUnits" min="0" placeholder="0" oninput="saveCalcInputs();renderCalc()">
+        </div>
+        <div class="calc-field">
+          <label>출고완료 주문수</label>
+          <input type="number" id="calcDoneOrders" min="0" placeholder="0" oninput="saveCalcInputs();renderCalc()">
+        </div>
+      </div>
+      <div class="calc-divider"></div>
+      <!-- 결과 -->
+      <div class="calc-result-grid">
+        <div class="calc-result-card">
+          <div class="calc-result-label">주문당 평균 유닛</div>
+          <div class="calc-result-value" id="resUPO">-<span class="calc-result-unit">개</span></div>
+          <div class="calc-result-sub" id="resUPOsub"></div>
+        </div>
+        <div class="calc-result-card">
+          <div class="calc-result-label">남은 업무시간</div>
+          <div class="calc-result-value" id="resTime">-<span class="calc-result-unit">h</span></div>
+          <div class="calc-result-sub" id="resTimeSub"></div>
+        </div>
+        <div class="calc-result-card" style="background:#e6f1fb">
+          <div class="calc-result-label" style="color:#0c447c">필요 피킹인원</div>
+          <div class="calc-result-value" style="color:#0c447c" id="resPicking">-<span class="calc-result-unit">명</span></div>
+          <div class="calc-result-sub" style="color:#378add" id="resPickingSub"></div>
+        </div>
+        <div class="calc-result-card" style="background:#e1f5ee">
+          <div class="calc-result-label" style="color:#085041">필요 패킹인원</div>
+          <div class="calc-result-value" style="color:#085041" id="resPacking">-<span class="calc-result-unit">명</span></div>
+          <div class="calc-result-sub" style="color:#1d9e75" id="resPackingSub"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="trendHistory" style="display:none"><div class="trend-loading">데이터를 불러오는 중...</div></div>
   <div id="trendAvg" style="display:none">
     <div style="font-size:13px;color:#888780;margin-bottom:12px">2026-03-16 ~ 2026-04-20 · 36일 기준 요일별 평균 주문인입량</div>
@@ -768,7 +886,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.7.0";
+const CURRENT_VERSION = "1.8.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -846,7 +964,7 @@ onAuthStateChanged(auth, user => {
     document.getElementById('usernameTag').textContent='접속자: '+myName;
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
-    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend();
+    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData();
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
     initCustomItemsThenToday();
   } else {
@@ -940,7 +1058,7 @@ function switchTab(tab){
   } else if(tab==='trend'){
     document.getElementById('trendPage').style.display='block';
     document.getElementById('pageTitle').textContent='주문현황'; setDateLabel();
-    renderTrendToday(); renderTrendHistory();
+    renderTrendToday(); renderTrendHistory(); renderCalc();
   }
 }
 ['Day','Night','History','Goals','Calendar','Sheets','Trend'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
@@ -1065,7 +1183,7 @@ function listenTrend(){
   dates.forEach(date=>{
     onValue(ref(db,`ops-trend/${date}`),s=>{
       trendData[date]=s.val()||{};
-      if(curTab==='trend'){ renderTrendToday(); renderTrendHistory(); }
+      if(curTab==='trend'){ renderTrendToday(); renderTrendHistory(); renderCalc(); }
     });
   });
 }
@@ -1242,8 +1360,136 @@ window._trendTab=function(t){
     if(el) el.style.display=s===t?'block':'none';
     document.getElementById('trendBtn'+s.charAt(0).toUpperCase()+s.slice(1))?.classList.toggle('active',s===t);
   });
+  // 계산기 섹션은 오늘 탭에서만 표시
+  const calcEl=document.getElementById('trendCalc');
+  if(calcEl) calcEl.style.display=t==='today'?'block':'none';
   if(t==='avg') renderTrendAvg();
 };
+
+// ── 투입인원 계산기 ──────────────────────────────────────────────
+let calcData={}; // Firebase에서 로드한 오늘의 계산기 입력값
+
+function listenCalcData(){
+  onValue(ref(db,`ops-calc/${today}`),s=>{
+    calcData=s.val()||{};
+    // 입력 필드 복원
+    const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
+    fields.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&calcData[id]!==undefined) el.value=calcData[id];
+    });
+    renderCalc();
+  });
+}
+
+function saveCalcInputs(){
+  const fields=['calcDeadline','calcBreak','calcTotalUnits','calcTotalOrders','calcUPH','calcPPH','calcWaitUnits','calcWaitOrders','calcDoneUnits','calcDoneOrders'];
+  const obj={};
+  fields.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.value!=='') obj[id]=parseFloat(el.value);
+  });
+  update(ref(db,`ops-calc/${today}`),obj);
+}
+window.saveCalcInputs=saveCalcInputs;
+
+function getForecast(){
+  // 오늘 데이터에서 시간당 평균 주문인입 계산
+  const todayRows=trendData[today];
+  if(!todayRows) return null;
+  const sortedHours=Object.keys(todayRows).map(Number)
+    .filter(h=>TREND_HOURS.includes(h))
+    .sort((a,b)=>TREND_HOURS.indexOf(a)-TREND_HOURS.indexOf(b));
+  let totalOrd=0, count=0;
+  sortedHours.forEach((h,i)=>{
+    const hi=TREND_HOURS.indexOf(h);
+    const m=calcTrendMetrics(today,hi);
+    if(m&&m.ord!==null&&m.ord>0){totalOrd+=m.ord;count++;}
+  });
+  if(!count) return null;
+  const avgPerHour=totalOrd/count;
+  // 마감 시간 결정 (평일 24시=0시, 주말 22시)
+  const dow=new Date(today+'T12:00:00').getDay();
+  const isWeekend=(dow===0||dow===6);
+  const closingH=isWeekend?22:0; // 0 = 다음날 자정
+  const nowH=kstNow.getUTCHours();
+  // 남은 시간 계산
+  let remaining;
+  if(closingH===0){ remaining=((24-nowH)+0); }
+  else { remaining=closingH-nowH; }
+  if(remaining<0) remaining=0;
+  // 현재까지 총 주문인입 누적
+  const curTotal=trendData[today]?.[String(sortedHours[sortedHours.length-1]).padStart(2,'0')]?.total||0;
+  const forecast=Math.round(curTotal+avgPerHour*remaining);
+  return{forecast,avgPerHour:Math.round(avgPerHour),remaining:Math.round(remaining*10)/10,closingH,isWeekend};
+}
+
+function renderCalc(){
+  // 예측 카드
+  const fc=getForecast();
+  const fcCard=document.getElementById('calcForecastCard');
+  const fcVal=document.getElementById('calcForecastVal');
+  const fcSub=document.getElementById('calcForecastSub');
+  if(fc&&fcCard&&fcVal){
+    fcVal.textContent=fc.forecast.toLocaleString()+'건';
+    fcSub.textContent=`시간당 평균 ${fc.avgPerHour}건 × 잔여 ${fc.remaining}h | 마감 ${fc.closingH===0?'24:00':fc.closingH+':00'} (${fc.isWeekend?'주말':'평일'})`;
+    fcCard.style.display='block';
+  }
+  // 입력값 읽기
+  const deadline=parseFloat(document.getElementById('calcDeadline')?.value)||null;
+  const breakH=parseFloat(document.getElementById('calcBreak')?.value)||0;
+  const totalUnits=parseFloat(document.getElementById('calcTotalUnits')?.value)||null;
+  const totalOrders=parseFloat(document.getElementById('calcTotalOrders')?.value)||null;
+  const uph=parseFloat(document.getElementById('calcUPH')?.value)||null;
+  const pph=parseFloat(document.getElementById('calcPPH')?.value)||null;
+  const waitUnits=parseFloat(document.getElementById('calcWaitUnits')?.value)||0;
+  const waitOrders=parseFloat(document.getElementById('calcWaitOrders')?.value)||0;
+  const doneOrders=parseFloat(document.getElementById('calcDoneOrders')?.value)||0;
+  // 주문당 유닛
+  const upo=(totalUnits&&totalOrders&&totalOrders>0)?Math.round(totalUnits/totalOrders*10)/10:null;
+  const resUPO=document.getElementById('resUPO');
+  if(resUPO) resUPO.innerHTML=upo!==null?`${upo}<span class="calc-result-unit">개</span>`:`-<span class="calc-result-unit">개</span>`;
+  document.getElementById('resUPOsub').textContent=upo!==null?`${totalUnits?.toLocaleString()}유닛 ÷ ${totalOrders?.toLocaleString()}주문`:'';
+  // 남은 업무시간
+  let remTime=null;
+  if(deadline!==null){
+    const nowH=kstNow.getUTCHours();
+    let diff=(deadline===0?24:deadline)-nowH-breakH;
+    if(diff<0) diff=0;
+    remTime=Math.round(diff*10)/10;
+  }
+  const resTime=document.getElementById('resTime');
+  if(resTime) resTime.innerHTML=remTime!==null?`${remTime}<span class="calc-result-unit">h</span>`:`-<span class="calc-result-unit">h</span>`;
+  document.getElementById('resTimeSub').textContent=remTime!==null?`마감 ${deadline===0?'24:00':deadline+':00'} − 현재 − 휴식 ${breakH}h`:'마감시간을 입력하세요';
+  // 예측 주문수
+  const forecastOrders=fc?fc.forecast:null;
+  // 피킹인원
+  const resPicking=document.getElementById('resPicking');
+  const resPickingSub=document.getElementById('resPickingSub');
+  if(remTime&&upo&&uph&&forecastOrders!==null){
+    const pickNeededOrders=forecastOrders-doneOrders-waitOrders;
+    const pickNeededUnits=pickNeededOrders*upo;
+    const pickers=pickNeededOrders>0?Math.ceil(pickNeededUnits/(remTime*uph)):0;
+    resPicking.innerHTML=`${pickers}<span class="calc-result-unit">명</span>`;
+    resPickingSub.textContent=`피킹필요 ${Math.round(pickNeededUnits).toLocaleString()}유닛 ÷ (${remTime}h×${uph})`;
+  } else {
+    resPicking.innerHTML=`-<span class="calc-result-unit">명</span>`;
+    resPickingSub.textContent='UPH·마감시간·유닛/주문 입력 필요';
+  }
+  // 패킹인원
+  const resPacking=document.getElementById('resPacking');
+  const resPackingSub=document.getElementById('resPackingSub');
+  if(remTime&&pph&&forecastOrders!==null){
+    const packNeeded=forecastOrders-doneOrders;
+    const packers=packNeeded>0?Math.ceil(packNeeded/(remTime*pph)):0;
+    resPacking.innerHTML=`${packers}<span class="calc-result-unit">명</span>`;
+    resPackingSub.textContent=`패킹필요 ${packNeeded.toLocaleString()}주문 ÷ (${remTime}h×${pph})`;
+  } else {
+    resPacking.innerHTML=`-<span class="calc-result-unit">명</span>`;
+    resPackingSub.textContent='PPH·마감시간 입력 필요';
+  }
+}
+window.renderCalc=renderCalc;
 function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.val()||{}; qsa('.goal-body.open',el=>{ const gid=el.id.replace('gbody-',''); renderComments(gid); }); }); }
 function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); }); }
 
