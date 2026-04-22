@@ -412,7 +412,7 @@ body.dark .sheet-content-text { color: #e8e6df; }
 .sheets-empty { text-align: center; color: #888780; padding: 3rem; font-size: 14px; }
 
 /* 주문추세 탭 */
-.tab-btn.trend.active { color: #7b3fc4; }
+.tab-btn.notice.active { color: #185fa5; }
 #trendPage { display: none; }
 .trend-sub-tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; flex-wrap: wrap; }
 .tsub-btn { padding: 5px 14px; border-radius: 99px; font-size: 13px; border: 0.5px solid rgba(0,0,0,0.1); background: #fff; color: #888780; font-family: inherit; cursor: pointer; }
@@ -469,6 +469,90 @@ body.dark .calc-forecast-card { background: rgba(127,119,221,0.15); }
 /* 새 댓글 N 뱃지 */
 .cmt-new-badge { display: inline-block; font-size: 9px; font-weight: 700; color: #fff; background: #e24b4a; border-radius: 99px; padding: 1px 5px; margin-left: 3px; vertical-align: middle; line-height: 1.5; letter-spacing: 0.2px; }
 
+/* 주간/야간 내 서브탭 (기록보기) */
+.todo-sub-tabs { display: flex; gap: 6px; margin-bottom: 1rem; }
+.todo-sub-btn { padding: 5px 14px; border-radius: 99px; font-size: 13px; border: 0.5px solid rgba(0,0,0,0.1); background: #fff; color: #888780; font-family: inherit; cursor: pointer; }
+body.dark .todo-sub-btn { background: #242424; border-color: rgba(255,255,255,0.1); }
+.todo-sub-btn.active-day { background: #1d9e75; color: #fff; border-color: #1d9e75; font-weight: 500; }
+.todo-sub-btn.active-night { background: #7f77dd; color: #fff; border-color: #7f77dd; font-weight: 500; }
+#historyInner { display: none; }
+
+/* 예측 선택 카드 */
+.forecast-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+@media(max-width:640px){ .forecast-grid { grid-template-columns: 1fr; } }
+.forecast-option { border: 1.5px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 0.75rem 1rem; cursor: pointer; transition: all 0.15s; background: #fff; }
+body.dark .forecast-option { background: #242424; border-color: rgba(255,255,255,0.1); }
+.forecast-option.selected { border-color: #7b3fc4; background: #f5f3fe; }
+body.dark .forecast-option.selected { background: rgba(127,119,221,0.15); }
+.forecast-option-label { font-size: 10px; color: #888780; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+.forecast-option-val { font-size: 20px; font-weight: 500; color: #534ab7; }
+.forecast-option-sub { font-size: 10px; color: #7f77dd; margin-top: 2px; }
+.forecast-option.selected .forecast-option-val { color: #7b3fc4; }
+.forecast-radio { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #c8c5bc; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.forecast-option.selected .forecast-radio { border-color: #7b3fc4; background: #7b3fc4; }
+.forecast-option.selected .forecast-radio::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #fff; display: block; }
+.fc3-input { width: 100%; border: none; background: transparent; font-size: 20px; font-weight: 500; color: #534ab7; font-family: inherit; outline: none; padding: 0; text-align: left; }
+body.dark .fc3-input { color: #afa9ec; }
+.fc3-input::placeholder { color: #c8c5bc; font-size: 16px; }
+
+/* 센터공지 탭 */
+#noticePage { display: none; }
+.notice-search-wrap { position: relative; margin-bottom: 0.75rem; }
+.notice-search-input { width: 100%; padding: 9px 36px 9px 12px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; font-size: 14px; color: #2c2c2a; font-family: inherit; outline: none; }
+body.dark .notice-search-input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.notice-search-clear { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #888780; cursor: pointer; font-size: 16px; padding: 0; }
+.notice-add-form { background: #fff; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; border: 0.5px solid rgba(0,0,0,0.08); display: none; }
+body.dark .notice-add-form { background: #242424; border-color: rgba(255,255,255,0.08); }
+.notice-add-form.open { display: block; }
+.notice-add-form label { font-size: 12px; color: #888780; display: block; margin-bottom: 5px; margin-top: 10px; }
+.notice-add-form label:first-child { margin-top: 0; }
+.notice-add-form input, .notice-add-form textarea { width: 100%; padding: 8px 10px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; }
+body.dark .notice-add-form input, body.dark .notice-add-form textarea { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.notice-add-form textarea { min-height: 80px; resize: vertical; }
+.notice-card { background: #fff; border-radius: 14px; margin-bottom: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.07); }
+body.dark .notice-card { background: #2a2a2a; box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+.notice-header { padding: 0.9rem 1.1rem; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.notice-title-wrap { flex: 1; min-width: 0; }
+.notice-title { font-size: 14px; font-weight: 500; color: #2c2c2a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.dark .notice-title { color: #e8e6df; }
+.notice-meta-row { font-size: 11px; color: #888780; margin-top: 2px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.notice-readers { font-size: 11px; color: #1d9e75; background: #e1f5ee; border-radius: 99px; padding: 1px 8px; }
+.notice-cmt-badge { font-size: 11px; color: #185fa5; background: #e6f1fb; border-radius: 99px; padding: 1px 8px; }
+.notice-chev { font-size: 12px; color: #888780; transition: transform 0.2s; flex-shrink: 0; }
+.notice-chev.open { transform: rotate(180deg); }
+.notice-body { display: none; border-top: 0.5px solid rgba(0,0,0,0.06); padding: 1rem 1.1rem; }
+body.dark .notice-body { border-color: rgba(255,255,255,0.06); }
+.notice-body.open { display: block; }
+.notice-content-text { font-size: 13px; color: #444; line-height: 1.7; white-space: pre-wrap; margin-bottom: 8px; }
+body.dark .notice-content-text { color: #b4b2a9; }
+.notice-slack-link { font-size: 12px; color: #185fa5; text-decoration: none; display: inline-block; margin-bottom: 10px; }
+.notice-check-row { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+.notice-check { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid #c8c5bc; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.notice-check.checked { background: #1d9e75; border-color: #1d9e75; }
+.notice-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+.notice-check-label { font-size: 12px; color: #888780; }
+.notice-actions { display: flex; gap: 8px; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid rgba(0,0,0,0.06); }
+body.dark .notice-actions { border-color: rgba(255,255,255,0.06); }
+.notice-edit-form { display: none; background: #f9f8f5; border-radius: 10px; padding: 12px; margin-top: 10px; }
+body.dark .notice-edit-form { background: #1a1a1a; }
+.notice-edit-form.open { display: block; }
+.notice-edit-form label { font-size: 11px; color: #888780; display: block; margin-bottom: 4px; margin-top: 8px; }
+.notice-edit-form label:first-child { margin-top: 0; }
+.notice-edit-form input, .notice-edit-form textarea { width: 100%; padding: 7px 9px; border-radius: 7px; border: 0.5px solid rgba(0,0,0,0.12); background: #fff; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; box-sizing: border-box; }
+body.dark .notice-edit-form input, body.dark .notice-edit-form textarea { background: #242424; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.notice-edit-form textarea { min-height: 70px; resize: vertical; }
+.notice-edit-btns { display: flex; gap: 6px; justify-content: flex-end; margin-top: 10px; }
+.notice-cmt-area { margin-top: 10px; }
+.notice-cmt-item { font-size: 12px; color: #444; padding: 5px 0; border-bottom: 0.5px solid rgba(0,0,0,0.04); }
+body.dark .notice-cmt-item { color: #b4b2a9; border-color: rgba(255,255,255,0.04); }
+.notice-cmt-author { font-weight: 500; color: #185fa5; margin-right: 5px; }
+.notice-cmt-input-wrap { display: flex; gap: 6px; margin-top: 8px; }
+.notice-cmt-input { flex: 1; padding: 7px 10px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; font-size: 13px; font-family: inherit; color: #2c2c2a; outline: none; }
+body.dark .notice-cmt-input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.notice-cmt-send { padding: 7px 12px; border-radius: 8px; background: #185fa5; color: #fff; border: none; font-size: 12px; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.notice-cmt-label { font-size: 12px; color: #888780; font-weight: 500; margin-bottom: 4px; }
+.notices-empty { text-align: center; color: #888780; padding: 3rem; font-size: 14px; }
+
 /* 목표 진행률 - 목록 뷰 */
 .goal-prog-wrap { display: flex; align-items: center; gap: 7px; margin-top: 6px; }
 .goal-prog-bar-bg { width: 100px; height: 5px; background: #f1efe8; border-radius: 99px; overflow: hidden; flex-shrink: 0; }
@@ -523,6 +607,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.9.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>예측 3종 선택(평균·보정·직접입력), 센터공지 탭(검색·확인체크·댓글), 기록보기 주간/야간 서브탭 이동, 출고마감 요일별 기본값</td></tr>
         <tr><td><span class="ver-badge">v1.8.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>주문현황 투입인원 계산기 — 마감 예측 물량, 피킹·패킹 필요 인원 자동 계산, 입력값 Firebase 유지</td></tr>
         <tr><td><span class="ver-badge">v1.7.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-18</td><td>주문추세 탭 추가 — GitHub Actions 자동 수집, 오늘/기록 뷰, 4개 지표 색상 표시</td></tr>
         <tr><td><span class="ver-badge">v1.6.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-16</td><td>공유 시트 검색 — 제목·내용 동시 검색, 검색어 하이라이트, 내용 매칭 시 자동 펼침</td></tr>
@@ -578,7 +663,6 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   <div class="tab-sw">
     <button class="tab-btn day active" id="tabDay">주간</button>
     <button class="tab-btn night" id="tabNight">야간</button>
-    <button class="tab-btn history" id="tabHistory">기록 보기</button>
   </div>
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문현황</button></div>
@@ -586,6 +670,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   <div class="tab-sw"><button class="tab-btn goals" id="tabGoals">센터 목표</button></div>
   <div class="tab-div"></div>
   <div class="tab-sw" id="calTabSw"><button class="tab-btn calendar" id="tabCalendar">센터 일정</button></div>
+  <div class="tab-div"></div>
+  <div class="tab-sw"><button class="tab-btn notice" id="tabNotice">센터공지</button></div>
   <div class="tab-div"></div>
   <div class="tab-sw"><button class="tab-btn sheets" id="tabSheets">공유 시트</button></div>
 </div>
@@ -599,7 +685,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.8.0</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.0</span>
       · 업데이트 2026-04-23 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -637,6 +723,11 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 
 <!-- 업무 페이지 -->
 <div id="todoPage">
+  <div class="todo-sub-tabs">
+    <button class="todo-sub-btn active-day" id="todoSubWork" onclick="window._todoSub('work')">업무 목록</button>
+    <button class="todo-sub-btn" id="todoSubHistory" onclick="window._todoSub('history')">기록 보기</button>
+  </div>
+  <div id="workInner">
   <div class="stats">
     <div class="stat-card"><div class="stat-label">전체</div><div class="stat-value" id="s-total" style="color:#378add">0</div></div>
     <div class="stat-card"><div class="stat-label">미확인</div><div class="stat-value" id="s-none" style="color:#888780">0</div></div>
@@ -655,10 +746,10 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <button class="filter-btn" id="fDone">완료</button>
   </div>
   <div class="todo-list" id="todoList"><div class="connecting">Firebase 연결 중...</div></div>
-</div>
+  </div>
+  <div id="historyInner">
 
-<!-- 기록 페이지 -->
-<div id="historyPage">
+<!-- 기록 페이지 (주간/야간 서브탭 안) -->
   <div class="hf-row">
     <button class="hf-btn active" id="hfAll">전체</button>
     <button class="hf-btn" id="hfDay">주간만</button>
@@ -670,7 +761,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     </div>
   </div>
   <div id="historyList"><div class="h-empty">기록을 불러오는 중...</div></div>
-</div>
+  </div><!-- historyInner end -->
+</div><!-- todoPage end -->
 
 <!-- 센터 목표 -->
 <div id="goalsPage">
@@ -718,6 +810,24 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
 </div>
 
+<!-- 센터공지 -->
+<div id="noticePage">
+  <div class="notice-search-wrap">
+    <input type="text" class="notice-search-input" id="noticeSearchInput" placeholder="제목 또는 내용으로 검색...">
+    <button class="notice-search-clear" onclick="document.getElementById('noticeSearchInput').value='';renderNotices()">×</button>
+  </div>
+  <div class="notice-add-form" id="noticeAddForm">
+    <label>제목</label><input type="text" id="noticeTitle" placeholder="공지 제목...">
+    <label>내용</label><textarea id="noticeContent" placeholder="공지 내용..."></textarea>
+    <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack" placeholder="https://...">
+    <div class="add-form-btns" style="margin-top:10px">
+      <button class="btn-cancel-sm" onclick="document.getElementById('noticeAddForm').classList.remove('open')">취소</button>
+      <button class="btn-save-sheet" onclick="window._addNotice()">등록</button>
+    </div>
+  </div>
+  <div id="noticeList"><div class="notices-empty">공지를 불러오는 중...</div></div>
+</div>
+
 <!-- 공유 시트 -->
 <div id="sheetsPage">
   <div class="sheet-search-wrap">
@@ -737,11 +847,24 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div id="trendToday"><div class="trend-loading">데이터를 불러오는 중...</div></div>
   <div id="trendCalc" style="display:block">
-    <!-- 예측 물량 카드 -->
-    <div class="calc-forecast-card" id="calcForecastCard">
-      <div class="calc-forecast-label">마감 예측 주문량</div>
-      <div class="calc-forecast-value" id="calcForecastVal">-</div>
-      <div class="calc-forecast-sub" id="calcForecastSub"></div>
+    <!-- 예측 물량 3가지 선택 -->
+    <div style="font-size:13px;font-weight:500;color:#888780;margin-bottom:8px;margin-top:1rem">마감 예측 주문량 <span style="font-size:11px;font-weight:400">— 클릭하여 선택 후 투입인원 계산에 사용</span></div>
+    <div class="forecast-grid">
+      <div class="forecast-option selected" id="fc1Card" onclick="window._selectFc(1)">
+        <div class="forecast-option-label"><span class="forecast-radio"></span>① 평균 인입 기반</div>
+        <div class="forecast-option-val" id="fc1Val">-</div>
+        <div class="forecast-option-sub" id="fc1Sub"></div>
+      </div>
+      <div class="forecast-option" id="fc2Card" onclick="window._selectFc(2)">
+        <div class="forecast-option-label"><span class="forecast-radio"></span>② 보정치 적용</div>
+        <div class="forecast-option-val" id="fc2Val">-</div>
+        <div class="forecast-option-sub" id="fc2Sub"></div>
+      </div>
+      <div class="forecast-option" id="fc3Card" onclick="window._selectFc(3)">
+        <div class="forecast-option-label"><span class="forecast-radio"></span>③ 직접 입력</div>
+        <input class="fc3-input" id="fc3Input" type="number" placeholder="예: 5000" oninput="window._selectFc(3);renderCalc()">
+        <div class="forecast-option-sub">건</div>
+      </div>
     </div>
     <div class="calc-section">
       <div class="calc-section-title">투입 인원 계산</div>
@@ -752,7 +875,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
           <input type="time" id="calcDeadline" oninput="saveCalcInputs();renderCalc()">
         </div>
         <div class="calc-field">
-          <label>쉬는 시간 (분)</label>
+          <label>남은 쉬는 시간 (분)</label>
           <input type="number" id="calcBreak" min="0" max="300" step="15" placeholder="예: 30" oninput="saveCalcInputs();renderCalc()">
         </div>
       </div>
@@ -770,11 +893,11 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
       <!-- UPH / PPH -->
       <div class="calc-grid">
         <div class="calc-field">
-          <label>UPH (피킹 시간당 유닛)</label>
+          <label>UPH</label>
           <input type="number" id="calcUPH" min="0" placeholder="예: 100" value="100" oninput="saveCalcInputs();renderCalc()">
         </div>
         <div class="calc-field">
-          <label>PPH (패킹 시간당 주문)</label>
+          <label>PPH</label>
           <input type="number" id="calcPPH" min="0" placeholder="예: 90" value="90" oninput="saveCalcInputs();renderCalc()">
         </div>
       </div>
@@ -886,7 +1009,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.8.0";
+const CURRENT_VERSION = "1.9.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -908,6 +1031,7 @@ function kstDateTimeStr(){ const d=new Date(Date.now()+9*3600000); return d.toIS
 function setDateLabel(){ const s=new Date(nowMs).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}); document.getElementById('dateLabel').textContent=s+' (업무일: '+today+')'; }
 
 let curTab='day', curFilter='미완료', htFilter='전체', hPeriod=7;
+let currentUser=null; // 로그인한 사용자 (notice, toggle read 등에서 사용)
 let goalStatusFilter='active', goalPriFilter='all', goalPeriod=30;
 let myName='', dragSrcId=null, sheetDragId=null;
 let sheetQuery='';
@@ -958,16 +1082,18 @@ function progColor(p){
 // 로그인
 onAuthStateChanged(auth, user => {
   if(user){
+    currentUser=user;
     myName=user.email.split('@')[0];
     document.getElementById('loginPage').style.display='none';
     document.getElementById('appPage').style.display='block';
     document.getElementById('usernameTag').textContent='접속자: '+myName;
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
-    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData();
+    listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData(); listenNotices();
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
     initCustomItemsThenToday();
   } else {
+    currentUser=null;
     document.getElementById('loginPage').style.display='flex';
     document.getElementById('appPage').style.display='none';
   }
@@ -1009,10 +1135,10 @@ function saveEdit(){
 window.openGoalEdit=openGoalEdit; window.openSheetEdit=openSheetEdit; window.openCalEdit=openCalEdit;
 
 // 탭
-const PAGES=['todoPage','historyPage','goalsPage','calendarPage','sheetsPage','trendPage'];
+const PAGES=['todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage'];
 function switchTab(tab){
   curTab=tab;
-  ['Day','Night','History','Goals','Calendar','Sheets','Trend'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
+  ['Day','Night','Goals','Calendar','Sheets','Trend','Notice'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
   document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add('active');
   PAGES.forEach(p=>document.getElementById(p).style.display='none');
   ['addForm','goalForm','sheetForm'].forEach(f=>document.getElementById(f).classList.remove('open'));
@@ -1031,12 +1157,12 @@ function switchTab(tab){
     document.getElementById('btnSave').className=isDay?'btn-save-day':'btn-save-goal';
     document.getElementById('progressBar').className='progress-bar '+(isDay?'bar-day':'bar-night');
     document.getElementById('s-done').style.color=isDay?'#1d9e75':'#7f77dd';
+    // 서브탭 색상 업데이트
+    document.getElementById('todoSubWork').className='todo-sub-btn '+(isDay?'active-day':'active-night');
+    document.getElementById('todoSubHistory').className='todo-sub-btn';
+    document.getElementById('workInner').style.display='block';
+    document.getElementById('historyInner').style.display='none';
     curFilter='미완료'; resetFilters(); render();
-  } else if(tab==='history'){
-    document.getElementById('historyPage').style.display='block';
-    document.getElementById('pageTitle').textContent='기록 보기';
-    document.getElementById('dateLabel').textContent='';
-    renderHistory();
   } else if(tab==='goals'){
     document.getElementById('goalsPage').style.display='block';
     document.getElementById('btnAdd').style.display='inline-block';
@@ -1059,14 +1185,22 @@ function switchTab(tab){
     document.getElementById('trendPage').style.display='block';
     document.getElementById('pageTitle').textContent='주문현황'; setDateLabel();
     renderTrendToday(); renderTrendHistory(); renderCalc();
+  } else if(tab==='notice'){
+    document.getElementById('noticePage').style.display='block';
+    document.getElementById('btnAdd').style.display='inline-block';
+    document.getElementById('btnAdd').className='btn-primary btn-sheet';
+    document.getElementById('btnAdd').textContent='+ 공지 작성';
+    document.getElementById('pageTitle').textContent='센터공지'; setDateLabel();
+    renderNotices();
   }
 }
-['Day','Night','History','Goals','Calendar','Sheets','Trend'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
+['Day','Night','Goals','Calendar','Sheets','Trend','Notice'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
 
 // 추가 버튼
 document.getElementById('btnAdd').addEventListener('click',()=>{
   if(curTab==='goals'){ document.getElementById('goalForm').classList.toggle('open'); if(document.getElementById('goalForm').classList.contains('open')) document.getElementById('goalTitle').focus(); }
   else if(curTab==='sheets'){ document.getElementById('sheetForm').classList.toggle('open'); if(document.getElementById('sheetForm').classList.contains('open')) document.getElementById('sheetTitle').focus(); }
+  else if(curTab==='notice'){ document.getElementById('noticeAddForm').classList.toggle('open'); if(document.getElementById('noticeAddForm').classList.contains('open')) document.getElementById('noticeTitle').focus(); }
   else { document.getElementById('addForm').classList.toggle('open'); if(document.getElementById('addForm').classList.contains('open')){ document.getElementById('newText').value=''; document.getElementById('newText').focus(); } }
 });
 document.getElementById('btnCancel').addEventListener('click',()=>document.getElementById('addForm').classList.remove('open'));
@@ -1164,9 +1298,243 @@ function initCustomItemsThenToday(){
   onValue(ref(db,'itemOrder/night'),   s=>{ savedOrder.night =s.val()||[]; if(!ready.nightO){ready.nightO=true; tryStart('night');} });
 }
 function listenToday(tab){ onValue(ref(db,`todos/${tab}/${today}`),s=>{ const v=s.val(); if(!v){initDefaults(tab);return;} todayData[tab]=Object.values(v).sort((a,b)=>(a.order||0)-(b.order||0)); if(curTab===tab) render(); }); }
-function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='history') renderHistory(); }); }); }
+function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='day'||curTab==='night') renderHistory(); }); }); }
 function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); }); }
 function listenSheets(){ onValue(ref(db,'sheets'),s=>{ sheetsData=s.val()||{}; if(curTab==='sheets') renderSheets(); }); }
+
+// ── 주간/야간 서브탭 (기록보기) ────────────────────────────────
+window._todoSub=function(mode){
+  const isDay=curTab==='day';
+  if(mode==='work'){
+    document.getElementById('workInner').style.display='block';
+    document.getElementById('historyInner').style.display='none';
+    document.getElementById('todoSubWork').className='todo-sub-btn '+(isDay?'active-day':'active-night');
+    document.getElementById('todoSubHistory').className='todo-sub-btn';
+    document.getElementById('btnReset').style.display='inline-block';
+    document.getElementById('btnAdd').style.display='inline-block';
+  } else {
+    document.getElementById('workInner').style.display='none';
+    document.getElementById('historyInner').style.display='block';
+    document.getElementById('todoSubWork').className='todo-sub-btn';
+    document.getElementById('todoSubHistory').className='todo-sub-btn '+(isDay?'active-day':'active-night');
+    document.getElementById('btnReset').style.display='none';
+    document.getElementById('btnAdd').style.display='none';
+    renderHistory();
+  }
+};
+
+// ── 예측 선택 ─────────────────────────────────────────────────
+let selectedFc=1;
+window._selectFc=function(n){
+  selectedFc=n;
+  [1,2,3].forEach(i=>{
+    document.getElementById('fc'+i+'Card').classList.toggle('selected',i===n);
+  });
+  renderCalc();
+};
+
+// 보정치 테이블 (dow: 0=일,1=월,...,6=토)
+const CORRECTION={
+  1:{9:1.342486,10:0.886916,11:0.760138,12:0.820850,13:1.046353,14:0.969390,15:0.691253,16:0.697608,17:1.412160,18:1.480905,19:1.517179,20:1.363943,21:1.197503,22:1.069490,23:1.044166,0:1.203161},
+  2:{9:1.370034,10:1.031365,11:0.796076,12:0.592357,13:0.900388,14:0.911101,15:0.851411,16:0.783905,17:1.279754,18:1.478810,19:1.547836,20:1.503439,21:1.267668,22:1.112047,23:1.032053,0:1.259358},
+  3:{9:1.167123,10:0.931319,11:0.804107,12:0.820496,13:1.000903,14:0.863870,15:0.741225,16:0.777621,17:1.266523,18:1.406091,19:1.541415,20:1.388535,21:1.192581,22:0.996748,23:1.008417,0:1.189429},
+  4:{9:1.218568,10:1.006827,11:0.773155,12:0.811747,13:1.019107,14:0.920131,15:0.829835,16:0.672427,17:1.347864,18:1.374649,19:1.355270,20:1.284882,21:1.144654,22:1.030296,23:1.046040,0:1.138402},
+  5:{9:1.213258,10:0.930672,11:0.847617,12:0.786642,13:0.964654,14:0.886263,15:0.818511,16:0.634472,17:1.117334,18:1.302663,19:1.445283,20:1.492738,21:1.298650,22:1.235127,23:1.113103,0:1.193633},
+  6:{9:1.165152,10:0.941183,11:0.768354,12:0.779576,13:0.847590,14:0.755146,15:0.911515,16:0.855348,17:1.041011,18:1.028092,19:1.000257,20:1.128498,21:0.971333,22:0.857184},
+  0:{9:1.475427,10:1.031904,11:0.887344,12:0.902213,13:0.944871,14:0.889643,15:0.902092,16:0.852312,17:1.088521,18:1.018902,19:0.967724,20:0.918231,21:0.741501,22:0.653885}
+};
+
+// 주문인입 마감 시간: 평일=0시, 주말=22시
+function getOrderClosingH(dow){ return (dow===0||dow===6)?22:0; }
+// 출고 마감 기본값: 평일=00:45, 토=23:30, 일=00:00
+function getDeliveryDefault(dow){ if(dow===6) return '23:30'; if(dow===0) return '00:00'; return '00:45'; }
+// 고정 운영시간: 평일 16h, 주말 14h
+function getFixedHours(dow){ return (dow===0||dow===6)?14:16; }
+
+function getForecastData(){
+  const todayRows=trendData[today];
+  if(!todayRows) return null;
+  const dow=new Date(today+'T12:00:00').getDay();
+  const orderClosingH=getOrderClosingH(dow);
+  const fixedH=getFixedHours(dow);
+
+  // 8시 시작 물량
+  const h8=todayRows['08'];
+  if(!h8) return null;
+  const startAmount=h8.total-(h8.cancel||0);
+
+  // 주문인입 마감 시간 이전 시간만 포함 (평일:0시이전, 주말:22시이전)
+  // TREND_HOURS = [8,9,...,23,0,1,2] — 마감 이후(0시이후=1,2시 for weekday는 이미 넘은것)
+  const orderClosingIdx = orderClosingH===0 ? TREND_HOURS.indexOf(0) : TREND_HOURS.indexOf(orderClosingH);
+
+  let totalOrd1=0, count1=0;
+  let totalOrd2=0, count2=0;
+  TREND_HOURS.forEach((h,hi)=>{
+    // 마감 시간 이후 제외: 평일은 0시 포함, 주말은 22시 포함까지만
+    if(orderClosingH===0){ if(hi>orderClosingIdx) return; } // 0시까지 포함
+    else { if(hi>=orderClosingIdx) return; } // 22시 미만까지
+    const m=calcTrendMetrics(today,hi);
+    if(!m||m.ord===null||m.ord<=0) return;
+    // 예측1: 단순 평균
+    totalOrd1+=m.ord; count1++;
+    // 예측2: 보정치 적용
+    const corr=CORRECTION[dow]?.[h];
+    if(corr){ totalOrd2+=Math.round(m.ord*corr); count2++; }
+  });
+
+  const avg1=count1>0?totalOrd1/count1:0;
+  const avg2=count2>0?totalOrd2/count2:0;
+  const fc1=Math.round(startAmount+avg1*fixedH);
+  const fc2=Math.round(startAmount+avg2*fixedH);
+
+  return{startAmount,avg1:Math.round(avg1),avg2:Math.round(avg2),fc1,fc2,fixedH,dow};
+}
+
+// ── 공지사항 ──────────────────────────────────────────────────
+let noticesData={}, noticeCommentsData={}, noticeReadsData={};
+function listenNotices(){
+  onValue(ref(db,'notices'),s=>{ noticesData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
+  onValue(ref(db,'noticeComments'),s=>{ noticeCommentsData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
+  onValue(ref(db,'noticeReads'),s=>{ noticeReadsData=s.val()||{}; if(curTab==='notice') renderNotices(); });
+}
+
+function updateNoticeBadge(){
+  const sw=document.querySelector('[id="tabNotice"]')?.parentElement; if(!sw) return;
+  sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
+  // 다음 업무일까지 새 댓글이 있는 공지 수
+  const tomorrow=new Date(baseDate.getTime()+86400000).toISOString().split('T')[0];
+  let cnt=0;
+  Object.entries(noticesData||{}).forEach(([nid,n])=>{
+    const cmts=Object.values(noticeCommentsData[nid]||{});
+    const hasNew=cmts.some(c=>c.date&&c.date>=today&&c.date<=tomorrow);
+    if(hasNew) cnt++;
+  });
+  if(cnt>0){ const b=document.createElement('span'); b.className='tab-badge'; b.textContent=cnt; sw.appendChild(b); }
+}
+
+function renderNotices(){
+  const el=document.getElementById('noticeList'); if(!el) return;
+  const q=(document.getElementById('noticeSearchInput')?.value||'').toLowerCase();
+  let items=Object.entries(noticesData).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  if(q) items=items.filter(([,n])=>(n.title||'').toLowerCase().includes(q)||(n.content||'').toLowerCase().includes(q));
+  if(!items.length){ el.innerHTML='<div class="notices-empty">'+(q?'검색 결과 없음':'등록된 공지가 없습니다.')+'</div>'; return; }
+
+  const uid=currentUser?.uid||'';
+  const uname=currentUser?.email?.split('@')[0]||'익명';
+  const tomorrow=new Date(baseDate.getTime()+86400000).toISOString().split('T')[0];
+
+  el.innerHTML=items.map(([nid,n])=>{
+    const cmts=Object.entries(noticeCommentsData[nid]||{});
+    const cntCmt=cmts.length;
+    const hasNew=cmts.some(([,c])=>c.date&&c.date>=today&&c.date<=tomorrow);
+    const reads=noticeReadsData[nid]||{};
+    const readers=Object.values(reads).map(r=>r.name).join(', ');
+    const isRead=!!reads[uid.replace(/\./g,'_')];
+    const cmtBadge=cntCmt>0?`<span class="notice-cmt-badge">💬${cntCmt}${hasNew?'<span class="cmt-new-badge">N</span>':''}</span>`:'';
+    const readerBadge=readers?`<span class="notice-readers">✓ ${readers}</span>`:'';
+    const cmtHtml=cmts.map(([,c])=>`<div class="notice-cmt-item"><span class="notice-cmt-author">${c.name||'익명'}</span>${c.text||''}</div>`).join('');
+    return `<div class="notice-card">
+      <div class="notice-header" onclick="window._toggleNoticeBody('${nid}')">
+        <div class="notice-title-wrap">
+          <div class="notice-title">${n.title||'(제목 없음)'}</div>
+          <div class="notice-meta-row">
+            <span>${n.author||''} · ${n.date||''}</span>
+            ${cmtBadge}${readerBadge}
+          </div>
+        </div>
+        <span class="notice-chev" id="nchev-${nid}">▾</span>
+      </div>
+      <div class="notice-body" id="nbody-${nid}">
+        <div class="notice-content-text">${n.content||''}</div>
+        ${n.slackUrl?`<a class="notice-slack-link" href="${n.slackUrl}" target="_blank">🔗 슬랙 링크</a>`:''}
+        <div class="notice-check-row">
+          <div class="notice-check${isRead?' checked':''}" onclick="event.stopPropagation();window._toggleNoticeRead('${nid}','${uname}')"></div>
+          <span class="notice-check-label">${isRead?'확인 완료':'확인 체크'}</span>
+        </div>
+        ${n.authorId===uid?`
+        <div class="notice-edit-form" id="nedit-${nid}">
+          <label>제목</label><input id="nedit-title-${nid}" value="${(n.title||'').replace(/"/g,'&quot;')}">
+          <label>내용</label><textarea id="nedit-content-${nid}">${n.content||''}</textarea>
+          <label>슬랙 링크</label><input id="nedit-slack-${nid}" type="url" value="${n.slackUrl||''}">
+          <div class="notice-edit-btns">
+            <button class="btn-cancel-sm" onclick="document.getElementById('nedit-${nid}').classList.remove('open')">취소</button>
+            <button class="btn-save-sheet" onclick="window._saveNoticeEdit('${nid}')">저장</button>
+          </div>
+        </div>`:''}
+        <div class="notice-actions">
+          <div class="notice-cmt-label">댓글 ${cntCmt>0?`(${cntCmt})`:''}</div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            ${n.authorId===uid?`<button class="btn-edit-sm" onclick="window._toggleNoticeEdit('${nid}')">수정</button><button class="btn-del-sm" onclick="window._deleteNotice('${nid}')">×</button>`:''}
+          </div>
+        </div>
+        <div class="notice-cmt-area" id="ncmt-${nid}">
+          ${cmtHtml}
+          <div class="notice-cmt-input-wrap">
+            <input class="notice-cmt-input" id="ncmtIn-${nid}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._addNoticeCmt('${nid}')">
+            <button class="notice-cmt-send" onclick="window._addNoticeCmt('${nid}')">등록</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window._toggleNoticeBody=function(nid){
+  const body=document.getElementById('nbody-'+nid);
+  if(!body) return;
+  body.classList.toggle('open');
+  document.getElementById('nchev-'+nid)?.classList.toggle('open',body.classList.contains('open'));
+  if(body.classList.contains('open')) document.getElementById('ncmt-'+nid)?.classList.add('open');
+};
+window._toggleNoticeRead=function(nid,uname){
+  const uid=(currentUser?.uid||'anon').replace(/\./g,'_');
+  const r=noticeReadsData[nid]?.[uid];
+  if(r){ remove(ref(db,`noticeReads/${nid}/${uid}`)); }
+  else { set(ref(db,`noticeReads/${nid}/${uid}`),{name:uname,ts:Date.now()}); }
+};
+window._addNotice=function(){
+  const title=document.getElementById('noticeTitle')?.value.trim();
+  if(!title){alert('제목을 입력해 주세요.');return;}
+  const uid=currentUser?.uid||'';
+  const uname=currentUser?.email?.split('@')[0]||'익명';
+  const id='notice-'+Date.now();
+  set(ref(db,`notices/${id}`),{
+    title, content:document.getElementById('noticeContent')?.value.trim()||'',
+    slackUrl:document.getElementById('noticeSlack')?.value.trim()||'',
+    author:uname, authorId:uid, date:today, ts:Date.now()
+  });
+  ['noticeTitle','noticeContent','noticeSlack'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+  document.getElementById('noticeAddForm')?.classList.remove('open');
+};
+window._toggleNoticeEdit=function(nid){
+  const el=document.getElementById('nedit-'+nid); if(!el) return;
+  el.classList.toggle('open');
+  // 편집 폼 열리면 본문 닫기
+  if(el.classList.contains('open')) document.getElementById('nbody-'+nid)?.classList.remove('open');
+};
+window._saveNoticeEdit=function(nid){
+  const title=(document.getElementById('nedit-title-'+nid)?.value||'').trim();
+  if(!title){alert('제목을 입력해 주세요.');return;}
+  const content=(document.getElementById('nedit-content-'+nid)?.value||'').trim();
+  const slackUrl=(document.getElementById('nedit-slack-'+nid)?.value||'').trim();
+  update(ref(db,`notices/${nid}`),{title,content,slackUrl});
+  document.getElementById('nedit-'+nid)?.classList.remove('open');
+};
+window._deleteNotice=function(nid){
+  if(!confirm('공지를 삭제할까요?')) return;
+  remove(ref(db,`notices/${nid}`));
+  remove(ref(db,`noticeComments/${nid}`));
+  remove(ref(db,`noticeReads/${nid}`));
+};
+window._addNoticeCmt=function(nid){
+  const el=document.getElementById('ncmtIn-'+nid); if(!el) return;
+  const text=el.value.trim(); if(!text) return;
+  const uname=currentUser?.email?.split('@')[0]||'익명';
+  const cid='cmt-'+Date.now();
+  set(ref(db,`noticeComments/${nid}/${cid}`),{text,name:uname,date:today,ts:Date.now()});
+  el.value='';
+};
+document.getElementById('noticeSearchInput')?.addEventListener('input',renderNotices);
 
 // ── 주문추세 ──────────────────────────────────────────────────
 const TREND_HOURS=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0,1,2];
@@ -1377,8 +1745,7 @@ const CALC_PERSIST_FIELDS=['calcUPH','calcPPH'];
 
 function listenCalcData(){
   const dow=new Date(today+'T12:00:00').getDay();
-  const isWeekend=(dow===0||dow===6);
-  const dailyDefaults={calcDeadline:isWeekend?'00:00':'01:30'};
+  const dailyDefaults={calcDeadline:getDeliveryDefault(dow)};
   const persistDefaults={calcUPH:100,calcPPH:90};
 
   // 일별 데이터 (업무 초기화마다 리셋)
@@ -1425,77 +1792,42 @@ function saveCalcInputs(){
 }
 window.saveCalcInputs=saveCalcInputs;
 
-function getForecast(){
-  const todayRows=trendData[today];
-  if(!todayRows) return null;
-  const sortedHours=Object.keys(todayRows).map(Number)
-    .filter(h=>TREND_HOURS.includes(h))
-    .sort((a,b)=>TREND_HOURS.indexOf(a)-TREND_HOURS.indexOf(b));
-  if(!sortedHours.length) return null;
-
-  // 8시 시작 물량 = 도착보장총 + 일반총 - 취소합
-  const h8=todayRows['08'];
-  const startAmount=h8?(h8.total-(h8.cancel||0)):null;
-
-  // 시간당 평균 주문인입 (8시 이후 누적 인입 / 경과 시간)
-  let totalOrd=0, count=0;
-  sortedHours.forEach((h,i)=>{
-    const hi=TREND_HOURS.indexOf(h);
-    const m=calcTrendMetrics(today,hi);
-    if(m&&m.ord!==null&&m.ord>0){totalOrd+=m.ord;count++;}
-  });
-  if(!count||startAmount===null) return null;
-  const avgPerHour=totalOrd/count;
-
-  // 마감 시간 결정 (평일 01:30, 주말 00:00)
-  const dow=new Date(today+'T12:00:00').getDay();
-  const isWeekend=(dow===0||dow===6);
-  const closingH=isWeekend?0:1;
-  const closingM=isWeekend?0:30;
-
-  // 남은 시간 계산 (현재 KST 기준)
-  const nowH=kstNow.getUTCHours();
-  const nowM=kstNow.getUTCMinutes?kstNow.getUTCMinutes():0;
-  const closingMin=closingH*60+closingM;
-  const nowMin=nowH*60+nowM;
-  let diffMin=closingMin-nowMin;
-  if(diffMin<=0) diffMin+=24*60;
-  const remaining=Math.round(diffMin/6)/10; // 소수점 1자리 시간
-
-  // 예측 = 8시 시작 물량 + 평균 인입 × 남은 시간
-  const forecast=Math.round(startAmount+avgPerHour*remaining);
-  const closingLabel=isWeekend?'00:00':'01:30';
-  return{forecast,startAmount,avgPerHour:Math.round(avgPerHour),remaining,closingLabel,isWeekend};
-}
-
 function renderCalc(){
-  // 예측 카드
-  const fc=getForecast();
-  const fcCard=document.getElementById('calcForecastCard');
-  const fcVal=document.getElementById('calcForecastVal');
-  const fcSub=document.getElementById('calcForecastSub');
-  if(fc&&fcCard&&fcVal){
-    fcVal.textContent=fc.forecast.toLocaleString()+'건';
-    fcSub.textContent=`시작 ${fc.startAmount?.toLocaleString()}건 + 평균 ${fc.avgPerHour}건/h × 잔여 ${fc.remaining}h | 마감 ${fc.closingLabel} (${fc.isWeekend?'주말':'평일'})`;
-    fcCard.style.display='block';
+  // 예측 3가지 계산
+  const fd=getForecastData();
+  const fc1El=document.getElementById('fc1Val'), fc1Sub=document.getElementById('fc1Sub');
+  const fc2El=document.getElementById('fc2Val'), fc2Sub=document.getElementById('fc2Sub');
+  if(fd){
+    if(fc1El){ fc1El.textContent=fd.fc1.toLocaleString()+'건'; fc1Sub.textContent=`시작 ${fd.startAmount.toLocaleString()} + 평균 ${fd.avg1}건/h × ${fd.fixedH}h`; }
+    if(fc2El){ fc2El.textContent=fd.fc2.toLocaleString()+'건'; fc2Sub.textContent=`보정 평균 ${fd.avg2}건/h × ${fd.fixedH}h`; }
+  } else {
+    if(fc1El){ fc1El.textContent='-'; fc1Sub.textContent='8시 데이터 필요'; }
+    if(fc2El){ fc2El.textContent='-'; fc2Sub.textContent='8시 데이터 필요'; }
   }
-  // 입력값 읽기
-  const deadlineVal=document.getElementById('calcDeadline')?.value||''; // "HH:MM"
+
+  // 선택된 예측값 결정
+  let forecastOrders=null;
+  if(selectedFc===1&&fd) forecastOrders=fd.fc1;
+  else if(selectedFc===2&&fd) forecastOrders=fd.fc2;
+  else if(selectedFc===3){ const v=parseFloat(document.getElementById('fc3Input')?.value); if(!isNaN(v)&&v>0) forecastOrders=v; }
+
+  // 입력값
+  const deadlineVal=document.getElementById('calcDeadline')?.value||'';
   const breakMin=parseFloat(document.getElementById('calcBreak')?.value)||0;
-  const breakH=breakMin/60;
   const totalUnits=parseFloat(document.getElementById('calcTotalUnits')?.value)||null;
   const totalOrders=parseFloat(document.getElementById('calcTotalOrders')?.value)||null;
   const uph=parseFloat(document.getElementById('calcUPH')?.value)||null;
   const pph=parseFloat(document.getElementById('calcPPH')?.value)||null;
-  const waitUnits=parseFloat(document.getElementById('calcWaitUnits')?.value)||0;
   const waitOrders=parseFloat(document.getElementById('calcWaitOrders')?.value)||0;
   const doneOrders=parseFloat(document.getElementById('calcDoneOrders')?.value)||0;
+
   // 주문당 유닛
   const upo=(totalUnits&&totalOrders&&totalOrders>0)?Math.round(totalUnits/totalOrders*10)/10:null;
   const resUPO=document.getElementById('resUPO');
   if(resUPO) resUPO.innerHTML=upo!==null?`${upo}<span class="calc-result-unit">개</span>`:`-<span class="calc-result-unit">개</span>`;
   document.getElementById('resUPOsub').textContent=upo!==null?`${totalUnits?.toLocaleString()}유닛 ÷ ${totalOrders?.toLocaleString()}주문`:'';
-  // 남은 업무시간 — HH:MM 기반 계산
+
+  // 남은 업무시간
   let remTime=null, remTimeSub='마감시간을 입력하세요';
   if(deadlineVal){
     const [dh,dm]=deadlineVal.split(':').map(Number);
@@ -1503,19 +1835,17 @@ function renderCalc(){
     const nowH=kstNow.getUTCHours();
     const nowM=kstNow.getUTCMinutes?kstNow.getUTCMinutes():0;
     const nowMin=nowH*60+nowM;
-    // 마감이 현재보다 이른 경우(자정 넘은 시각) → 다음날로 처리
     let diffMin=deadlineMin-nowMin;
     if(diffMin<=0) diffMin+=24*60;
     diffMin-=breakMin;
     if(diffMin<0) diffMin=0;
-    remTime=Math.round(diffMin/6)/10; // 소수점 1자리
+    remTime=Math.round(diffMin/6)/10;
     remTimeSub=`마감 ${deadlineVal} − 현재 ${String(nowH).padStart(2,'0')}:${String(nowM).padStart(2,'0')} − 휴식 ${breakMin}분`;
   }
   const resTime=document.getElementById('resTime');
   if(resTime) resTime.innerHTML=remTime!==null?`${remTime}<span class="calc-result-unit">h</span>`:`-<span class="calc-result-unit">h</span>`;
   document.getElementById('resTimeSub').textContent=remTimeSub;
-  // 예측 주문수
-  const forecastOrders=fc?fc.forecast:null;
+
   // 피킹인원
   const resPicking=document.getElementById('resPicking');
   const resPickingSub=document.getElementById('resPickingSub');
@@ -1527,7 +1857,7 @@ function renderCalc(){
     resPickingSub.textContent=`피킹필요 ${Math.round(pickNeededUnits).toLocaleString()}유닛 ÷ (${remTime}h×${uph})`;
   } else {
     resPicking.innerHTML=`-<span class="calc-result-unit">명</span>`;
-    resPickingSub.textContent='UPH·마감시간·유닛/주문 입력 필요';
+    resPickingSub.textContent=forecastOrders===null?'예측 주문량을 선택하세요':'UPH·마감시간·유닛/주문 입력 필요';
   }
   // 패킹인원
   const resPacking=document.getElementById('resPacking');
@@ -1539,7 +1869,7 @@ function renderCalc(){
     resPackingSub.textContent=`패킹필요 ${packNeeded.toLocaleString()}주문 ÷ (${remTime}h×${pph})`;
   } else {
     resPacking.innerHTML=`-<span class="calc-result-unit">명</span>`;
-    resPackingSub.textContent='PPH·마감시간 입력 필요';
+    resPackingSub.textContent=forecastOrders===null?'예측 주문량을 선택하세요':'PPH·마감시간 입력 필요';
   }
 }
 window.renderCalc=renderCalc;
