@@ -497,6 +497,18 @@ body.dark .fc3-input { color: #afa9ec; }
 
 /* 센터공지 탭 */
 #noticePage { display: none; }
+.notice-cat-tag { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 99px; padding: 1px 8px; white-space: nowrap; flex-shrink: 0; }
+.notice-cat-업데이트 { background: #e6f1fb; color: #0c447c; }
+.notice-cat-B2C     { background: #eeedfe; color: #3c3489; }
+.notice-cat-B2B     { background: #e1f5ee; color: #085041; }
+.notice-cat-입고     { background: #faeeda; color: #633806; }
+.notice-cat-반품     { background: #fcebeb; color: #791f1f; }
+.notice-cat-네이버   { background: #d5f5e3; color: #1e6e43; }
+.notice-cat-기타     { background: #f1efe8; color: #5f5e5a; }
+.notice-filter-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.notice-filter-btn { padding: 4px 11px; border-radius: 99px; font-size: 12px; border: 0.5px solid rgba(0,0,0,0.1); background: #fff; color: #888780; font-family: inherit; cursor: pointer; }
+body.dark .notice-filter-btn { background: #242424; border-color: rgba(255,255,255,0.1); }
+.notice-filter-btn.active { background: #185fa5; color: #fff; border-color: #185fa5; font-weight: 500; }
 .notice-search-wrap { position: relative; margin-bottom: 0.75rem; }
 .notice-search-input { width: 100%; padding: 9px 36px 9px 12px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.12); background: #f9f8f5; font-size: 14px; color: #2c2c2a; font-family: inherit; outline: none; }
 body.dark .notice-search-input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
@@ -816,7 +828,27 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <input type="text" class="notice-search-input" id="noticeSearchInput" placeholder="제목 또는 내용으로 검색...">
     <button class="notice-search-clear" onclick="document.getElementById('noticeSearchInput').value='';renderNotices()">×</button>
   </div>
+  <div class="notice-filter-row" id="noticeFilterRow">
+    <button class="notice-filter-btn active" onclick="window._setNoticeFilter('')">전체</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('업데이트')">업데이트</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('B2C')">B2C</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('B2B')">B2B</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('입고')">입고</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('반품')">반품</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('네이버')">네이버</button>
+    <button class="notice-filter-btn" onclick="window._setNoticeFilter('기타')">기타</button>
+  </div>
   <div class="notice-add-form" id="noticeAddForm">
+    <label>카테고리</label>
+    <select id="noticeCat" style="width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.12);background:#f9f8f5;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none">
+      <option value="업데이트">업데이트</option>
+      <option value="B2C">B2C</option>
+      <option value="B2B">B2B</option>
+      <option value="입고">입고</option>
+      <option value="반품">반품</option>
+      <option value="네이버">네이버</option>
+      <option value="기타">기타</option>
+    </select>
     <label>제목</label><input type="text" id="noticeTitle" placeholder="공지 제목...">
     <label>내용</label><textarea id="noticeContent" placeholder="공지 내용..."></textarea>
     <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack" placeholder="https://...">
@@ -1392,22 +1424,32 @@ function getForecastData(){
 
 // ── 공지사항 ──────────────────────────────────────────────────
 let noticesData={}, noticeCommentsData={}, noticeReadsData={};
+let noticeCatFilter=''; // 현재 카테고리 필터
+
 function listenNotices(){
   onValue(ref(db,'notices'),s=>{ noticesData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
   onValue(ref(db,'noticeComments'),s=>{ noticeCommentsData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
-  onValue(ref(db,'noticeReads'),s=>{ noticeReadsData=s.val()||{}; if(curTab==='notice') renderNotices(); });
+  onValue(ref(db,'noticeReads'),s=>{ noticeReadsData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
 }
+
+window._setNoticeFilter=function(cat){
+  noticeCatFilter=cat;
+  document.querySelectorAll('.notice-filter-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent===(cat||'전체'));
+  });
+  renderNotices();
+};
 
 function updateNoticeBadge(){
   const sw=document.querySelector('[id="tabNotice"]')?.parentElement; if(!sw) return;
   sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
-  // 다음 업무일까지 새 댓글이 있는 공지 수
-  const tomorrow=new Date(baseDate.getTime()+86400000).toISOString().split('T')[0];
+  if(!currentUser) return;
+  const uid=(currentUser.uid||'').replace(/\./g,'_');
+  // 내가 확인하지 않은 공지 수
   let cnt=0;
-  Object.entries(noticesData||{}).forEach(([nid,n])=>{
-    const cmts=Object.values(noticeCommentsData[nid]||{});
-    const hasNew=cmts.some(c=>c.date&&c.date>=today&&c.date<=tomorrow);
-    if(hasNew) cnt++;
+  Object.entries(noticesData||{}).forEach(([nid])=>{
+    const reads=noticeReadsData[nid]||{};
+    if(!reads[uid]) cnt++;
   });
   if(cnt>0){ const b=document.createElement('span'); b.className='tab-badge'; b.textContent=cnt; sw.appendChild(b); }
 }
@@ -1417,7 +1459,8 @@ function renderNotices(){
   const q=(document.getElementById('noticeSearchInput')?.value||'').toLowerCase();
   let items=Object.entries(noticesData).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
   if(q) items=items.filter(([,n])=>(n.title||'').toLowerCase().includes(q)||(n.content||'').toLowerCase().includes(q));
-  if(!items.length){ el.innerHTML='<div class="notices-empty">'+(q?'검색 결과 없음':'등록된 공지가 없습니다.')+'</div>'; return; }
+  if(noticeCatFilter) items=items.filter(([,n])=>n.cat===noticeCatFilter);
+  if(!items.length){ el.innerHTML='<div class="notices-empty">'+(q||noticeCatFilter?'검색 결과 없음':'등록된 공지가 없습니다.')+'</div>'; return; }
 
   const uid=currentUser?.uid||'';
   const uname=currentUser?.email?.split('@')[0]||'익명';
@@ -1432,11 +1475,12 @@ function renderNotices(){
     const isRead=!!reads[uid.replace(/\./g,'_')];
     const cmtBadge=cntCmt>0?`<span class="notice-cmt-badge">💬${cntCmt}${hasNew?'<span class="cmt-new-badge">N</span>':''}</span>`:'';
     const readerBadge=readers?`<span class="notice-readers">✓ ${readers}</span>`:'';
+    const catTag=n.cat?`<span class="notice-cat-tag notice-cat-${n.cat}">${n.cat}</span>`:'';
     const cmtHtml=cmts.map(([,c])=>`<div class="notice-cmt-item"><span class="notice-cmt-author">${c.name||'익명'}</span>${c.text||''}</div>`).join('');
     return `<div class="notice-card">
       <div class="notice-header" onclick="window._toggleNoticeBody('${nid}')">
         <div class="notice-title-wrap">
-          <div class="notice-title">${n.title||'(제목 없음)'}</div>
+          <div class="notice-title" style="display:flex;align-items:center;gap:6px">${catTag}${n.title||'(제목 없음)'}</div>
           <div class="notice-meta-row">
             <span>${n.author||''} · ${n.date||''}</span>
             ${cmtBadge}${readerBadge}
@@ -1453,6 +1497,10 @@ function renderNotices(){
         </div>
         ${n.authorId===uid?`
         <div class="notice-edit-form" id="nedit-${nid}">
+          <label>카테고리</label>
+          <select id="nedit-cat-${nid}" style="width:100%;padding:7px 9px;border-radius:7px;border:0.5px solid rgba(0,0,0,0.12);background:#fff;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none">
+            ${['업데이트','B2C','B2B','입고','반품','네이버','기타'].map(c=>`<option value="${c}"${n.cat===c?' selected':''}>${c}</option>`).join('')}
+          </select>
           <label>제목</label><input id="nedit-title-${nid}" value="${(n.title||'').replace(/"/g,'&quot;')}">
           <label>내용</label><textarea id="nedit-content-${nid}">${n.content||''}</textarea>
           <label>슬랙 링크</label><input id="nedit-slack-${nid}" type="url" value="${n.slackUrl||''}">
@@ -1498,8 +1546,10 @@ window._addNotice=function(){
   const uid=currentUser?.uid||'';
   const uname=currentUser?.email?.split('@')[0]||'익명';
   const id='notice-'+Date.now();
+  const cat=document.getElementById('noticeCat')?.value||'기타';
   set(ref(db,`notices/${id}`),{
-    title, content:document.getElementById('noticeContent')?.value.trim()||'',
+    title, cat,
+    content:document.getElementById('noticeContent')?.value.trim()||'',
     slackUrl:document.getElementById('noticeSlack')?.value.trim()||'',
     author:uname, authorId:uid, date:today, ts:Date.now()
   });
@@ -1515,9 +1565,10 @@ window._toggleNoticeEdit=function(nid){
 window._saveNoticeEdit=function(nid){
   const title=(document.getElementById('nedit-title-'+nid)?.value||'').trim();
   if(!title){alert('제목을 입력해 주세요.');return;}
+  const cat=document.getElementById('nedit-cat-'+nid)?.value||'기타';
   const content=(document.getElementById('nedit-content-'+nid)?.value||'').trim();
   const slackUrl=(document.getElementById('nedit-slack-'+nid)?.value||'').trim();
-  update(ref(db,`notices/${nid}`),{title,content,slackUrl});
+  update(ref(db,`notices/${nid}`),{title,cat,content,slackUrl});
   document.getElementById('nedit-'+nid)?.classList.remove('open');
 };
 window._deleteNotice=function(nid){
