@@ -838,6 +838,9 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <button class="notice-filter-btn" onclick="window._setNoticeFilter('네이버')">네이버</button>
     <button class="notice-filter-btn" onclick="window._setNoticeFilter('기타')">기타</button>
   </div>
+  <div style="font-size:11px;color:#b4b2a9;margin-bottom:0.75rem;line-height:1.6">
+    <span style="font-weight:500;color:#888780">업데이트</span>는 업데이트 관련 모든 내용 &nbsp;·&nbsp; 나머지는 업데이트가 아닌 운영 참고사항
+  </div>
   <div class="notice-add-form" id="noticeAddForm">
     <label>카테고리</label>
     <select id="noticeCat" style="width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid rgba(0,0,0,0.12);background:#f9f8f5;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none">
@@ -1467,7 +1470,13 @@ function updateNoticeBadge(){
     const reads=noticeReadsData[nid]||{};
     if(!reads[uid]) cnt++;
   });
-  if(cnt>0){ const b=document.createElement('span'); b.className='tab-badge'; b.textContent=cnt; sw.appendChild(b); }
+  if(cnt>0){
+    const b=document.createElement('span');
+    b.className='tab-badge';
+    b.style.background='#e24b4a';
+    b.textContent=cnt;
+    sw.appendChild(b);
+  }
 }
 
 function renderNotices(){
