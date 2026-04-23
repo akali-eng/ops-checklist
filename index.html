@@ -1852,7 +1852,7 @@ function renderCalc(){
   if(remTime&&upo&&uph&&forecastOrders!==null){
     const pickNeededOrders=forecastOrders-doneOrders-waitOrders;
     const pickNeededUnits=pickNeededOrders*upo;
-    const pickers=pickNeededOrders>0?Math.ceil(pickNeededUnits/(remTime*uph)):0;
+    const pickers=pickNeededOrders>0?(pickNeededUnits/(remTime*uph)).toFixed(1):0;
     resPicking.innerHTML=`${pickers}<span class="calc-result-unit">명</span>`;
     resPickingSub.textContent=`피킹필요 ${Math.round(pickNeededUnits).toLocaleString()}유닛 ÷ (${remTime}h×${uph})`;
   } else {
@@ -1864,7 +1864,7 @@ function renderCalc(){
   const resPackingSub=document.getElementById('resPackingSub');
   if(remTime&&pph&&forecastOrders!==null){
     const packNeeded=forecastOrders-doneOrders;
-    const packers=packNeeded>0?Math.ceil(packNeeded/(remTime*pph)):0;
+    const packers=packNeeded>0?(packNeeded/(remTime*pph)).toFixed(1):0;
     resPacking.innerHTML=`${packers}<span class="calc-result-unit">명</span>`;
     resPackingSub.textContent=`패킹필요 ${packNeeded.toLocaleString()}주문 ÷ (${remTime}h×${pph})`;
   } else {
