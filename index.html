@@ -1520,7 +1520,6 @@ function renderNotices(){
           <div class="notice-check${isRead?' checked':''}" onclick="event.stopPropagation();window._toggleNoticeRead('${nid}','${uname}')"></div>
           <span class="notice-check-label">${isRead?'확인 완료':'확인 체크'}</span>
         </div>
-        ${n.authorId===uid?`
         <div class="notice-edit-form" id="nedit-${nid}">
           <label>카테고리</label>
           <select id="nedit-cat-${nid}" style="width:100%;padding:7px 9px;border-radius:7px;border:0.5px solid rgba(0,0,0,0.12);background:#fff;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none">
@@ -1533,11 +1532,11 @@ function renderNotices(){
             <button class="btn-cancel-sm" onclick="document.getElementById('nedit-${nid}').classList.remove('open')">취소</button>
             <button class="btn-save-sheet" onclick="window._saveNoticeEdit('${nid}')">저장</button>
           </div>
-        </div>`:''}
-        <div class="notice-actions">
+        </div>        <div class="notice-actions">
           <div class="notice-cmt-label">댓글 ${cntCmt>0?`(${cntCmt})`:''}</div>
           <div style="margin-left:auto;display:flex;gap:8px">
-            ${n.authorId===uid?`<button class="btn-edit-sm" onclick="window._toggleNoticeEdit('${nid}')">수정</button><button class="btn-del-sm" onclick="window._deleteNotice('${nid}')">×</button>`:''}
+            <button class="btn-edit-sm" onclick="window._toggleNoticeEdit('${nid}')">수정</button>
+            <button class="btn-del-sm" onclick="window._deleteNotice('${nid}')">×</button>
           </div>
         </div>
         <div class="notice-cmt-area" id="ncmt-${nid}">
