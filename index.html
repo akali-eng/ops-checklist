@@ -1122,6 +1122,8 @@ onAuthStateChanged(auth, user => {
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
     listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData(); listenNotices();
+    // 데이터 로드 후 뱃지 재계산 (비동기 타이밍 보장)
+    setTimeout(()=>updateNoticeBadge(), 800);
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
     initCustomItemsThenToday();
   } else {
@@ -1425,11 +1427,26 @@ function getForecastData(){
 // ── 공지사항 ──────────────────────────────────────────────────
 let noticesData={}, noticeCommentsData={}, noticeReadsData={};
 let noticeCatFilter=''; // 현재 카테고리 필터
+let _noticeListenReady={n:false,r:false}; // 데이터 로드 완료 추적
 
 function listenNotices(){
-  onValue(ref(db,'notices'),s=>{ noticesData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
-  onValue(ref(db,'noticeComments'),s=>{ noticeCommentsData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
-  onValue(ref(db,'noticeReads'),s=>{ noticeReadsData=s.val()||{}; if(curTab==='notice') renderNotices(); updateNoticeBadge(); });
+  onValue(ref(db,'notices'),s=>{
+    noticesData=s.val()||{};
+    _noticeListenReady.n=true;
+    if(curTab==='notice') renderNotices();
+    updateNoticeBadge();
+  });
+  onValue(ref(db,'noticeComments'),s=>{
+    noticeCommentsData=s.val()||{};
+    if(curTab==='notice') renderNotices();
+    updateNoticeBadge();
+  });
+  onValue(ref(db,'noticeReads'),s=>{
+    noticeReadsData=s.val()||{};
+    _noticeListenReady.r=true;
+    if(curTab==='notice') renderNotices();
+    updateNoticeBadge();
+  });
 }
 
 window._setNoticeFilter=function(cat){
@@ -1443,11 +1460,10 @@ window._setNoticeFilter=function(cat){
 function updateNoticeBadge(){
   const sw=document.querySelector('[id="tabNotice"]')?.parentElement; if(!sw) return;
   sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
-  if(!currentUser) return;
-  const uid=(currentUser.uid||'').replace(/\./g,'_');
-  // 내가 확인하지 않은 공지 수
+  if(!currentUser||!currentUser.uid) return;
+  const uid=currentUser.uid.replace(/\./g,'_');
   let cnt=0;
-  Object.entries(noticesData||{}).forEach(([nid])=>{
+  Object.keys(noticesData||{}).forEach(nid=>{
     const reads=noticeReadsData[nid]||{};
     if(!reads[uid]) cnt++;
   });
