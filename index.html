@@ -619,6 +619,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.9.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>초기 접속 시 공지 검색창·필터·"공지를 불러오는 중..." 메시지가 주간 탭에 노출되던 버그 수정 (전체 페이지 초기 숨김 처리 + 로그인 후 초기 탭 활성화)</td></tr>
         <tr><td><span class="ver-badge">v1.9.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>예측 3종 선택(평균·보정·직접입력), 센터공지 탭(검색·확인체크·댓글), 기록보기 주간/야간 서브탭 이동, 출고마감 요일별 기본값</td></tr>
         <tr><td><span class="ver-badge">v1.8.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>주문현황 투입인원 계산기 — 마감 예측 물량, 피킹·패킹 필요 인원 자동 계산, 입력값 Firebase 유지</td></tr>
         <tr><td><span class="ver-badge">v1.7.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-18</td><td>주문추세 탭 추가 — GitHub Actions 자동 수집, 오늘/기록 뷰, 4개 지표 색상 표시</td></tr>
@@ -700,8 +701,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.0</span>
-      · 업데이트 2026-04-23 &nbsp;|&nbsp;
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.1</span>
+      · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
@@ -737,7 +738,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 업무 페이지 -->
-<div id="todoPage">
+<div id="todoPage" style="display:none">
   <div class="todo-sub-tabs">
     <button class="todo-sub-btn active-day" id="todoSubWork" onclick="window._todoSub('work')">업무 목록</button>
     <button class="todo-sub-btn" id="todoSubHistory" onclick="window._todoSub('history')">기록 보기</button>
@@ -780,7 +781,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div><!-- todoPage end -->
 
 <!-- 센터 목표 -->
-<div id="goalsPage">
+<div id="goalsPage" style="display:none">
   <div class="goal-stats-bar" id="goalStatsBar"></div>
   <div class="gf-row">
     <button class="gf-btn active-goal" id="gfActive">진행 중</button>
@@ -801,7 +802,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 센터 일정 -->
-<div id="calendarPage">
+<div id="calendarPage" style="display:none">
   <div class="cal-nav">
     <button class="cal-nav-btn" id="calPrev">← 이전</button>
     <div class="cal-month-label" id="calMonthLabel"></div>
@@ -826,7 +827,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 운영 공지 -->
-<div id="noticePage">
+<div id="noticePage" style="display:none">
   <div class="notice-search-wrap">
     <input type="text" class="notice-search-input" id="noticeSearchInput" placeholder="제목 또는 내용으로 검색...">
     <button class="notice-search-clear" onclick="document.getElementById('noticeSearchInput').value='';renderNotices('op')">×</button>
@@ -862,7 +863,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 기능 공지 -->
-<div id="noticePage2">
+<div id="noticePage2" style="display:none">
   <div class="notice-search-wrap">
     <input type="text" class="notice-search-input" id="noticeSearchInput2" placeholder="제목 또는 내용으로 검색...">
     <button class="notice-search-clear" onclick="document.getElementById('noticeSearchInput2').value='';renderNotices('fn')">×</button>
@@ -898,7 +899,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 공유 시트 -->
-<div id="sheetsPage">
+<div id="sheetsPage" style="display:none">
   <div class="sheet-search-wrap">
     <input type="text" class="sheet-search-input" id="sheetSearchInput" placeholder="제목 또는 내용으로 검색...">
     <button class="sheet-search-clear" id="sheetSearchClear" onclick="window._clearSheetSearch()">×</button>
@@ -908,7 +909,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 
 <!-- 주문추세 -->
-<div id="trendPage">
+<div id="trendPage" style="display:none">
   <div class="trend-sub-tabs">
     <button class="tsub-btn active" id="trendBtnToday" onclick="window._trendTab('today')">오늘</button>
     <button class="tsub-btn" id="trendBtnHistory" onclick="window._trendTab('history')">기록</button>
@@ -1078,7 +1079,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.9.0";
+const CURRENT_VERSION = "1.9.1";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1165,6 +1166,8 @@ onAuthStateChanged(auth, user => {
     setTimeout(()=>updateNoticeBadge(), 800);
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
     initCustomItemsThenToday();
+    // 초기 탭을 명시적으로 활성화 (모든 페이지 div가 숨김 상태이므로 필수)
+    switchTab('day');
   } else {
     currentUser=null;
     document.getElementById('loginPage').style.display='flex';
