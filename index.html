@@ -764,6 +764,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.1.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🔔 멘션 종 아이콘 위치 변경 — 헤더 버튼 그룹의 맨 왼쪽으로 이동 (다크/봄/체크 초기화/항목 추가/로그아웃보다 앞)</td></tr>
         <tr><td><span class="ver-badge" style="background:#ffe4ec;color:#b24a66">v2.1.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌸 봄 테마 추가 — 헤더에 '봄' 토글 버튼 (다크 옆), 라이트 모드에서 핑크 그라디언트 배경 + 꽃잎 애니메이션, 다크+봄 공존(달밤의 벚꽃), 새로고침 후에도 설정 유지</td></tr>
         <tr><td><span class="ver-badge">v2.0.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>대시보드 개선 — 페이지 제목 '대시보드' 표시, 섹션별 이동 링크 제거(아이템 클릭만으로 이동), 📆 오늘·내일 일정 섹션 추가 (일정 있을 때만 표시), 홈에서도 실시간 갱신</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.0.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>메이저 업데이트</strong> — ① 🏠 홈 대시보드 신설 (내 진행 중 업무·기한 임박 목표·읽지 않은 공지 한눈에) ② 🔔 멘션 시스템 (헤더 종 아이콘·파란 뱃지·드롭다운·클릭 시 해당 위치 이동) ③ @ 자동완성 (공지·목표·일정·댓글 모든 입력 지원, 팀원 이름 실시간 필터) ④ 멘션 태그 파란색 강조 렌더링</td></tr>
@@ -856,13 +857,11 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.1.0</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.1.1</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
-      <button class="btn-dark" id="btnDark">다크</button>
-      <button class="btn-spring" id="btnSpring" title="봄 테마 🌸">🌸 봄</button>
       <div class="bell-wrap" id="bellWrap" style="position:relative" onclick="window._toggleMentionDropdown(event)" title="멘션 알림">
         <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="bell-badge" id="mentionBadge">0</span>
@@ -874,6 +873,8 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
           <div class="mention-drop-list" id="mentionDropList"></div>
         </div>
       </div>
+      <button class="btn-dark" id="btnDark">다크</button>
+      <button class="btn-spring" id="btnSpring" title="봄 테마 🌸">🌸 봄</button>
       <button class="btn-reset" id="btnReset">체크 초기화</button>
       <button id="btnAdd" class="btn-primary btn-day">+ 항목 추가</button>
       <button class="btn-logout" id="btnLogout">로그아웃</button>
@@ -1281,7 +1282,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.1.0";
+const CURRENT_VERSION = "2.1.1";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
