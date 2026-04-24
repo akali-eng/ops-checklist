@@ -673,7 +673,8 @@ body.dark .dash-item-title { color: #e8e6df; }
 .dash-cal-when { font-size: 10px; padding: 1px 8px; border-radius: 99px; background: #f0e8d8; color: #5a4a28; white-space: nowrap; font-weight: 500; }
 .dash-cal-when.dash-cal-today { background: #185fa5; color: #fff; }
 body.dark .dash-cal-when { background: #2a2a2a; color: #c4b892; }
-body.dark .dash-cal-when.dash-cal-today { background: #3a7bc2; color: #fff; } { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
+body.dark .dash-cal-when.dash-cal-today { background: #3a7bc2; color: #fff; }
+.rich-toolbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
 body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
 .rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
 .rt-btn:hover { background: #e6f1fb; border-color: #185fa5; }
@@ -711,6 +712,33 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
 .gb-text font[size="5"],.notice-content-text font[size="5"]{font-size:19px}
 .gb-text font[size="6"],.notice-content-text font[size="6"]{font-size:24px}
 .gb-text font[size="7"],.notice-content-text font[size="7"]{font-size:30px}
+
+/* ===== v2.1.0 봄 테마 🌸 ===== */
+/* 버튼 */
+.btn-spring { background: linear-gradient(135deg, #ffe4ec, #ffc8da); color: #b24a66; border: 0.5px solid #f4b8cb; border-radius: 9px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.btn-spring:hover { background: linear-gradient(135deg, #ffd5e0, #f9b4c8); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(242,155,183,0.4); }
+.btn-spring.active { background: linear-gradient(135deg, #ff8fb0, #ff6e97); color: #fff; border-color: #ff6e97; box-shadow: 0 0 0 2px rgba(255,110,151,0.25); }
+body.dark .btn-spring { background: linear-gradient(135deg, #4a2936, #5a2e3e); color: #ffb6c9; border-color: #6a3849; }
+body.dark .btn-spring:hover { background: linear-gradient(135deg, #5a3446, #6a394e); }
+body.dark .btn-spring.active { background: linear-gradient(135deg, #a35072, #c1608a); color: #fff; border-color: #c1608a; }
+
+/* 봄 모드 배경 (라이트에서만 전체 배경 핑크화) */
+body.spring:not(.dark) { background: linear-gradient(180deg, #fff5f8 0%, #ffeaf1 60%, #ffd9e6 100%); }
+body.spring:not(.dark) .content-box,
+body.spring:not(.dark) #appPage { background: transparent; }
+
+/* 꽃잎 레이어 */
+.sakura-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+.sakura { position: absolute; top: -5vh; font-size: 20px; opacity: 0; will-change: transform, opacity; animation: sakuraFall linear infinite; filter: drop-shadow(0 1px 2px rgba(200,80,120,0.15)); }
+@keyframes sakuraFall {
+  0%   { opacity: 0; transform: translate(0, -5vh) rotate(0deg); }
+  8%   { opacity: 0.85; }
+  50%  { transform: translate(40px, 50vh) rotate(180deg); }
+  92%  { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-30px, 110vh) rotate(360deg); }
+}
+/* 다크 + 봄: 꽃잎 약간 진하게 */
+body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) brightness(1.1); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -736,6 +764,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge" style="background:#ffe4ec;color:#b24a66">v2.1.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌸 봄 테마 추가 — 헤더에 '봄' 토글 버튼 (다크 옆), 라이트 모드에서 핑크 그라디언트 배경 + 꽃잎 애니메이션, 다크+봄 공존(달밤의 벚꽃), 새로고침 후에도 설정 유지</td></tr>
         <tr><td><span class="ver-badge">v2.0.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>대시보드 개선 — 페이지 제목 '대시보드' 표시, 섹션별 이동 링크 제거(아이템 클릭만으로 이동), 📆 오늘·내일 일정 섹션 추가 (일정 있을 때만 표시), 홈에서도 실시간 갱신</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.0.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>메이저 업데이트</strong> — ① 🏠 홈 대시보드 신설 (내 진행 중 업무·기한 임박 목표·읽지 않은 공지 한눈에) ② 🔔 멘션 시스템 (헤더 종 아이콘·파란 뱃지·드롭다운·클릭 시 해당 위치 이동) ③ @ 자동완성 (공지·목표·일정·댓글 모든 입력 지원, 팀원 이름 실시간 필터) ④ 멘션 태그 파란색 강조 렌더링</td></tr>
         <tr><td><span class="ver-badge">v1.9.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>빈 에디터에서 굵게·기울임·밑줄 버튼 두 번 눌러도 꺼지지 않던 문제 수정 (selection 복원 시 pending format 상태 보존)</td></tr>
@@ -827,11 +856,13 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.0.1</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.1.0</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
+      <button class="btn-dark" id="btnDark">다크</button>
+      <button class="btn-spring" id="btnSpring" title="봄 테마 🌸">🌸 봄</button>
       <div class="bell-wrap" id="bellWrap" style="position:relative" onclick="window._toggleMentionDropdown(event)" title="멘션 알림">
         <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="bell-badge" id="mentionBadge">0</span>
@@ -843,7 +874,6 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
           <div class="mention-drop-list" id="mentionDropList"></div>
         </div>
       </div>
-      <button class="btn-dark" id="btnDark">다크</button>
       <button class="btn-reset" id="btnReset">체크 초기화</button>
       <button id="btnAdd" class="btn-primary btn-day">+ 항목 추가</button>
       <button class="btn-logout" id="btnLogout">로그아웃</button>
@@ -1251,7 +1281,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.0.1";
+const CURRENT_VERSION = "2.1.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1369,7 +1399,62 @@ document.getElementById('verLink').addEventListener('click',()=>document.getElem
 document.getElementById('verCloseBtn').addEventListener('click',()=>document.getElementById('verModalBg').classList.remove('open'));
 document.getElementById('verModalBg').addEventListener('click',e=>{ if(e.target===document.getElementById('verModalBg')) document.getElementById('verModalBg').classList.remove('open'); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('verModalBg').classList.remove('open'); document.getElementById('editModalBg').classList.remove('open'); } });
-document.getElementById('btnDark').addEventListener('click',()=>{ document.body.classList.toggle('dark'); document.getElementById('btnDark').textContent=document.body.classList.contains('dark')?'라이트':'다크'; });
+document.getElementById('btnDark').addEventListener('click',()=>{ document.body.classList.toggle('dark'); const isDark=document.body.classList.contains('dark'); document.getElementById('btnDark').textContent=isDark?'라이트':'다크'; try{localStorage.setItem('clo_dark', isDark?'1':'0');}catch(e){} });
+
+// ===== 봄 테마 🌸 =====
+function ensureSakuraLayer(){
+  let layer=document.getElementById('sakuraLayer');
+  if(layer) return layer;
+  layer=document.createElement('div');
+  layer.id='sakuraLayer';
+  layer.className='sakura-layer';
+  // 꽃잎 12개, 랜덤 속성
+  const petals=['🌸','🌸','🌸','🌸','🌺','🌷','🌸','🌸','🌼','🌸','🌸','🌸'];
+  const html=[];
+  for(let i=0;i<petals.length;i++){
+    const left=Math.random()*100;             // 0~100 vw
+    const duration=10+Math.random()*14;       // 10~24s
+    const delay=Math.random()*16;             // 0~16s
+    const size=14+Math.random()*14;           // 14~28px
+    const opacity=0.45+Math.random()*0.35;    // 0.45~0.8
+    html.push(`<span class="sakura" style="left:${left}vw;font-size:${size}px;animation-duration:${duration}s;animation-delay:-${delay}s;opacity:${opacity};">${petals[i]}</span>`);
+  }
+  layer.innerHTML=html.join('');
+  document.body.appendChild(layer);
+  return layer;
+}
+function removeSakuraLayer(){
+  const l=document.getElementById('sakuraLayer');
+  if(l) l.remove();
+}
+function applySpringState(on){
+  document.body.classList.toggle('spring', !!on);
+  const btn=document.getElementById('btnSpring');
+  if(btn){
+    btn.classList.toggle('active', !!on);
+    btn.textContent = on ? '🌸 봄 ON' : '🌸 봄';
+  }
+  if(on) ensureSakuraLayer();
+  else removeSakuraLayer();
+}
+document.getElementById('btnSpring')?.addEventListener('click',()=>{
+  const on=!document.body.classList.contains('spring');
+  applySpringState(on);
+  try{localStorage.setItem('clo_spring', on?'1':'0');}catch(e){}
+});
+
+// 저장된 테마 상태 복원 (로그인 페이지에서도 반영)
+(function restoreThemes(){
+  try{
+    if(localStorage.getItem('clo_dark')==='1'){
+      document.body.classList.add('dark');
+      const b=document.getElementById('btnDark'); if(b) b.textContent='라이트';
+    }
+    if(localStorage.getItem('clo_spring')==='1'){
+      applySpringState(true);
+    }
+  }catch(e){}
+})();
 
 // 편집 모달
 document.getElementById('editModalCancel').addEventListener('click',()=>document.getElementById('editModalBg').classList.remove('open'));
