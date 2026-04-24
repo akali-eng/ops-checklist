@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>업무 확인</title>
+<title>CLO - Check Log Operations</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f5; color: #2c2c2a; min-height: 100vh; transition: background 0.2s, color 0.2s; }
@@ -601,7 +601,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 
 <div id="loginPage">
   <div class="login-card">
-    <h1>업무 확인 시스템</h1>
+    <h1>CLO - Check Log Operations</h1>
     <p>계속하려면 로그인해 주세요</p>
     <div class="lf"><label>이메일</label><input type="email" id="loginEmail" placeholder="이메일 입력"></div>
     <div class="lf"><label>비밀번호</label><input type="password" id="loginPw" placeholder="비밀번호 입력"></div>
@@ -696,6 +696,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   <div class="header-left">
     <h1 id="pageTitle">주간 업무 확인</h1>
     <div class="subdate" id="dateLabel"></div>
+    <div style="font-size:12px;color:#b4b2a9;margin-top:2px;display:none" id="pageDesc"></div>
     <div class="uname" id="usernameTag"></div>
   </div>
   <div class="header-right">
@@ -1098,6 +1099,7 @@ const thisMonth = today.slice(0,7);
 
 function kstDateTimeStr(){ const d=new Date(Date.now()+9*3600000); return d.toISOString().replace('T',' ').slice(0,16); }
 function setDateLabel(){ const s=new Date(nowMs).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}); document.getElementById('dateLabel').textContent=s+' (업무일: '+today+')'; }
+function setPageDesc(text){ const el=document.getElementById('pageDesc'); if(!el) return; if(text){el.textContent=text;el.style.display='block';}else{el.textContent='';el.style.display='none';} }
 
 let curTab='day', curFilter='미완료', htFilter='전체', hPeriod=7;
 let currentUser=null; // 로그인한 사용자 (notice, toggle read 등에서 사용)
@@ -1212,6 +1214,7 @@ function switchTab(tab){
   ['Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
   document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add('active');
   PAGES.forEach(p=>document.getElementById(p).style.display='none');
+  setPageDesc('');
   ['addForm','goalForm','sheetForm'].forEach(f=>document.getElementById(f).classList.remove('open'));
   document.getElementById('btnReset').style.display='none';
   document.getElementById('btnAdd').style.display='none';
@@ -1261,14 +1264,14 @@ function switchTab(tab){
     document.getElementById('btnAdd').style.display='inline-block';
     document.getElementById('btnAdd').className='btn-primary btn-sheet';
     document.getElementById('btnAdd').textContent='+ 공지 작성';
-    document.getElementById('pageTitle').textContent='운영 공지'; setDateLabel();
+    document.getElementById('pageTitle').textContent='운영 공지'; setDateLabel(); setPageDesc('운영과 관련된 공지사항입니다.');
     renderNotices('op');
   } else if(tab==='notice2'){
     document.getElementById('noticePage2').style.display='block';
     document.getElementById('btnAdd').style.display='inline-block';
     document.getElementById('btnAdd').className='btn-primary btn-sheet';
     document.getElementById('btnAdd').textContent='+ 공지 작성';
-    document.getElementById('pageTitle').textContent='기능 공지'; setDateLabel();
+    document.getElementById('pageTitle').textContent='기능 공지'; setDateLabel(); setPageDesc('업데이트 및 기능에 관한 공지사항입니다.');
     renderNotices('fn');
   }
 }
