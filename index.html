@@ -594,6 +594,42 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   .cal-chip { display: none; }
   .cal-cell.has-events .cal-date-num::after { content: '•'; color: #185fa5; margin-left: 2px; }
 }
+
+/* Rich Text Editor */
+.rich-toolbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
+body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
+.rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
+.rt-btn:hover { background: #e6f1fb; border-color: #185fa5; }
+body.dark .rt-btn { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
+body.dark .rt-btn:hover { background: #1a3a5c; }
+.rt-btn-b { font-weight: 700; }
+.rt-btn-i { font-style: italic; }
+.rt-btn-u { text-decoration: underline; }
+.rt-sep { width: 1px; align-self: stretch; background: rgba(0,0,0,0.1); margin: 0 3px; }
+body.dark .rt-sep { background: rgba(255,255,255,0.12); }
+.rt-size { font-size: 12px; padding: 3px 6px; border-radius: 6px; border: 0.5px solid rgba(0,0,0,0.12); background: #fff; color: #2c2c2a; cursor: pointer; font-family: inherit; }
+body.dark .rt-size { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
+.rt-color { width: 20px; height: 20px; border-radius: 5px; border: 0.5px solid rgba(0,0,0,0.18); cursor: pointer; padding: 0; transition: transform 0.1s; }
+.rt-color:hover { transform: scale(1.12); }
+.rich-editor { width: 100%; min-height: 90px; padding: 9px 11px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 0 0 10px 10px; background: #f9f8f5; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; line-height: 1.6; white-space: pre-wrap; word-break: break-word; overflow-y: auto; max-height: 260px; box-sizing: border-box; }
+body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.rich-editor:focus { border-color: #185fa5; }
+.rich-editor:empty::before { content: attr(data-placeholder); color: #b4b2a9; pointer-events: none; }
+.rich-editor font[size="1"]{font-size:10px}
+.rich-editor font[size="2"]{font-size:12px}
+.rich-editor font[size="3"]{font-size:14px}
+.rich-editor font[size="4"]{font-size:16px}
+.rich-editor font[size="5"]{font-size:19px}
+.rich-editor font[size="6"]{font-size:24px}
+.rich-editor font[size="7"]{font-size:30px}
+/* 렌더링 영역에도 font size 적용 */
+.gb-text font[size="1"],.notice-content-text font[size="1"]{font-size:10px}
+.gb-text font[size="2"],.notice-content-text font[size="2"]{font-size:12px}
+.gb-text font[size="3"],.notice-content-text font[size="3"]{font-size:14px}
+.gb-text font[size="4"],.notice-content-text font[size="4"]{font-size:16px}
+.gb-text font[size="5"],.notice-content-text font[size="5"]{font-size:19px}
+.gb-text font[size="6"],.notice-content-text font[size="6"]{font-size:24px}
+.gb-text font[size="7"],.notice-content-text font[size="7"]{font-size:30px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -619,6 +655,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.9.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표·운영 공지·기능 공지 내용 작성에 글자 스타일 에디터 추가 (굵게·기울임·밑줄·크기 4단계·색상 5종·스타일 제거, 외부 서식 붙여넣기 자동 정리)</td></tr>
         <tr><td><span class="ver-badge">v1.9.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>초기 접속 시 공지 검색창·필터·"공지를 불러오는 중..." 메시지가 주간 탭에 노출되던 버그 수정 (전체 페이지 초기 숨김 처리 + 로그인 후 초기 탭 활성화)</td></tr>
         <tr><td><span class="ver-badge">v1.9.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>예측 3종 선택(평균·보정·직접입력), 센터공지 탭(검색·확인체크·댓글), 기록보기 주간/야간 서브탭 이동, 출고마감 요일별 기본값</td></tr>
         <tr><td><span class="ver-badge">v1.8.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>주문현황 투입인원 계산기 — 마감 예측 물량, 피킹·패킹 필요 인원 자동 계산, 입력값 Firebase 유지</td></tr>
@@ -642,7 +679,9 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
     <h2 id="editModalTitle">수정</h2>
     <div id="editGoalFields">
       <label>목표 제목</label><input type="text" id="eg-title">
-      <label>필요 작업 내용</label><textarea id="eg-content"></textarea>
+      <label>필요 작업 내용</label>
+      <div id="eg-content_tb"></div>
+      <div class="rich-editor" id="eg-content" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1"></div>
       <div class="edit-modal-row">
         <div><label>우선순위</label><select id="eg-priority"><option value="high">높음</option><option value="mid">중간</option><option value="low">낮음</option></select></div>
         <div><label>목표 기한</label><input type="date" id="eg-deadline"></div>
@@ -701,7 +740,7 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.1</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.2</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -722,7 +761,9 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 </div>
 <div class="add-form" id="goalForm">
   <label>목표 제목</label><input type="text" id="goalTitle" placeholder="센터 목표 제목...">
-  <label>필요 작업 내용</label><textarea id="goalContent" placeholder="필요한 작업 내용..."></textarea>
+  <label>필요 작업 내용</label>
+  <div id="goalContent_tb"></div>
+  <div class="rich-editor" id="goalContent" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1"></div>
   <div class="form-row">
     <div><label>우선순위</label><select id="goalPriority"><option value="high">높음</option><option value="mid" selected>중간</option><option value="low">낮음</option></select></div>
     <div><label>목표 기한</label><input type="date" id="goalDeadline"></div>
@@ -852,7 +893,9 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
       <option value="기타">기타</option>
     </select>
     <label>제목</label><input type="text" id="noticeTitle" placeholder="공지 제목...">
-    <label>내용</label><textarea id="noticeContent" placeholder="공지 내용..."></textarea>
+    <label>내용</label>
+    <div id="noticeContent_tb"></div>
+    <div class="rich-editor" id="noticeContent" contenteditable="true" data-placeholder="공지 내용..." data-rt="1"></div>
     <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack" placeholder="https://...">
     <div class="add-form-btns" style="margin-top:10px">
       <button class="btn-cancel-sm" onclick="document.getElementById('noticeAddForm').classList.remove('open')">취소</button>
@@ -888,7 +931,9 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
       <option value="기타">기타</option>
     </select>
     <label>제목</label><input type="text" id="noticeTitle2" placeholder="공지 제목...">
-    <label>내용</label><textarea id="noticeContent2" placeholder="공지 내용..."></textarea>
+    <label>내용</label>
+    <div id="noticeContent2_tb"></div>
+    <div class="rich-editor" id="noticeContent2" contenteditable="true" data-placeholder="공지 내용..." data-rt="1"></div>
     <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack2" placeholder="https://...">
     <div class="add-form-btns" style="margin-top:10px">
       <button class="btn-cancel-sm" onclick="document.getElementById('noticeAddForm2').classList.remove('open')">취소</button>
@@ -1079,7 +1124,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.9.1";
+const CURRENT_VERSION = "1.9.2";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1168,6 +1213,8 @@ onAuthStateChanged(auth, user => {
     initCustomItemsThenToday();
     // 초기 탭을 명시적으로 활성화 (모든 페이지 div가 숨김 상태이므로 필수)
     switchTab('day');
+    // 정적 rich editor 툴바 일괄 부착 (추가 폼 3곳)
+    attachAllRichEditors();
   } else {
     currentUser=null;
     document.getElementById('loginPage').style.display='flex';
@@ -1198,17 +1245,99 @@ document.getElementById('editModalCancel').addEventListener('click',()=>document
 document.getElementById('editModalBg').addEventListener('click',e=>{ if(e.target===document.getElementById('editModalBg')) document.getElementById('editModalBg').classList.remove('open'); });
 document.getElementById('editModalSave').addEventListener('click',saveEdit);
 
-function openGoalEdit(id){ const g=goalsData[id]; if(!g) return; editState={type:'goal',id}; document.getElementById('editModalTitle').textContent='목표 수정'; document.getElementById('editGoalFields').style.display='block'; document.getElementById('editSheetFields').style.display='none'; document.getElementById('editCalFields').style.display='none'; document.getElementById('eg-title').value=g.title||''; document.getElementById('eg-content').value=g.content||''; document.getElementById('eg-priority').value=g.priority||'mid'; document.getElementById('eg-deadline').value=g.deadline||''; document.getElementById('eg-slack').value=g.slackUrl||''; document.getElementById('editModalBg').classList.add('open'); }
+function openGoalEdit(id){ const g=goalsData[id]; if(!g) return; editState={type:'goal',id}; document.getElementById('editModalTitle').textContent='목표 수정'; document.getElementById('editGoalFields').style.display='block'; document.getElementById('editSheetFields').style.display='none'; document.getElementById('editCalFields').style.display='none'; document.getElementById('eg-title').value=g.title||''; rtSet('eg-content',g.content||''); attachRichEditor('eg-content'); document.getElementById('eg-priority').value=g.priority||'mid'; document.getElementById('eg-deadline').value=g.deadline||''; document.getElementById('eg-slack').value=g.slackUrl||''; document.getElementById('editModalBg').classList.add('open'); }
 function openSheetEdit(id){ const s=sheetsData[id]; if(!s) return; editState={type:'sheet',id}; document.getElementById('editModalTitle').textContent='시트 수정'; document.getElementById('editGoalFields').style.display='none'; document.getElementById('editSheetFields').style.display='block'; document.getElementById('editCalFields').style.display='none'; document.getElementById('es-title').value=s.title||''; document.getElementById('es-content').value=s.content||''; document.getElementById('es-url').value=s.url||''; document.getElementById('editModalBg').classList.add('open'); }
 function openCalEdit(date,eventId){ const e=calendarData[date]?.[eventId]; if(!e) return; editState={type:'cal',date,eventId}; document.getElementById('editModalTitle').textContent='일정 수정'; document.getElementById('editGoalFields').style.display='none'; document.getElementById('editSheetFields').style.display='none'; document.getElementById('editCalFields').style.display='block'; document.getElementById('ec-title').value=e.title||''; document.getElementById('ec-content').value=e.content||''; document.getElementById('editModalBg').classList.add('open'); }
 function saveEdit(){
   if(!editState) return;
-  if(editState.type==='goal'){ const t=document.getElementById('eg-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`goals/${editState.id}`),{title:t,content:document.getElementById('eg-content').value.trim(),priority:document.getElementById('eg-priority').value,deadline:document.getElementById('eg-deadline').value||null,slackUrl:document.getElementById('eg-slack').value.trim()}); }
+  if(editState.type==='goal'){ const t=document.getElementById('eg-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`goals/${editState.id}`),{title:t,content:rtGet('eg-content'),priority:document.getElementById('eg-priority').value,deadline:document.getElementById('eg-deadline').value||null,slackUrl:document.getElementById('eg-slack').value.trim()}); }
   else if(editState.type==='sheet'){ const t=document.getElementById('es-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`sheets/${editState.id}`),{title:t,content:document.getElementById('es-content').value.trim(),url:document.getElementById('es-url').value.trim()}); }
   else if(editState.type==='cal'){ const t=document.getElementById('ec-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`calendarEvents/${editState.date}/${editState.eventId}`),{title:t,content:document.getElementById('ec-content').value.trim()}); renderCalPanel(editState.date); }
   document.getElementById('editModalBg').classList.remove('open'); editState=null;
 }
 window.openGoalEdit=openGoalEdit; window.openSheetEdit=openSheetEdit; window.openCalEdit=openCalEdit;
+
+// ===== Rich Text Editor =====
+function rtGet(id){
+  const el=document.getElementById(id);
+  if(!el) return '';
+  const html=(el.innerHTML||'').trim();
+  // 빈 상태로 간주할 패턴들 제거
+  if(html==='<br>'||html==='<div><br></div>'||html==='<p><br></p>') return '';
+  return html;
+}
+function rtSet(id,html){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML=html||'';
+}
+function rtClear(id){
+  const el=document.getElementById(id);
+  if(el) el.innerHTML='';
+}
+function buildRichToolbar(editorId){
+  const colors=[['#2c2c2a','기본'],['#e24b4a','빨강'],['#185fa5','파랑'],['#0f6e56','초록'],['#854f0b','갈색']];
+  return `<div class="rich-toolbar">
+    <button type="button" class="rt-btn rt-btn-b" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','bold')" title="굵게">B</button>
+    <button type="button" class="rt-btn rt-btn-i" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','italic')" title="기울임">I</button>
+    <button type="button" class="rt-btn rt-btn-u" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','underline')" title="밑줄">U</button>
+    <div class="rt-sep"></div>
+    <select class="rt-size" onmousedown="event.preventDefault()" onchange="window._rtSize('${editorId}',this.value);this.value=''" title="글자 크기">
+      <option value="">크기</option>
+      <option value="2">작게</option>
+      <option value="3">보통</option>
+      <option value="5">크게</option>
+      <option value="6">아주 크게</option>
+    </select>
+    <div class="rt-sep"></div>
+    ${colors.map(c=>`<button type="button" class="rt-color" style="background:${c[0]}" onmousedown="event.preventDefault()" onclick="window._rtColor('${editorId}','${c[0]}')" title="${c[1]}"></button>`).join('')}
+    <div class="rt-sep"></div>
+    <button type="button" class="rt-btn" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','removeFormat')" title="스타일 제거">✕</button>
+  </div>`;
+}
+window._rtCmd=function(editorId,cmd){
+  const el=document.getElementById(editorId);
+  if(!el) return;
+  el.focus();
+  try{ document.execCommand(cmd,false,null); }catch(e){}
+};
+window._rtSize=function(editorId,size){
+  if(!size) return;
+  const el=document.getElementById(editorId);
+  if(!el) return;
+  el.focus();
+  try{ document.execCommand('fontSize',false,size); }catch(e){}
+};
+window._rtColor=function(editorId,color){
+  const el=document.getElementById(editorId);
+  if(!el) return;
+  el.focus();
+  try{ document.execCommand('foreColor',false,color); }catch(e){}
+};
+// 에디터 하나에 툴바 장착 + paste 이벤트 바인딩
+function attachRichEditor(editorId){
+  const tb=document.getElementById(editorId+'_tb');
+  const ed=document.getElementById(editorId);
+  if(!tb||!ed) return;
+  // 이미 부착되었으면 중복 방지
+  if(tb.dataset.rtAttached==='1') return;
+  tb.innerHTML=buildRichToolbar(editorId);
+  tb.dataset.rtAttached='1';
+  // 붙여넣기: 외부 서식 제거, plain text만 삽입
+  if(ed.dataset.rtPasteBound!=='1'){
+    ed.addEventListener('paste', e=>{
+      e.preventDefault();
+      const text=((e.clipboardData||window.clipboardData)?.getData('text/plain'))||'';
+      try{ document.execCommand('insertText',false,text); }catch(err){ /* fallback */ }
+    });
+    ed.dataset.rtPasteBound='1';
+  }
+}
+// 페이지에 있는 모든 rich editor에 툴바 부착 (data-rt="1" 로 표시된 것)
+function attachAllRichEditors(root){
+  (root||document).querySelectorAll('[data-rt="1"]').forEach(el=>{
+    if(el.id) attachRichEditor(el.id);
+  });
+}
 
 // 탭
 const PAGES=['todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage','noticePage2'];
@@ -1579,7 +1708,9 @@ function renderNotices(type){
             ${cats.map(c=>`<option value="${c}"${n.cat===c?' selected':''}>${c}</option>`).join('')}
           </select>
           <label>제목</label><input id="nedit-title-${nid}" value="${(n.title||'').replace(/"/g,'&quot;')}">
-          <label>내용</label><textarea id="nedit-content-${nid}">${n.content||''}</textarea>
+          <label>내용</label>
+          <div id="nedit-content-${nid}_tb"></div>
+          <div class="rich-editor" id="nedit-content-${nid}" contenteditable="true" data-placeholder="공지 내용..." data-rt="1">${n.content||''}</div>
           <label>슬랙 링크</label><input id="nedit-slack-${nid}" type="url" value="${n.slackUrl||''}">
           <div class="notice-edit-btns">
             <button class="btn-cancel-sm" onclick="document.getElementById('nedit-${nid}').classList.remove('open')">취소</button>
@@ -1632,26 +1763,35 @@ window._addNotice=function(type){
   const catId=type==='op'?'noticeCat':'noticeCat2';
   const cat=document.getElementById(catId)?.value||'기타';
   const dbPath=type==='op'?'notices':'notices2';
+  const contentId=type==='op'?'noticeContent':'noticeContent2';
+  const slackId=type==='op'?'noticeSlack':'noticeSlack2';
   set(ref(db,`${dbPath}/${id}`),{
     title, cat,
-    content:document.getElementById(type==='op'?'noticeContent':'noticeContent2')?.value.trim()||'',
-    slackUrl:document.getElementById(type==='op'?'noticeSlack':'noticeSlack2')?.value.trim()||'',
+    content:rtGet(contentId),
+    slackUrl:document.getElementById(slackId)?.value.trim()||'',
     author:uname, authorId:uid, date:today, ts:Date.now()
   });
-  [titleId, type==='op'?'noticeContent':'noticeContent2', type==='op'?'noticeSlack':'noticeSlack2'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+  // 입력 필드 초기화 (input/rich editor 각각)
+  const tEl=document.getElementById(titleId); if(tEl) tEl.value='';
+  const sEl=document.getElementById(slackId); if(sEl) sEl.value='';
+  rtClear(contentId);
   document.getElementById(type==='op'?'noticeAddForm':'noticeAddForm2')?.classList.remove('open');
 };
 window._toggleNoticeEdit=function(nid){
   const el=document.getElementById('nedit-'+nid); if(!el) return;
   el.classList.toggle('open');
-  if(el.classList.contains('open')) document.getElementById('nbody-'+nid)?.classList.remove('open');
+  if(el.classList.contains('open')){
+    document.getElementById('nbody-'+nid)?.classList.remove('open');
+    // rich editor 툴바 부착 (renderNotices 재렌더링마다 호출 안전)
+    attachRichEditor('nedit-content-'+nid);
+  }
 };
 window._saveNoticeEdit=function(nid,type){
   type=type||'op';
   const title=(document.getElementById('nedit-title-'+nid)?.value||'').trim();
   if(!title){alert('제목을 입력해 주세요.');return;}
   const cat=document.getElementById('nedit-cat-'+nid)?.value||'기타';
-  const content=(document.getElementById('nedit-content-'+nid)?.value||'').trim();
+  const content=rtGet('nedit-content-'+nid);
   const slackUrl=(document.getElementById('nedit-slack-'+nid)?.value||'').trim();
   const dbPath=type==='op'?'notices':'notices2';
   update(ref(db,`${dbPath}/${nid}`),{title,cat,content,slackUrl});
@@ -2060,7 +2200,7 @@ function updateCalBadge(){
 }
 
 function addTodo(){ const text=document.getElementById('newText').value.trim(); if(!text) return; const id=`${curTab}-custom-${Date.now()}`, item={id,text,order:todayData[curTab].length,progBy:{},doneBy:null,custom:true}; set(ref(db,`todos/${curTab}/${today}/${id}`),item); set(ref(db,`customItems/${curTab}/${id}`),{id,text,order:item.order}); document.getElementById('newText').value=''; document.getElementById('addForm').classList.remove('open'); }
-function addGoal(){ const title=document.getElementById('goalTitle').value.trim(); if(!title){alert('목표 제목을 입력해 주세요.');return;} const nr=push(ref(db,'goals')); set(nr,{id:nr.key,title,content:document.getElementById('goalContent').value.trim(),priority:document.getElementById('goalPriority').value,deadline:document.getElementById('goalDeadline').value||null,slackUrl:document.getElementById('goalSlack').value.trim(),createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,progBy:{},doneBy:null,doneAt:null}); ['goalTitle','goalContent','goalSlack'].forEach(id=>document.getElementById(id).value=''); document.getElementById('goalPriority').value='mid'; document.getElementById('goalDeadline').value=''; document.getElementById('goalForm').classList.remove('open'); }
+function addGoal(){ const title=document.getElementById('goalTitle').value.trim(); if(!title){alert('목표 제목을 입력해 주세요.');return;} const nr=push(ref(db,'goals')); set(nr,{id:nr.key,title,content:rtGet('goalContent'),priority:document.getElementById('goalPriority').value,deadline:document.getElementById('goalDeadline').value||null,slackUrl:document.getElementById('goalSlack').value.trim(),createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,progBy:{},doneBy:null,doneAt:null}); ['goalTitle','goalSlack'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); rtClear('goalContent'); document.getElementById('goalPriority').value='mid'; document.getElementById('goalDeadline').value=''; document.getElementById('goalForm').classList.remove('open'); }
 function addSheet(){ const title=document.getElementById('sheetTitle').value.trim(); if(!title){alert('시트 제목을 입력해 주세요.');return;} const url=document.getElementById('sheetUrl').value.trim(); if(!url){alert('링크 주소를 입력해 주세요.');return;} const nr=push(ref(db,'sheets')); set(nr,{id:nr.key,title,content:document.getElementById('sheetContent').value.trim(),url,createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,order:Object.keys(sheetsData).length}); ['sheetTitle','sheetContent','sheetUrl'].forEach(id=>document.getElementById(id).value=''); document.getElementById('sheetForm').classList.remove('open'); }
 
 // 달력
