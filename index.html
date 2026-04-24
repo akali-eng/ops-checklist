@@ -600,8 +600,12 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
 .rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
 .rt-btn:hover { background: #e6f1fb; border-color: #185fa5; }
+.rt-btn.active { background: #185fa5; color: #fff; border-color: #185fa5; box-shadow: inset 0 1px 2px rgba(0,0,0,0.15); }
+.rt-btn.active:hover { background: #104a83; border-color: #104a83; }
 body.dark .rt-btn { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
 body.dark .rt-btn:hover { background: #1a3a5c; }
+body.dark .rt-btn.active { background: #3a7bc2; color: #fff; border-color: #3a7bc2; }
+body.dark .rt-btn.active:hover { background: #2f6aad; border-color: #2f6aad; }
 .rt-btn-b { font-weight: 700; }
 .rt-btn-i { font-style: italic; }
 .rt-btn-u { text-decoration: underline; }
@@ -655,6 +659,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.9.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>글자 스타일 에디터 개선 — 굵게·기울임·밑줄 적용 상태 버튼에 표시, 글자 크기 드롭다운 정상 동작 (selection 저장·복원 로직 추가)</td></tr>
         <tr><td><span class="ver-badge">v1.9.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표·운영 공지·기능 공지 내용 작성에 글자 스타일 에디터 추가 (굵게·기울임·밑줄·크기 4단계·색상 5종·스타일 제거, 외부 서식 붙여넣기 자동 정리)</td></tr>
         <tr><td><span class="ver-badge">v1.9.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>초기 접속 시 공지 검색창·필터·"공지를 불러오는 중..." 메시지가 주간 탭에 노출되던 버그 수정 (전체 페이지 초기 숨김 처리 + 로그인 후 초기 탭 활성화)</td></tr>
         <tr><td><span class="ver-badge">v1.9.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-23</td><td>예측 3종 선택(평균·보정·직접입력), 센터공지 탭(검색·확인체크·댓글), 기록보기 주간/야간 서브탭 이동, 출고마감 요일별 기본값</td></tr>
@@ -740,7 +745,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.2</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.3</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1124,7 +1129,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.9.2";
+const CURRENT_VERSION = "1.9.3";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1274,6 +1279,45 @@ function rtClear(id){
   const el=document.getElementById(id);
   if(el) el.innerHTML='';
 }
+
+// Selection 저장/복원 (드롭다운·버튼 클릭으로 포커스가 빠져도 커서 위치 유지)
+let rtLastRange=null;
+let rtLastEditorId=null;
+function rtSaveSelection(editorId){
+  const ed=document.getElementById(editorId); if(!ed) return;
+  const sel=window.getSelection(); if(!sel||sel.rangeCount===0) return;
+  const range=sel.getRangeAt(0);
+  // 해당 에디터 내부 선택인지 확인
+  const ac=range.commonAncestorContainer;
+  if(ed===ac||ed.contains(ac)){
+    rtLastRange=range.cloneRange();
+    rtLastEditorId=editorId;
+  }
+}
+function rtRestoreSelection(editorId){
+  if(rtLastEditorId!==editorId||!rtLastRange) return false;
+  try{
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(rtLastRange);
+    return true;
+  }catch(e){ return false; }
+}
+
+// 툴바 버튼 active 상태 업데이트 (현재 커서 위치 기준)
+function rtUpdateToolbarState(editorId){
+  const tb=document.getElementById(editorId+'_tb');
+  if(!tb) return;
+  const btnB=tb.querySelector('.rt-btn-b');
+  const btnI=tb.querySelector('.rt-btn-i');
+  const btnU=tb.querySelector('.rt-btn-u');
+  try{
+    if(btnB) btnB.classList.toggle('active',document.queryCommandState('bold'));
+    if(btnI) btnI.classList.toggle('active',document.queryCommandState('italic'));
+    if(btnU) btnU.classList.toggle('active',document.queryCommandState('underline'));
+  }catch(e){}
+}
+
 function buildRichToolbar(editorId){
   const colors=[['#2c2c2a','기본'],['#e24b4a','빨강'],['#185fa5','파랑'],['#0f6e56','초록'],['#854f0b','갈색']];
   return `<div class="rich-toolbar">
@@ -1281,7 +1325,7 @@ function buildRichToolbar(editorId){
     <button type="button" class="rt-btn rt-btn-i" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','italic')" title="기울임">I</button>
     <button type="button" class="rt-btn rt-btn-u" onmousedown="event.preventDefault()" onclick="window._rtCmd('${editorId}','underline')" title="밑줄">U</button>
     <div class="rt-sep"></div>
-    <select class="rt-size" onmousedown="event.preventDefault()" onchange="window._rtSize('${editorId}',this.value);this.value=''" title="글자 크기">
+    <select class="rt-size" onchange="window._rtSize('${editorId}',this.value);this.value=''" title="글자 크기">
       <option value="">크기</option>
       <option value="2">작게</option>
       <option value="3">보통</option>
@@ -1295,25 +1339,31 @@ function buildRichToolbar(editorId){
   </div>`;
 }
 window._rtCmd=function(editorId,cmd){
-  const el=document.getElementById(editorId);
-  if(!el) return;
+  const el=document.getElementById(editorId); if(!el) return;
   el.focus();
+  rtRestoreSelection(editorId);
   try{ document.execCommand(cmd,false,null); }catch(e){}
+  rtSaveSelection(editorId);
+  rtUpdateToolbarState(editorId);
 };
 window._rtSize=function(editorId,size){
   if(!size) return;
-  const el=document.getElementById(editorId);
-  if(!el) return;
+  const el=document.getElementById(editorId); if(!el) return;
   el.focus();
+  rtRestoreSelection(editorId);
   try{ document.execCommand('fontSize',false,size); }catch(e){}
+  rtSaveSelection(editorId);
+  rtUpdateToolbarState(editorId);
 };
 window._rtColor=function(editorId,color){
-  const el=document.getElementById(editorId);
-  if(!el) return;
+  const el=document.getElementById(editorId); if(!el) return;
   el.focus();
+  rtRestoreSelection(editorId);
   try{ document.execCommand('foreColor',false,color); }catch(e){}
+  rtSaveSelection(editorId);
+  rtUpdateToolbarState(editorId);
 };
-// 에디터 하나에 툴바 장착 + paste 이벤트 바인딩
+// 에디터 하나에 툴바 장착 + 이벤트 바인딩
 function attachRichEditor(editorId){
   const tb=document.getElementById(editorId+'_tb');
   const ed=document.getElementById(editorId);
@@ -1322,6 +1372,7 @@ function attachRichEditor(editorId){
   if(tb.dataset.rtAttached==='1') return;
   tb.innerHTML=buildRichToolbar(editorId);
   tb.dataset.rtAttached='1';
+
   // 붙여넣기: 외부 서식 제거, plain text만 삽입
   if(ed.dataset.rtPasteBound!=='1'){
     ed.addEventListener('paste', e=>{
@@ -1329,6 +1380,13 @@ function attachRichEditor(editorId){
       const text=((e.clipboardData||window.clipboardData)?.getData('text/plain'))||'';
       try{ document.execCommand('insertText',false,text); }catch(err){ /* fallback */ }
     });
+    // selection 저장 + 툴바 상태 동기화 이벤트
+    const syncFn=()=>{ rtSaveSelection(editorId); rtUpdateToolbarState(editorId); };
+    ed.addEventListener('mouseup', syncFn);
+    ed.addEventListener('keyup', syncFn);
+    ed.addEventListener('focus', syncFn);
+    // 포커스가 빠지기 직전에 selection 저장 (드롭다운 열 때 필수)
+    ed.addEventListener('blur', ()=>rtSaveSelection(editorId));
     ed.dataset.rtPasteBound='1';
   }
 }
