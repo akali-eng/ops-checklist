@@ -1100,6 +1100,7 @@ const thisMonth = today.slice(0,7);
 function kstDateTimeStr(){ const d=new Date(Date.now()+9*3600000); return d.toISOString().replace('T',' ').slice(0,16); }
 function setDateLabel(){ const s=new Date(nowMs).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'long'}); document.getElementById('dateLabel').textContent=s+' (업무일: '+today+')'; }
 function setPageDesc(text){ const el=document.getElementById('pageDesc'); if(!el) return; if(text){el.textContent=text;el.style.display='block';}else{el.textContent='';el.style.display='none';} }
+function fmtTs(ts){ if(!ts) return ''; const d=new Date(ts); const mm=String(d.getMonth()+1).padStart(2,'0'); const dd=String(d.getDate()).padStart(2,'0'); const hh=String(d.getHours()).padStart(2,'0'); const mi=String(d.getMinutes()).padStart(2,'0'); return `${mm}-${dd} ${hh}:${mi}`; }
 
 let curTab='day', curFilter='미완료', htFilter='전체', hPeriod=7;
 let currentUser=null; // 로그인한 사용자 (notice, toggle read 등에서 사용)
@@ -1506,23 +1507,23 @@ window._setNoticeFilter=function(cat){
 };
 
 function updateNoticeBadge(){
-  // 운영공지 탭 뱃지
-  const sw=document.querySelector('[id="tabNotice"]')?.parentElement; if(!sw) return;
-  sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
   if(!currentUser||!currentUser.uid) return;
   const uid=currentUser.uid.replace(/\./g,'_');
-  let opCnt=0, fnCnt=0;
-  Object.keys(noticesData.op||{}).forEach(nid=>{ if(!(noticeReadsData.op[nid]||{})[uid]) opCnt++; });
-  Object.keys(noticesData.fn||{}).forEach(nid=>{ if(!(noticeReadsData.fn[nid]||{})[uid]) fnCnt++; });
-  if(opCnt>0){
-    const b=document.createElement('span'); b.className='tab-badge'; b.style.background='#e24b4a'; b.textContent=opCnt;
-    document.querySelector('[id="tabNotice"]')?.parentElement?.appendChild(b);
-  }
-  if(fnCnt>0){
-    const sw2=document.getElementById('tabNotice2')?.parentElement||sw;
-    const b=document.createElement('span'); b.className='tab-badge'; b.style.background='#e24b4a'; b.textContent=fnCnt;
-    sw2.appendChild(b);
-  }
+  // 각 버튼에 직접 뱃지 부착 (두 탭이 같은 tab-sw를 공유하므로 버튼 기준으로 처리)
+  ['op','fn'].forEach(type=>{
+    const btnId=type==='op'?'tabNotice':'tabNotice2';
+    const btn=document.getElementById(btnId); if(!btn) return;
+    btn.querySelectorAll('.tab-badge').forEach(b=>b.remove());
+    const cnt=Object.keys(noticesData[type]||{}).filter(nid=>!(noticeReadsData[type][nid]||{})[uid]).length;
+    if(cnt>0){
+      const b=document.createElement('span');
+      b.className='tab-badge';
+      b.style.cssText='background:#e24b4a;position:absolute;top:-5px;right:-5px';
+      b.textContent=cnt;
+      btn.style.position='relative';
+      btn.appendChild(b);
+    }
+  });
 }
 
 function renderNotices(type){
@@ -1550,14 +1551,14 @@ function renderNotices(type){
     const cmtBadge=cntCmt>0?`<span class="notice-cmt-badge">💬${cntCmt}${hasNew?'<span class="cmt-new-badge">N</span>':''}</span>`:'';
     const readerBadge=readers?`<span class="notice-readers">✓ ${readers}</span>`:'';
     const catTag=n.cat?`<span class="notice-cat-tag notice-cat-${n.cat}">${n.cat}</span>`:'';
-    const cmtHtml=cmts.map(([,c])=>`<div class="notice-cmt-item"><span class="notice-cmt-author">${c.name||'익명'}</span>${c.text||''}</div>`).join('');
+    const cmtHtml=cmts.map(([,c])=>`<div class="notice-cmt-item"><span class="notice-cmt-author">${c.name||'익명'}</span><span style="font-size:11px;color:#b4b2a9;margin-right:4px">${fmtTs(c.ts)}</span>${c.text||''}</div>`).join('');
     const cats=['B2C','B2B','입고','반품','네이버','기타'];
     return `<div class="notice-card">
       <div class="notice-header" onclick="window._toggleNoticeBody('${nid}','${type}')">
         <div class="notice-title-wrap">
           <div class="notice-title" style="display:flex;align-items:center;gap:6px">${catTag}${n.title||'(제목 없음)'}</div>
           <div class="notice-meta-row">
-            <span>${n.author||''} · ${n.date||''}</span>
+            <span>${n.author||''} · ${fmtTs(n.ts)}</span>
             ${cmtBadge}${readerBadge}
           </div>
         </div>
