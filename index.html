@@ -669,7 +669,11 @@ body.dark .dash-item:hover { background: #222; }
 body.dark .dash-item-title { color: #e8e6df; }
 .dash-item-meta { font-size: 11px; color: #888780; white-space: nowrap; }
 .dash-item-meta.urgent { color: #e24b4a; font-weight: 500; }
-.dash-notice-cat { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: #faeeda; color: #854f0b; white-space: nowrap; } { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
+.dash-notice-cat { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: #faeeda; color: #854f0b; white-space: nowrap; }
+.dash-cal-when { font-size: 10px; padding: 1px 8px; border-radius: 99px; background: #f0e8d8; color: #5a4a28; white-space: nowrap; font-weight: 500; }
+.dash-cal-when.dash-cal-today { background: #185fa5; color: #fff; }
+body.dark .dash-cal-when { background: #2a2a2a; color: #c4b892; }
+body.dark .dash-cal-when.dash-cal-today { background: #3a7bc2; color: #fff; } { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
 body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
 .rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
 .rt-btn:hover { background: #e6f1fb; border-color: #185fa5; }
@@ -732,6 +736,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.0.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>대시보드 개선 — 페이지 제목 '대시보드' 표시, 섹션별 이동 링크 제거(아이템 클릭만으로 이동), 📆 오늘·내일 일정 섹션 추가 (일정 있을 때만 표시), 홈에서도 실시간 갱신</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.0.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>메이저 업데이트</strong> — ① 🏠 홈 대시보드 신설 (내 진행 중 업무·기한 임박 목표·읽지 않은 공지 한눈에) ② 🔔 멘션 시스템 (헤더 종 아이콘·파란 뱃지·드롭다운·클릭 시 해당 위치 이동) ③ @ 자동완성 (공지·목표·일정·댓글 모든 입력 지원, 팀원 이름 실시간 필터) ④ 멘션 태그 파란색 강조 렌더링</td></tr>
         <tr><td><span class="ver-badge">v1.9.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>빈 에디터에서 굵게·기울임·밑줄 버튼 두 번 눌러도 꺼지지 않던 문제 수정 (selection 복원 시 pending format 상태 보존)</td></tr>
         <tr><td><span class="ver-badge">v1.9.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>글자 스타일 에디터 개선 — 굵게·기울임·밑줄 적용 상태 버튼에 표시, 글자 크기 드롭다운 정상 동작 (selection 저장·복원 로직 추가)</td></tr>
@@ -822,7 +827,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.0.0</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.0.1</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -878,21 +883,24 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   <div class="dash-section" id="dashMyProgress">
     <div class="dash-sec-hdr">
       <div class="dash-sec-title">🎯 내 진행 중 업무 <span class="dash-sec-count" id="dashMyProgCount">0</span></div>
-      <button class="dash-sec-link" onclick="switchTab('goals')">센터 목표 →</button>
     </div>
     <div id="dashMyProgList"></div>
   </div>
   <div class="dash-section" id="dashUrgent">
     <div class="dash-sec-hdr">
       <div class="dash-sec-title">⏰ 기한 임박 목표 <span class="dash-sec-count" id="dashUrgentCount">0</span></div>
-      <button class="dash-sec-link" onclick="switchTab('goals')">센터 목표 →</button>
     </div>
     <div id="dashUrgentList"></div>
+  </div>
+  <div class="dash-section" id="dashCalendar" style="display:none">
+    <div class="dash-sec-hdr">
+      <div class="dash-sec-title">📆 오늘·내일 일정 <span class="dash-sec-count" id="dashCalCount">0</span></div>
+    </div>
+    <div id="dashCalList"></div>
   </div>
   <div class="dash-section" id="dashUnread">
     <div class="dash-sec-hdr">
       <div class="dash-sec-title">📢 읽지 않은 공지 <span class="dash-sec-count" id="dashUnreadCount">0</span></div>
-      <button class="dash-sec-link" onclick="switchTab('notice')">운영 공지 →</button>
     </div>
     <div id="dashUnreadList"></div>
   </div>
@@ -1243,7 +1251,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.0.0";
+const CURRENT_VERSION = "2.0.1";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1984,6 +1992,7 @@ function renderDashboard(){
   }
   renderDashMyProgress();
   renderDashUrgent();
+  renderDashCalendar();
   renderDashUnreadNotices();
 }
 
@@ -2051,6 +2060,56 @@ function renderDashUrgent(){
     </div>`;
   }).join('');
 }
+
+// 오늘·내일 일정 (있는 경우만 표시)
+function renderDashCalendar(){
+  const section = document.getElementById('dashCalendar');
+  const list    = document.getElementById('dashCalList');
+  const cnt     = document.getElementById('dashCalCount');
+  if(!section||!list||!cnt) return;
+  const todayStr = today;
+  const tomorrowStr = new Date(new Date(todayStr).getTime()+86400000).toISOString().split('T')[0];
+  const groups = [
+    { date: todayStr,    label: '오늘' },
+    { date: tomorrowStr, label: '내일' }
+  ];
+  let total = 0;
+  const parts = [];
+  groups.forEach(g=>{
+    const evs = calendarData[g.date]||{};
+    const list2 = Object.values(evs);
+    if(!list2.length) return;
+    total += list2.length;
+    parts.push(list2.map(e=>{
+      return `<div class="dash-item" onclick="window._openCalFromDash('${g.date}','${e.id}')">
+        <span class="dash-cal-when ${g.label==='오늘'?'dash-cal-today':''}">${g.label}</span>
+        <div class="dash-item-title">${e.title||''}</div>
+        <span class="dash-item-meta">${e.createdBy||''}</span>
+      </div>`;
+    }).join(''));
+  });
+  if(total===0){
+    section.style.display='none';
+    return;
+  }
+  section.style.display='';
+  cnt.textContent = total;
+  list.innerHTML = parts.join('');
+}
+window._openCalFromDash = function(dateStr, eventId){
+  switchTab('calendar');
+  setTimeout(()=>{
+    selectedCalDate = dateStr;
+    if(typeof renderCalPanel==='function') renderCalPanel(dateStr);
+    // 달력에서 해당 날짜 셀도 선택 표시
+    document.querySelectorAll('.cal-cell').forEach(c=>c.classList.remove('selected'));
+    // 댓글 영역 스크롤
+    setTimeout(()=>{
+      const card = document.querySelector('#cal-cmts-'+eventId)?.closest('.cal-event');
+      card?.scrollIntoView({behavior:'smooth',block:'center'});
+    }, 80);
+  }, 120);
+};
 
 // 읽지 않은 공지 (운영 + 기능 합쳐서)
 function renderDashUnreadNotices(){
@@ -2155,7 +2214,7 @@ function switchTab(tab){
 
   if(tab==='home'){
     document.getElementById('homePage').style.display='block';
-    document.getElementById('pageTitle').textContent='홈'; setDateLabel();
+    document.getElementById('pageTitle').textContent='대시보드'; setDateLabel();
     renderDashboard();
   } else if(tab==='day'||tab==='night'){
     document.getElementById('todoPage').style.display='block';
@@ -2319,7 +2378,7 @@ function initCustomItemsThenToday(){
 }
 function listenToday(tab){ onValue(ref(db,`todos/${tab}/${today}`),s=>{ const v=s.val(); if(!v){initDefaults(tab);return;} todayData[tab]=Object.values(v).sort((a,b)=>(a.order||0)-(b.order||0)); if(curTab===tab) render(); }); }
 function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='day'||curTab==='night') renderHistory(); }); }); }
-function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); }); }
+function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); if(curTab==='home'){ renderDashMyProgress(); renderDashUrgent(); } }); }
 function listenSheets(){ onValue(ref(db,'sheets'),s=>{ sheetsData=s.val()||{}; if(curTab==='sheets') renderSheets(); }); }
 
 // ── 주간/야간 서브탭 (기록보기) ────────────────────────────────
@@ -2420,9 +2479,9 @@ function listenNotices(){
     const cmtPath=type==='op'?'noticeComments':'noticeComments2';
     const readPath=type==='op'?'noticeReads':'noticeReads2';
     const tabId=type==='op'?'notice':'notice2';
-    onValue(ref(db,dbPath),s=>{ noticesData[type]=s.val()||{}; if(curTab===tabId) renderNotices(type); updateNoticeBadge(); });
+    onValue(ref(db,dbPath),s=>{ noticesData[type]=s.val()||{}; if(curTab===tabId) renderNotices(type); updateNoticeBadge(); if(curTab==='home') renderDashUnreadNotices(); });
     onValue(ref(db,cmtPath),s=>{ noticeCommentsData[type]=s.val()||{}; if(curTab===tabId) renderNotices(type); });
-    onValue(ref(db,readPath),s=>{ noticeReadsData[type]=s.val()||{}; if(curTab===tabId) renderNotices(type); updateNoticeBadge(); });
+    onValue(ref(db,readPath),s=>{ noticeReadsData[type]=s.val()||{}; if(curTab===tabId) renderNotices(type); updateNoticeBadge(); if(curTab==='home') renderDashUnreadNotices(); });
   });
 }
 
@@ -2969,7 +3028,7 @@ function renderCalc(){
 }
 window.renderCalc=renderCalc;
 function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.val()||{}; qsa('.goal-body.open',el=>{ const gid=el.id.replace('gbody-',''); renderComments(gid); }); }); }
-function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); }); }
+function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); if(curTab==='home') renderDashCalendar(); }); }
 
 function updateCalBadge(){
   const sw=document.getElementById('calTabSw'); if(!sw) return;
