@@ -659,6 +659,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v1.9.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>빈 에디터에서 굵게·기울임·밑줄 버튼 두 번 눌러도 꺼지지 않던 문제 수정 (selection 복원 시 pending format 상태 보존)</td></tr>
         <tr><td><span class="ver-badge">v1.9.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>글자 스타일 에디터 개선 — 굵게·기울임·밑줄 적용 상태 버튼에 표시, 글자 크기 드롭다운 정상 동작 (selection 저장·복원 로직 추가)</td></tr>
         <tr><td><span class="ver-badge">v1.9.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표·운영 공지·기능 공지 내용 작성에 글자 스타일 에디터 추가 (굵게·기울임·밑줄·크기 4단계·색상 5종·스타일 제거, 외부 서식 붙여넣기 자동 정리)</td></tr>
         <tr><td><span class="ver-badge">v1.9.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>초기 접속 시 공지 검색창·필터·"공지를 불러오는 중..." 메시지가 주간 탭에 노출되던 버그 수정 (전체 페이지 초기 숨김 처리 + 로그인 후 초기 탭 활성화)</td></tr>
@@ -745,7 +746,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.3</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.4</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1129,7 +1130,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.9.3";
+const CURRENT_VERSION = "1.9.4";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1296,8 +1297,17 @@ function rtSaveSelection(editorId){
 }
 function rtRestoreSelection(editorId){
   if(rtLastEditorId!==editorId||!rtLastRange) return false;
+  const sel=window.getSelection();
+  const ed=document.getElementById(editorId);
+  // 현재 selection이 이미 해당 에디터 내부에 있다면 건드리지 않음
+  // (selection 교체가 Chrome의 pending format 상태를 리셋해서
+  //  빈 에디터에서 B/I/U 토글이 꺼지지 않는 문제 방지)
+  if(ed&&sel&&sel.rangeCount>0){
+    const cur=sel.getRangeAt(0);
+    const ac=cur.commonAncestorContainer;
+    if(ed===ac||ed.contains(ac)) return true;
+  }
   try{
-    const sel=window.getSelection();
     sel.removeAllRanges();
     sel.addRange(rtLastRange);
     return true;
