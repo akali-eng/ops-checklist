@@ -598,6 +598,79 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 /* Rich Text Editor */
 .rich-toolbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
 body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
+
+/* ===== v2.0.0 Mention System ===== */
+.mention-tag { display: inline-block; background: #e6f1fb; color: #185fa5; padding: 0 4px; border-radius: 4px; font-weight: 500; font-size: 0.95em; }
+body.dark .mention-tag { background: #1a3a5c; color: #8cc5ff; }
+.mention-auto-popup { position: absolute; z-index: 2000; background: #fff; border: 0.5px solid rgba(0,0,0,0.15); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 160px; max-height: 240px; overflow-y: auto; padding: 4px; font-family: inherit; }
+body.dark .mention-auto-popup { background: #1a1a1a; border-color: rgba(255,255,255,0.15); box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+.mention-auto-item { padding: 7px 12px; font-size: 13px; color: #2c2c2a; cursor: pointer; border-radius: 7px; display: flex; align-items: center; gap: 8px; }
+.mention-auto-item::before { content: '@'; color: #185fa5; font-weight: 600; }
+.mention-auto-item:hover, .mention-auto-item.active { background: #e6f1fb; color: #185fa5; }
+body.dark .mention-auto-item { color: #e8e6df; }
+body.dark .mention-auto-item:hover, body.dark .mention-auto-item.active { background: #1a3a5c; color: #8cc5ff; }
+
+/* 종 아이콘 (헤더) */
+.bell-wrap { position: relative; display: inline-flex; align-items: center; cursor: pointer; margin-right: 10px; padding: 4px 6px; border-radius: 8px; transition: background 0.15s; }
+.bell-wrap:hover { background: rgba(0,0,0,0.05); }
+body.dark .bell-wrap:hover { background: rgba(255,255,255,0.08); }
+.bell-icon { width: 20px; height: 20px; color: #888780; transition: color 0.15s; }
+.bell-wrap:hover .bell-icon { color: #185fa5; }
+.bell-badge { position: absolute; top: -2px; right: -2px; background: #185fa5; color: #fff; font-size: 10px; font-weight: 600; min-width: 16px; height: 16px; border-radius: 99px; display: none; align-items: center; justify-content: center; padding: 0 4px; line-height: 1; }
+.mention-dropdown { position: absolute; right: 0; top: 100%; margin-top: 6px; width: 360px; max-width: calc(100vw - 40px); background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); max-height: 480px; overflow: hidden; display: none; z-index: 1500; }
+body.dark .mention-dropdown { background: #1a1a1a; border-color: rgba(255,255,255,0.12); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+.mention-dropdown.open { display: flex; flex-direction: column; }
+.mention-drop-hdr { padding: 11px 14px; border-bottom: 0.5px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; }
+body.dark .mention-drop-hdr { border-color: rgba(255,255,255,0.1); }
+.mention-drop-title { font-size: 13px; font-weight: 500; color: #2c2c2a; }
+body.dark .mention-drop-title { color: #e8e6df; }
+.mention-drop-action { font-size: 11px; color: #185fa5; cursor: pointer; background: none; border: none; padding: 3px 8px; border-radius: 6px; font-family: inherit; }
+.mention-drop-action:hover { background: #e6f1fb; }
+body.dark .mention-drop-action:hover { background: #1a3a5c; }
+.mention-drop-list { overflow-y: auto; max-height: 420px; padding: 4px 0; }
+.mention-item { padding: 10px 14px; border-bottom: 0.5px solid rgba(0,0,0,0.05); cursor: pointer; transition: background 0.12s; position: relative; }
+.mention-item:last-child { border-bottom: none; }
+.mention-item:hover { background: #f5f3ec; }
+body.dark .mention-item { border-color: rgba(255,255,255,0.06); }
+body.dark .mention-item:hover { background: #222; }
+.mention-item.unread::before { content: ''; position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 99px; background: #185fa5; }
+.mention-item.unread { padding-left: 20px; }
+.mention-src { font-size: 11px; color: #888780; margin-bottom: 3px; }
+.mention-loc-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 99px; background: #e6f1fb; color: #185fa5; margin-right: 4px; }
+body.dark .mention-loc-tag { background: #1a3a5c; color: #8cc5ff; }
+.mention-preview { font-size: 12px; color: #2c2c2a; line-height: 1.45; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+body.dark .mention-preview { color: #e8e6df; }
+.mention-empty { padding: 24px; text-align: center; color: #888780; font-size: 12px; }
+.mention-del { position: absolute; right: 8px; top: 8px; background: none; border: none; color: #b4b2a9; font-size: 14px; cursor: pointer; padding: 2px 6px; border-radius: 5px; opacity: 0; transition: opacity 0.12s, background 0.12s; }
+.mention-item:hover .mention-del { opacity: 1; }
+.mention-del:hover { background: rgba(0,0,0,0.06); color: #e24b4a; }
+
+/* ===== 홈 대시보드 ===== */
+#homePage { display: none; }
+.dash-greeting { font-size: 18px; font-weight: 500; color: #2c2c2a; margin: 4px 0 22px; }
+body.dark .dash-greeting { color: #e8e6df; }
+.dash-greeting .dg-date { font-size: 13px; color: #888780; margin-left: 8px; font-weight: 400; }
+.dash-section { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+body.dark .dash-section { background: #1a1a1a; border-color: rgba(255,255,255,0.08); }
+.dash-sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.dash-sec-title { font-size: 14px; font-weight: 500; color: #2c2c2a; display: flex; align-items: center; gap: 8px; }
+body.dark .dash-sec-title { color: #e8e6df; }
+.dash-sec-count { background: #e6f1fb; color: #185fa5; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 99px; }
+body.dark .dash-sec-count { background: #1a3a5c; color: #8cc5ff; }
+.dash-sec-link { font-size: 12px; color: #185fa5; background: none; border: none; cursor: pointer; font-family: inherit; padding: 3px 8px; border-radius: 6px; }
+.dash-sec-link:hover { background: #e6f1fb; }
+body.dark .dash-sec-link:hover { background: #1a3a5c; }
+.dash-empty { font-size: 12px; color: #888780; padding: 18px 0; text-align: center; }
+.dash-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; transition: background 0.12s; }
+.dash-item:hover { background: #f5f3ec; }
+body.dark .dash-item:hover { background: #222; }
+.dash-item-pri { font-size: 10px; padding: 1px 7px; border-radius: 99px; white-space: nowrap; font-weight: 500; }
+.dash-item-title { font-size: 13px; color: #2c2c2a; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.dark .dash-item-title { color: #e8e6df; }
+.dash-item-meta { font-size: 11px; color: #888780; white-space: nowrap; }
+.dash-item-meta.urgent { color: #e24b4a; font-weight: 500; }
+.dash-notice-cat { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: #faeeda; color: #854f0b; white-space: nowrap; } { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
+body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
 .rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
 .rt-btn:hover { background: #e6f1fb; border-color: #185fa5; }
 .rt-btn.active { background: #185fa5; color: #fff; border-color: #185fa5; box-shadow: inset 0 1px 2px rgba(0,0,0,0.15); }
@@ -659,6 +732,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.0.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>메이저 업데이트</strong> — ① 🏠 홈 대시보드 신설 (내 진행 중 업무·기한 임박 목표·읽지 않은 공지 한눈에) ② 🔔 멘션 시스템 (헤더 종 아이콘·파란 뱃지·드롭다운·클릭 시 해당 위치 이동) ③ @ 자동완성 (공지·목표·일정·댓글 모든 입력 지원, 팀원 이름 실시간 필터) ④ 멘션 태그 파란색 강조 렌더링</td></tr>
         <tr><td><span class="ver-badge">v1.9.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>빈 에디터에서 굵게·기울임·밑줄 버튼 두 번 눌러도 꺼지지 않던 문제 수정 (selection 복원 시 pending format 상태 보존)</td></tr>
         <tr><td><span class="ver-badge">v1.9.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>글자 스타일 에디터 개선 — 굵게·기울임·밑줄 적용 상태 버튼에 표시, 글자 크기 드롭다운 정상 동작 (selection 저장·복원 로직 추가)</td></tr>
         <tr><td><span class="ver-badge">v1.9.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표·운영 공지·기능 공지 내용 작성에 글자 스타일 에디터 추가 (굵게·기울임·밑줄·크기 4단계·색상 5종·스타일 제거, 외부 서식 붙여넣기 자동 정리)</td></tr>
@@ -687,7 +761,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
       <label>목표 제목</label><input type="text" id="eg-title">
       <label>필요 작업 내용</label>
       <div id="eg-content_tb"></div>
-      <div class="rich-editor" id="eg-content" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1"></div>
+      <div class="rich-editor" id="eg-content" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1" data-mention="1"></div>
       <div class="edit-modal-row">
         <div><label>우선순위</label><select id="eg-priority"><option value="high">높음</option><option value="mid">중간</option><option value="low">낮음</option></select></div>
         <div><label>목표 기한</label><input type="date" id="eg-deadline"></div>
@@ -718,6 +792,8 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
 
 <!-- 탭 -->
 <div class="tab-row">
+  <div class="tab-sw"><button class="tab-btn goals" id="tabHome">🏠 홈</button></div>
+  <div class="tab-div"></div>
   <div class="tab-sw">
     <button class="tab-btn day active" id="tabDay">주간</button>
     <button class="tab-btn night" id="tabNight">야간</button>
@@ -746,11 +822,22 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v1.9.4</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.0.0</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
     <div class="hbtns">
+      <div class="bell-wrap" id="bellWrap" style="position:relative" onclick="window._toggleMentionDropdown(event)" title="멘션 알림">
+        <svg class="bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="bell-badge" id="mentionBadge">0</span>
+        <div class="mention-dropdown" id="mentionDropdown" onclick="event.stopPropagation()">
+          <div class="mention-drop-hdr">
+            <div class="mention-drop-title">🔔 나를 멘션한 곳</div>
+            <button class="mention-drop-action" onclick="window._markAllMentionsRead()">모두 읽음</button>
+          </div>
+          <div class="mention-drop-list" id="mentionDropList"></div>
+        </div>
+      </div>
       <button class="btn-dark" id="btnDark">다크</button>
       <button class="btn-reset" id="btnReset">체크 초기화</button>
       <button id="btnAdd" class="btn-primary btn-day">+ 항목 추가</button>
@@ -769,7 +856,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
   <label>목표 제목</label><input type="text" id="goalTitle" placeholder="센터 목표 제목...">
   <label>필요 작업 내용</label>
   <div id="goalContent_tb"></div>
-  <div class="rich-editor" id="goalContent" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1"></div>
+  <div class="rich-editor" id="goalContent" contenteditable="true" data-placeholder="필요한 작업 내용..." data-rt="1" data-mention="1"></div>
   <div class="form-row">
     <div><label>우선순위</label><select id="goalPriority"><option value="high">높음</option><option value="mid" selected>중간</option><option value="low">낮음</option></select></div>
     <div><label>목표 기한</label><input type="date" id="goalDeadline"></div>
@@ -785,6 +872,32 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
 </div>
 
 <!-- 업무 페이지 -->
+<!-- 홈 대시보드 -->
+<div id="homePage" style="display:none">
+  <div class="dash-greeting" id="dashGreeting"></div>
+  <div class="dash-section" id="dashMyProgress">
+    <div class="dash-sec-hdr">
+      <div class="dash-sec-title">🎯 내 진행 중 업무 <span class="dash-sec-count" id="dashMyProgCount">0</span></div>
+      <button class="dash-sec-link" onclick="switchTab('goals')">센터 목표 →</button>
+    </div>
+    <div id="dashMyProgList"></div>
+  </div>
+  <div class="dash-section" id="dashUrgent">
+    <div class="dash-sec-hdr">
+      <div class="dash-sec-title">⏰ 기한 임박 목표 <span class="dash-sec-count" id="dashUrgentCount">0</span></div>
+      <button class="dash-sec-link" onclick="switchTab('goals')">센터 목표 →</button>
+    </div>
+    <div id="dashUrgentList"></div>
+  </div>
+  <div class="dash-section" id="dashUnread">
+    <div class="dash-sec-hdr">
+      <div class="dash-sec-title">📢 읽지 않은 공지 <span class="dash-sec-count" id="dashUnreadCount">0</span></div>
+      <button class="dash-sec-link" onclick="switchTab('notice')">운영 공지 →</button>
+    </div>
+    <div id="dashUnreadList"></div>
+  </div>
+</div>
+
 <div id="todoPage" style="display:none">
   <div class="todo-sub-tabs">
     <button class="todo-sub-btn active-day" id="todoSubWork" onclick="window._todoSub('work')">업무 목록</button>
@@ -867,7 +980,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
       <label>제목</label>
       <input type="text" id="calEventTitle" placeholder="일정 제목 입력...">
       <label>내용 (선택)</label>
-      <textarea id="calEventContent" placeholder="상세 내용..."></textarea>
+      <textarea id="calEventContent" placeholder="상세 내용..." data-mention="1"></textarea>
       <button class="cal-add-btn" id="calAddBtn">추가</button>
     </div>
   </div>
@@ -901,7 +1014,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <label>제목</label><input type="text" id="noticeTitle" placeholder="공지 제목...">
     <label>내용</label>
     <div id="noticeContent_tb"></div>
-    <div class="rich-editor" id="noticeContent" contenteditable="true" data-placeholder="공지 내용..." data-rt="1"></div>
+    <div class="rich-editor" id="noticeContent" contenteditable="true" data-placeholder="공지 내용..." data-rt="1" data-mention="1"></div>
     <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack" placeholder="https://...">
     <div class="add-form-btns" style="margin-top:10px">
       <button class="btn-cancel-sm" onclick="document.getElementById('noticeAddForm').classList.remove('open')">취소</button>
@@ -939,7 +1052,7 @@ body.dark .rich-editor { background: #1a1a1a; color: #e8e6df; border-color: rgba
     <label>제목</label><input type="text" id="noticeTitle2" placeholder="공지 제목...">
     <label>내용</label>
     <div id="noticeContent2_tb"></div>
-    <div class="rich-editor" id="noticeContent2" contenteditable="true" data-placeholder="공지 내용..." data-rt="1"></div>
+    <div class="rich-editor" id="noticeContent2" contenteditable="true" data-placeholder="공지 내용..." data-rt="1" data-mention="1"></div>
     <label>슬랙 링크 (선택)</label><input type="url" id="noticeSlack2" placeholder="https://...">
     <div class="add-form-btns" style="margin-top:10px">
       <button class="btn-cancel-sm" onclick="document.getElementById('noticeAddForm2').classList.remove('open')">취소</button>
@@ -1130,7 +1243,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "1.9.4";
+const CURRENT_VERSION = "2.0.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1162,6 +1275,7 @@ let todayData={day:[],night:[]}, allHistory={day:{},night:{}};
 let customItems={day:{},night:{}}, savedOrder={day:[],night:[]};
 let defaultItemsData={day:{},night:{}}; // Firebase에서 관리하는 기본 항목
 let goalsData={}, sheetsData={}, commentsData={}, calendarData={}, calCommentsData={};
+let usersData={}, mentionsData={};  // v2.0.0 멘션 시스템
 let calYear=kstNow.getUTCFullYear(), calMonth=kstNow.getUTCMonth();
 let selectedCalDate=null, editState=null;
 
@@ -1213,14 +1327,17 @@ onAuthStateChanged(auth, user => {
     document.getElementById('adminDownload').style.display=user.email===ADMIN_EMAIL?'inline':'none';
     setDateLabel(); checkVersion();
     listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData(); listenNotices();
+    // v2.0.0 멘션 시스템
+    registerUser(); listenUsers(); listenMentions();
     // 데이터 로드 후 뱃지 재계산 (비동기 타이밍 보장)
     setTimeout(()=>updateNoticeBadge(), 800);
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
     initCustomItemsThenToday();
-    // 초기 탭을 명시적으로 활성화 (모든 페이지 div가 숨김 상태이므로 필수)
-    switchTab('day');
-    // 정적 rich editor 툴바 일괄 부착 (추가 폼 3곳)
+    // 초기 탭을 홈 대시보드로 열기
+    switchTab('home');
+    // 정적 rich editor 툴바 일괄 부착 (추가 폼 3곳) + 멘션 입력 바인딩
     attachAllRichEditors();
+    bindAllMentionInputs();
   } else {
     currentUser=null;
     document.getElementById('loginPage').style.display='flex';
@@ -1256,9 +1373,9 @@ function openSheetEdit(id){ const s=sheetsData[id]; if(!s) return; editState={ty
 function openCalEdit(date,eventId){ const e=calendarData[date]?.[eventId]; if(!e) return; editState={type:'cal',date,eventId}; document.getElementById('editModalTitle').textContent='일정 수정'; document.getElementById('editGoalFields').style.display='none'; document.getElementById('editSheetFields').style.display='none'; document.getElementById('editCalFields').style.display='block'; document.getElementById('ec-title').value=e.title||''; document.getElementById('ec-content').value=e.content||''; document.getElementById('editModalBg').classList.add('open'); }
 function saveEdit(){
   if(!editState) return;
-  if(editState.type==='goal'){ const t=document.getElementById('eg-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`goals/${editState.id}`),{title:t,content:rtGet('eg-content'),priority:document.getElementById('eg-priority').value,deadline:document.getElementById('eg-deadline').value||null,slackUrl:document.getElementById('eg-slack').value.trim()}); }
+  if(editState.type==='goal'){ const t=document.getElementById('eg-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} const c=rtGet('eg-content'); update(ref(db,`goals/${editState.id}`),{title:t,content:c,priority:document.getElementById('eg-priority').value,deadline:document.getElementById('eg-deadline').value||null,slackUrl:document.getElementById('eg-slack').value.trim()}); saveMentions(t+' '+htmlToPlainText(c), {type:'goal',id:editState.id}, 'ge'+editState.id); }
   else if(editState.type==='sheet'){ const t=document.getElementById('es-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`sheets/${editState.id}`),{title:t,content:document.getElementById('es-content').value.trim(),url:document.getElementById('es-url').value.trim()}); }
-  else if(editState.type==='cal'){ const t=document.getElementById('ec-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} update(ref(db,`calendarEvents/${editState.date}/${editState.eventId}`),{title:t,content:document.getElementById('ec-content').value.trim()}); renderCalPanel(editState.date); }
+  else if(editState.type==='cal'){ const t=document.getElementById('ec-title').value.trim(); if(!t){alert('제목을 입력해 주세요.');return;} const c=document.getElementById('ec-content').value.trim(); update(ref(db,`calendarEvents/${editState.date}/${editState.eventId}`),{title:t,content:c}); saveMentions(t+' '+c, {type:'cal',id:editState.eventId,date:editState.date}, 'ce'+editState.eventId); renderCalPanel(editState.date); }
   document.getElementById('editModalBg').classList.remove('open'); editState=null;
 }
 window.openGoalEdit=openGoalEdit; window.openSheetEdit=openSheetEdit; window.openCalEdit=openCalEdit;
@@ -1407,11 +1524,628 @@ function attachAllRichEditors(root){
   });
 }
 
+// ===================================================================
+// v2.0.0 Mention System
+// ===================================================================
+
+// --- users 노드 자동 등록 (접속 시 호출) ---
+function registerUser(){
+  if(!currentUser?.uid) return;
+  const uid=currentUser.uid.replace(/\./g,'_');
+  update(ref(db,`users/${uid}`),{
+    name: myName,
+    email: currentUser.email||'',
+    lastSeen: Date.now()
+  });
+}
+function listenUsers(){
+  onValue(ref(db,'users'), s=>{
+    usersData = s.val()||{};
+  });
+}
+
+// name(팀원 이름)으로 uid 찾기
+function findUidByName(name){
+  if(!name) return null;
+  for(const uid in usersData){
+    if(usersData[uid]?.name === name) return uid;
+  }
+  return null;
+}
+// 모든 팀원 이름 배열 (자동완성용)
+function getAllUserNames(){
+  return Object.values(usersData).map(u=>u?.name).filter(Boolean);
+}
+
+// --- 멘션 파싱 ---
+// 텍스트에서 @이름 패턴 추출 (usersData에 존재하는 이름만)
+function parseMentions(text){
+  if(!text) return [];
+  const names = getAllUserNames();
+  if(!names.length) return [];
+  // 긴 이름부터 매칭 (부분 이름 겹침 방지)
+  const sorted = [...names].sort((a,b)=>b.length-a.length);
+  const found = new Set();
+  sorted.forEach(n=>{
+    // 이름에 특수문자 escape
+    const esc = n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const re = new RegExp('@'+esc+'(?![a-zA-Z0-9가-힣_])', 'g');
+    if(re.test(text)) found.add(n);
+  });
+  return Array.from(found);
+}
+
+// HTML 포함된 rich editor 내용에서 plain text 추출
+function htmlToPlainText(html){
+  if(!html) return '';
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+// --- 멘션 저장/삭제 ---
+// 멘션 기록 저장 (대상 uid의 mentions 노드에 push)
+// loc: { type:'goal'|'notice-op'|'notice-fn'|'cal'|'goal-cmt'|'notice-cmt-op'|'notice-cmt-fn'|'cal-cmt', ...식별자 }
+function saveMentions(text, loc, sourceKey){
+  if(!currentUser) return;
+  const myUid = currentUser.uid.replace(/\./g,'_');
+  const names = parseMentions(text);
+  if(!names.length) return;
+  const previewSrc = text.length>80 ? text.slice(0,80)+'…' : text;
+  names.forEach(name=>{
+    const uid = findUidByName(name);
+    if(!uid) return;
+    if(uid === myUid) return;  // 자기 자신 멘션은 알림 안 함
+    const mid = (sourceKey||'m')+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);
+    set(ref(db,`mentions/${uid}/${mid}`),{
+      from: myName,
+      fromUid: myUid,
+      text: previewSrc,
+      loc: loc,
+      ts: Date.now(),
+      read: false
+    });
+  });
+}
+// 수정 시: 해당 sourceKey로 시작하는 이전 멘션들 정리 후 재저장
+// (간단화: 기존 멘션 그대로 두고 새로운 것만 추가하는 방식으로 일단 진행)
+
+function listenMentions(){
+  if(!currentUser?.uid) return;
+  const myUid = currentUser.uid.replace(/\./g,'_');
+  onValue(ref(db,`mentions/${myUid}`), s=>{
+    mentionsData = s.val()||{};
+    updateMentionBadge();
+    if(curTab==='home') renderDashboard();  // 홈에서 열려있으면 갱신
+  });
+}
+function getUnreadMentions(){
+  return Object.entries(mentionsData)
+    .filter(([,m])=>m && !m.read)
+    .sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+}
+function updateMentionBadge(){
+  const badge = document.getElementById('mentionBadge');
+  if(!badge) return;
+  const n = getUnreadMentions().length;
+  badge.textContent = n;
+  badge.style.display = n>0 ? 'inline-flex' : 'none';
+}
+window._markMentionRead = function(mid){
+  if(!currentUser?.uid) return;
+  const myUid = currentUser.uid.replace(/\./g,'_');
+  update(ref(db,`mentions/${myUid}/${mid}`), { read: true });
+};
+window._markAllMentionsRead = function(){
+  if(!currentUser?.uid) return;
+  const myUid = currentUser.uid.replace(/\./g,'_');
+  const unread = getUnreadMentions();
+  unread.forEach(([mid])=>{
+    update(ref(db,`mentions/${myUid}/${mid}`), { read: true });
+  });
+};
+// 멘션 삭제 (홈에서 X 버튼 / 전체 삭제)
+window._deleteMention = function(mid){
+  if(!currentUser?.uid) return;
+  const myUid = currentUser.uid.replace(/\./g,'_');
+  remove(ref(db,`mentions/${myUid}/${mid}`));
+};
+
+// 멘션 클릭 → 해당 위치로 네비게이션
+window._navigateToMention = function(mid){
+  const m = mentionsData[mid];
+  if(!m) return;
+  window._markMentionRead(mid);
+  // 종 드롭다운 닫기
+  document.getElementById('mentionDropdown')?.classList.remove('open');
+  const loc = m.loc||{};
+  switch(loc.type){
+    case 'goal':
+    case 'goal-cmt':
+      switchTab('goals');
+      setTimeout(()=>{
+        const body = document.getElementById('gbody-'+loc.id);
+        if(body && !body.classList.contains('open')){
+          body.classList.add('open');
+          document.getElementById('gchev-'+loc.id)?.classList.add('open');
+          if(typeof renderComments==='function') renderComments(loc.id);
+        }
+        body?.closest('.goal-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+      }, 120);
+      break;
+    case 'notice-op':
+    case 'notice-cmt-op':
+      switchTab('notice');
+      setTimeout(()=>{
+        const body = document.getElementById('nbody-'+loc.id);
+        if(body && !body.classList.contains('open')){
+          body.classList.add('open');
+          document.getElementById('nchev-'+loc.id)?.classList.add('open');
+          document.getElementById('ncmt-'+loc.id)?.classList.add('open');
+        }
+        body?.closest('.notice-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+      }, 120);
+      break;
+    case 'notice-fn':
+    case 'notice-cmt-fn':
+      switchTab('notice2');
+      setTimeout(()=>{
+        const body = document.getElementById('nbody-'+loc.id);
+        if(body && !body.classList.contains('open')){
+          body.classList.add('open');
+          document.getElementById('nchev-'+loc.id)?.classList.add('open');
+          document.getElementById('ncmt-'+loc.id)?.classList.add('open');
+        }
+        body?.closest('.notice-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+      }, 120);
+      break;
+    case 'cal':
+    case 'cal-cmt':
+      switchTab('calendar');
+      setTimeout(()=>{
+        if(loc.date && typeof renderCalPanel==='function'){
+          selectedCalDate = loc.date;
+          renderCalPanel(loc.date);
+        }
+      }, 120);
+      break;
+  }
+};
+
+// --- @ 자동완성 ---
+// 어느 곳이든 @ 후 한글/영문/숫자를 타이핑하면 팀원 목록 드롭다운
+// 지원 대상: <input>, <textarea>, [contenteditable]
+let mentionAutoCtx = null; // {el, startPos, query, type:'input'|'ce'}
+
+function _mentionDropdownEl(){
+  let d = document.getElementById('mentionAutoPopup');
+  if(!d){
+    d = document.createElement('div');
+    d.id = 'mentionAutoPopup';
+    d.className = 'mention-auto-popup';
+    d.style.display = 'none';
+    document.body.appendChild(d);
+  }
+  return d;
+}
+function hideMentionAuto(){
+  mentionAutoCtx = null;
+  const d = document.getElementById('mentionAutoPopup');
+  if(d) d.style.display='none';
+}
+function showMentionAuto(names, rect){
+  const d = _mentionDropdownEl();
+  if(!names.length){ hideMentionAuto(); return; }
+  d.innerHTML = names.map((n,i)=>`<div class="mention-auto-item${i===0?' active':''}" data-idx="${i}" data-name="${n.replace(/"/g,'&quot;')}">${n}</div>`).join('');
+  d.style.display='block';
+  d.style.left = (rect.left)+'px';
+  d.style.top  = (rect.top + rect.height + window.scrollY)+'px';
+  // 클릭 핸들러
+  d.querySelectorAll('.mention-auto-item').forEach(item=>{
+    item.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const name = item.getAttribute('data-name');
+      _applyMentionAuto(name);
+    });
+  });
+}
+function _setActiveMentionItem(delta){
+  const d = document.getElementById('mentionAutoPopup');
+  if(!d||d.style.display==='none') return;
+  const items = d.querySelectorAll('.mention-auto-item');
+  if(!items.length) return;
+  let cur = Array.from(items).findIndex(it=>it.classList.contains('active'));
+  if(cur<0) cur=0;
+  items[cur].classList.remove('active');
+  cur = (cur+delta+items.length)%items.length;
+  items[cur].classList.add('active');
+  items[cur].scrollIntoView({block:'nearest'});
+}
+function _confirmActiveMentionItem(){
+  const d = document.getElementById('mentionAutoPopup');
+  if(!d||d.style.display==='none') return false;
+  const act = d.querySelector('.mention-auto-item.active');
+  if(!act) return false;
+  const name = act.getAttribute('data-name');
+  _applyMentionAuto(name);
+  return true;
+}
+function _applyMentionAuto(name){
+  if(!mentionAutoCtx) return;
+  const {el, startPos, type} = mentionAutoCtx;
+  if(type==='input'||type==='textarea'){
+    const v = el.value;
+    const before = v.slice(0, startPos);         // @ 포함 이전
+    const after  = v.slice(el.selectionEnd);
+    const insert = '@'+name+' ';
+    el.value = before + insert + after;
+    const newPos = before.length + insert.length;
+    el.setSelectionRange(newPos, newPos);
+    el.focus();
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+  } else if(type==='ce'){
+    // contenteditable: 저장된 range로 @ 이후 텍스트 교체
+    const range = mentionAutoCtx.range;
+    if(!range) { hideMentionAuto(); return; }
+    try{
+      range.deleteContents();
+      const t = document.createTextNode('@'+name+' ');
+      range.insertNode(t);
+      // 커서를 삽입 텍스트 뒤로
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      const r2 = document.createRange();
+      r2.setStartAfter(t);
+      r2.collapse(true);
+      sel.addRange(r2);
+    }catch(e){}
+  }
+  hideMentionAuto();
+}
+
+// input/textarea 대상 자동완성 탐지
+function _checkMentionAutoInput(el){
+  if(!el) return;
+  const type = el.tagName==='TEXTAREA'?'textarea':'input';
+  const v = el.value;
+  const pos = el.selectionStart;
+  // 커서 이전 문자에서 가장 가까운 @ 찾기
+  let i = pos-1;
+  while(i>=0){
+    const ch = v[i];
+    if(ch==='@') break;
+    if(/[\s\n]/.test(ch)) { hideMentionAuto(); return; }
+    i--;
+  }
+  if(i<0) { hideMentionAuto(); return; }
+  // i 앞이 문장 시작이거나 공백이어야 함
+  if(i>0 && !/[\s\n]/.test(v[i-1])) { hideMentionAuto(); return; }
+  const query = v.slice(i+1, pos).toLowerCase();
+  const allNames = getAllUserNames().filter(n=>n!==myName);
+  const matched = allNames.filter(n=>n.toLowerCase().includes(query)).slice(0,8);
+  if(!matched.length){ hideMentionAuto(); return; }
+  const rect = el.getBoundingClientRect();
+  mentionAutoCtx = { el, startPos: i, query, type };
+  // 간단히 input/textarea 아래로 표시 (정확한 커서 위치 계산은 복잡하므로 element 기준)
+  showMentionAuto(matched, rect);
+}
+
+// contenteditable 대상 자동완성 탐지
+function _checkMentionAutoCE(el){
+  if(!el) return;
+  const sel = window.getSelection();
+  if(!sel || sel.rangeCount===0){ hideMentionAuto(); return; }
+  const range = sel.getRangeAt(0);
+  if(!el.contains(range.commonAncestorContainer)){ hideMentionAuto(); return; }
+  // 커서 앞 텍스트 추출 (범위를 에디터 시작부터 커서까지로 설정)
+  const preRange = document.createRange();
+  preRange.selectNodeContents(el);
+  preRange.setEnd(range.endContainer, range.endOffset);
+  const preText = preRange.toString();
+  // 가장 가까운 @ 찾기
+  let i = preText.length-1;
+  while(i>=0){
+    const ch = preText[i];
+    if(ch==='@') break;
+    if(/[\s\n]/.test(ch)){ hideMentionAuto(); return; }
+    i--;
+  }
+  if(i<0){ hideMentionAuto(); return; }
+  if(i>0 && !/[\s\n]/.test(preText[i-1])){ hideMentionAuto(); return; }
+  const query = preText.slice(i+1).toLowerCase();
+  const allNames = getAllUserNames().filter(n=>n!==myName);
+  const matched = allNames.filter(n=>n.toLowerCase().includes(query)).slice(0,8);
+  if(!matched.length){ hideMentionAuto(); return; }
+
+  // @ 위치부터 커서까지의 range 저장 (삽입 시 교체 대상)
+  // 현재 커서 range를 복제하되 시작점을 @ 위치로 조정
+  // preText 기반으로 @ 노드를 찾기는 복잡 → 간단히 startContainer/offset 기반으로 조정
+  const delLen = preText.length - i;  // 삭제할 문자 수 (@ 포함)
+  const targetRange = document.createRange();
+  targetRange.setEnd(range.endContainer, range.endOffset);
+  // 역방향으로 delLen만큼 이동하여 시작점 설정
+  let remaining = delLen;
+  let node = range.endContainer;
+  let offset = range.endOffset;
+  while(remaining>0 && node){
+    if(node.nodeType===3){ // text
+      if(offset >= remaining){
+        offset -= remaining; remaining = 0;
+      } else {
+        remaining -= offset; offset = 0;
+      }
+    }
+    if(remaining>0){
+      // 이전 노드로 이동
+      let prev = node.previousSibling;
+      if(!prev){
+        let p = node.parentNode;
+        while(p && !p.previousSibling && p!==el) p = p.parentNode;
+        if(!p || p===el) break;
+        prev = p.previousSibling;
+      }
+      // 가장 깊은 끝 위치로
+      while(prev && prev.lastChild) prev = prev.lastChild;
+      node = prev;
+      offset = node && node.nodeType===3 ? node.length : 0;
+    }
+  }
+  if(node){
+    try{ targetRange.setStart(node, offset); }catch(e){}
+  }
+
+  const caretRect = range.getBoundingClientRect();
+  const edRect = el.getBoundingClientRect();
+  const rect = (caretRect && caretRect.height>0) ? {
+    left: caretRect.left, top: caretRect.top - window.scrollY, height: caretRect.height
+  } : { left: edRect.left, top: edRect.top - window.scrollY, height: edRect.height };
+
+  mentionAutoCtx = { el, startPos: i, query, type:'ce', range: targetRange };
+  showMentionAuto(matched, rect);
+}
+
+// 공통 키 핸들러 (arrow/enter/esc 처리)
+function _mentionAutoKeydown(e){
+  const d = document.getElementById('mentionAutoPopup');
+  if(!d || d.style.display==='none') return false;
+  if(e.key==='ArrowDown'){ e.preventDefault(); _setActiveMentionItem(1); return true; }
+  if(e.key==='ArrowUp')  { e.preventDefault(); _setActiveMentionItem(-1); return true; }
+  if(e.key==='Enter' || e.key==='Tab'){
+    if(_confirmActiveMentionItem()){ e.preventDefault(); return true; }
+  }
+  if(e.key==='Escape'){ hideMentionAuto(); return true; }
+  return false;
+}
+
+// 입력 요소에 자동완성 바인딩
+function bindMentionAutocomplete(el){
+  if(!el || el.dataset.mbind==='1') return;
+  el.dataset.mbind='1';
+  const isCE = el.isContentEditable || el.getAttribute('contenteditable')==='true';
+  const detect = isCE ? _checkMentionAutoCE : _checkMentionAutoInput;
+  el.addEventListener('input', ()=>detect(el));
+  el.addEventListener('click', ()=>detect(el));
+  el.addEventListener('keyup', (e)=>{
+    // 키 핸들러가 먼저 처리 안 한 경우만
+    if(['ArrowDown','ArrowUp','Enter','Tab','Escape'].includes(e.key)) return;
+    detect(el);
+  });
+  el.addEventListener('keydown', (e)=>{
+    if(_mentionAutoKeydown(e)){
+      // 자동완성이 처리한 키(특히 Enter)는 inline onkeydown(댓글 등록 등) 실행 방지
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+    }
+  }, true);  // capture 단계 등록 → inline 속성 리스너보다 먼저 실행
+  el.addEventListener('blur', ()=>{
+    // 약간 지연 (드롭다운 클릭 시간 확보)
+    setTimeout(()=>{
+      if(!document.getElementById('mentionAutoPopup')?.matches(':hover')) hideMentionAuto();
+    }, 150);
+  });
+}
+// 페이지 내 모든 멘션 대상 입력에 바인딩
+function bindAllMentionInputs(root){
+  (root||document).querySelectorAll('[data-mention="1"]').forEach(el=>{
+    if(el) bindMentionAutocomplete(el);
+  });
+}
+
+// 텍스트에 포함된 @이름을 HTML에서 파란색 강조로 치환 (렌더링용)
+function highlightMentionsHtml(html){
+  if(!html) return html;
+  const names = getAllUserNames();
+  if(!names.length) return html;
+  const sorted = [...names].sort((a,b)=>b.length-a.length);
+  let out = html;
+  sorted.forEach(n=>{
+    const esc = n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const re = new RegExp('@('+esc+')(?![a-zA-Z0-9가-힣_])','g');
+    out = out.replace(re, '<span class="mention-tag">@$1</span>');
+  });
+  return out;
+}
+function highlightMentionsText(text){
+  if(!text) return '';
+  // plain text → HTML escape 먼저 후 멘션 강조
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return highlightMentionsHtml(esc);
+}
+
+// ===== 홈 대시보드 렌더링 =====
+function renderDashboard(){
+  // 인사말
+  const gr = document.getElementById('dashGreeting');
+  if(gr){
+    const d = new Date(Date.now()+9*3600000);
+    const y=d.getUTCFullYear(), m=d.getUTCMonth()+1, dd=d.getUTCDate();
+    const dow=['일','월','화','수','목','금','토'][d.getUTCDay()];
+    gr.innerHTML = `👋 안녕하세요, <strong>${myName}</strong>님<span class="dg-date">${y}년 ${m}월 ${dd}일 ${dow}요일</span>`;
+  }
+  renderDashMyProgress();
+  renderDashUrgent();
+  renderDashUnreadNotices();
+}
+
+// 내 진행 중 목표 (progBy에 내 이름, doneBy 없음)
+function renderDashMyProgress(){
+  const list = document.getElementById('dashMyProgList');
+  const cnt  = document.getElementById('dashMyProgCount');
+  if(!list||!cnt) return;
+  const active = Object.values(goalsData||{}).filter(g=>{
+    if(g.doneBy) return false;
+    const prog = g.progBy ? Object.values(g.progBy) : [];
+    return prog.includes(myName);
+  });
+  // 우선순위·기한순 정렬
+  const priOrder = {high:0, mid:1, low:2};
+  active.sort((a,b)=>{
+    const p = (priOrder[a.priority]??1) - (priOrder[b.priority]??1);
+    if(p!==0) return p;
+    if(a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+    if(a.deadline) return -1;
+    if(b.deadline) return 1;
+    return 0;
+  });
+  cnt.textContent = active.length;
+  if(!active.length){ list.innerHTML = '<div class="dash-empty">진행 중인 목표가 없습니다</div>'; return; }
+  const priMap = {high:{label:'높음',cls:'pri-high'}, mid:{label:'중간',cls:'pri-mid'}, low:{label:'낮음',cls:'pri-low'}};
+  const todayStr = today;
+  list.innerHTML = active.map(g=>{
+    const pri = priMap[g.priority]||priMap.mid;
+    let meta = '';
+    if(g.deadline){
+      const diff = Math.round((new Date(g.deadline)-new Date(todayStr))/86400000);
+      const urgentCls = diff<=3 ? 'urgent' : '';
+      meta = `<span class="dash-item-meta ${urgentCls}">D${diff>=0?'-'+diff:'+'+Math.abs(diff)} · ${g.deadline}</span>`;
+    }
+    return `<div class="dash-item" onclick="window._goToGoals('${g.id}')">
+      <span class="dash-item-pri ${pri.cls}">${pri.label}</span>
+      <div class="dash-item-title">${g.title||''}</div>
+      ${meta}
+    </div>`;
+  }).join('');
+}
+
+// 기한 임박 (3일 이내, 미완료) — 내 것이 아니어도
+function renderDashUrgent(){
+  const list = document.getElementById('dashUrgentList');
+  const cnt  = document.getElementById('dashUrgentCount');
+  if(!list||!cnt) return;
+  const todayStr = today;
+  const thr = new Date(new Date(todayStr).getTime()+3*86400000).toISOString().split('T')[0];
+  const items = Object.values(goalsData||{})
+    .filter(g=>!g.doneBy && g.deadline && g.deadline<=thr)
+    .sort((a,b)=>a.deadline.localeCompare(b.deadline));
+  cnt.textContent = items.length;
+  if(!items.length){ list.innerHTML = '<div class="dash-empty">기한 임박 목표가 없습니다</div>'; return; }
+  const priMap = {high:{label:'높음',cls:'pri-high'}, mid:{label:'중간',cls:'pri-mid'}, low:{label:'낮음',cls:'pri-low'}};
+  list.innerHTML = items.map(g=>{
+    const pri = priMap[g.priority]||priMap.mid;
+    const diff = Math.round((new Date(g.deadline)-new Date(todayStr))/86400000);
+    const urgentCls = diff<=1 ? 'urgent' : '';
+    return `<div class="dash-item" onclick="window._goToGoals('${g.id}')">
+      <span class="dash-item-pri ${pri.cls}">${pri.label}</span>
+      <div class="dash-item-title">${g.title||''}</div>
+      <span class="dash-item-meta ${urgentCls}">${diff<0?'D+'+Math.abs(diff)+' 지남':diff===0?'D-Day':'D-'+diff}</span>
+    </div>`;
+  }).join('');
+}
+
+// 읽지 않은 공지 (운영 + 기능 합쳐서)
+function renderDashUnreadNotices(){
+  const list = document.getElementById('dashUnreadList');
+  const cnt  = document.getElementById('dashUnreadCount');
+  if(!list||!cnt) return;
+  if(!currentUser){ list.innerHTML='<div class="dash-empty">-</div>'; cnt.textContent='0'; return; }
+  const uid = currentUser.uid.replace(/\./g,'_');
+  const items = [];
+  ['op','fn'].forEach(type=>{
+    const nd = noticesData[type]||{};
+    const rd = noticeReadsData[type]||{};
+    Object.entries(nd).forEach(([nid,n])=>{
+      if(!rd[nid]?.[uid]){ items.push({nid, n, type}); }
+    });
+  });
+  items.sort((a,b)=>(b.n.ts||0)-(a.n.ts||0));
+  cnt.textContent = items.length;
+  if(!items.length){ list.innerHTML = '<div class="dash-empty">읽지 않은 공지가 없습니다</div>'; return; }
+  list.innerHTML = items.slice(0, 8).map(({nid,n,type})=>{
+    const fn = () => window._openNoticeFromDash(nid, type);
+    const tag = type==='op'?'운영':'기능';
+    return `<div class="dash-item" onclick="window._openNoticeFromDash('${nid}','${type}')">
+      <span class="dash-notice-cat">${tag}</span>
+      <span class="dash-notice-cat" style="background:#f0e8d8;color:#5a4a28">${n.cat||'기타'}</span>
+      <div class="dash-item-title">${n.title||'(제목 없음)'}</div>
+      <span class="dash-item-meta">${n.author||''}</span>
+    </div>`;
+  }).join('');
+}
+window._openNoticeFromDash = function(nid, type){
+  switchTab(type==='op' ? 'notice' : 'notice2');
+  setTimeout(()=>{
+    const body = document.getElementById('nbody-'+nid);
+    if(body && !body.classList.contains('open')){
+      body.classList.add('open');
+      document.getElementById('nchev-'+nid)?.classList.add('open');
+      document.getElementById('ncmt-'+nid)?.classList.add('open');
+    }
+    body?.closest('.notice-card')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 120);
+};
+
+// ===== 멘션 드롭다운 =====
+window._toggleMentionDropdown = function(e){
+  e?.stopPropagation();
+  const d = document.getElementById('mentionDropdown');
+  if(!d) return;
+  const opening = !d.classList.contains('open');
+  d.classList.toggle('open');
+  if(opening){
+    renderMentionDropdown();
+    // 외부 클릭 감지 (한번만)
+    setTimeout(()=>{
+      const handler = (ev)=>{
+        if(!d.contains(ev.target) && !document.getElementById('bellWrap').contains(ev.target)){
+          d.classList.remove('open');
+          document.removeEventListener('click', handler);
+        }
+      };
+      document.addEventListener('click', handler);
+    }, 0);
+  }
+};
+function renderMentionDropdown(){
+  const list = document.getElementById('mentionDropList');
+  if(!list) return;
+  const all = Object.entries(mentionsData||{})
+    .filter(([,m])=>m)
+    .sort((a,b)=>(b[1].ts||0)-(a[1].ts||0))
+    .slice(0, 30);
+  if(!all.length){ list.innerHTML = '<div class="mention-empty">아직 멘션이 없습니다</div>'; return; }
+  const locLabel = {
+    'goal':'센터 목표','goal-cmt':'목표 댓글',
+    'notice-op':'운영 공지','notice-cmt-op':'운영 공지 댓글',
+    'notice-fn':'기능 공지','notice-cmt-fn':'기능 공지 댓글',
+    'cal':'센터 일정','cal-cmt':'일정 댓글'
+  };
+  list.innerHTML = all.map(([mid,m])=>{
+    const lbl = locLabel[m.loc?.type]||'알림';
+    const when = fmtTs(m.ts||Date.now());
+    const unreadCls = m.read ? '' : 'unread';
+    return `<div class="mention-item ${unreadCls}" onclick="window._navigateToMention('${mid}')">
+      <div class="mention-src"><span class="mention-loc-tag">${lbl}</span>${m.from||'?'} · ${when}</div>
+      <div class="mention-preview">${highlightMentionsText(m.text||'')}</div>
+      <button class="mention-del" onclick="event.stopPropagation();window._deleteMention('${mid}')" title="삭제">×</button>
+    </div>`;
+  }).join('');
+}
+
 // 탭
-const PAGES=['todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage','noticePage2'];
+const PAGES=['homePage','todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage','noticePage2'];
 function switchTab(tab){
   curTab=tab;
-  ['Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
+  ['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
   document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add('active');
   PAGES.forEach(p=>document.getElementById(p).style.display='none');
   setPageDesc('');
@@ -1419,7 +2153,11 @@ function switchTab(tab){
   document.getElementById('btnReset').style.display='none';
   document.getElementById('btnAdd').style.display='none';
 
-  if(tab==='day'||tab==='night'){
+  if(tab==='home'){
+    document.getElementById('homePage').style.display='block';
+    document.getElementById('pageTitle').textContent='홈'; setDateLabel();
+    renderDashboard();
+  } else if(tab==='day'||tab==='night'){
     document.getElementById('todoPage').style.display='block';
     document.getElementById('btnReset').style.display='inline-block';
     document.getElementById('btnAdd').style.display='inline-block';
@@ -1475,7 +2213,7 @@ function switchTab(tab){
     renderNotices('fn');
   }
 }
-['Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
+['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
 
 // 추가 버튼
 document.getElementById('btnAdd').addEventListener('click',()=>{
@@ -1778,7 +2516,7 @@ function renderNotices(type){
           <label>제목</label><input id="nedit-title-${nid}" value="${(n.title||'').replace(/"/g,'&quot;')}">
           <label>내용</label>
           <div id="nedit-content-${nid}_tb"></div>
-          <div class="rich-editor" id="nedit-content-${nid}" contenteditable="true" data-placeholder="공지 내용..." data-rt="1">${n.content||''}</div>
+          <div class="rich-editor" id="nedit-content-${nid}" contenteditable="true" data-placeholder="공지 내용..." data-rt="1" data-mention="1">${n.content||''}</div>
           <label>슬랙 링크</label><input id="nedit-slack-${nid}" type="url" value="${n.slackUrl||''}">
           <div class="notice-edit-btns">
             <button class="btn-cancel-sm" onclick="document.getElementById('nedit-${nid}').classList.remove('open')">취소</button>
@@ -1795,13 +2533,14 @@ function renderNotices(type){
         <div class="notice-cmt-area" id="ncmt-${nid}">
           ${cmtHtml}
           <div class="notice-cmt-input-wrap">
-            <input class="notice-cmt-input" id="ncmtIn-${nid}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._addNoticeCmt('${nid}','${type}')">
+            <input class="notice-cmt-input" id="ncmtIn-${nid}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._addNoticeCmt('${nid}','${type}')">
             <button class="notice-cmt-send" onclick="window._addNoticeCmt('${nid}','${type}')">등록</button>
           </div>
         </div>
       </div>
     </div>`;
   }).join('');
+  bindAllMentionInputs();
 }
 
 
@@ -1833,12 +2572,14 @@ window._addNotice=function(type){
   const dbPath=type==='op'?'notices':'notices2';
   const contentId=type==='op'?'noticeContent':'noticeContent2';
   const slackId=type==='op'?'noticeSlack':'noticeSlack2';
+  const content=rtGet(contentId);
   set(ref(db,`${dbPath}/${id}`),{
     title, cat,
-    content:rtGet(contentId),
+    content,
     slackUrl:document.getElementById(slackId)?.value.trim()||'',
     author:uname, authorId:uid, date:today, ts:Date.now()
   });
+  saveMentions(title+' '+htmlToPlainText(content), {type:type==='op'?'notice-op':'notice-fn', id}, 'n'+id);
   // 입력 필드 초기화 (input/rich editor 각각)
   const tEl=document.getElementById(titleId); if(tEl) tEl.value='';
   const sEl=document.getElementById(slackId); if(sEl) sEl.value='';
@@ -1863,6 +2604,7 @@ window._saveNoticeEdit=function(nid,type){
   const slackUrl=(document.getElementById('nedit-slack-'+nid)?.value||'').trim();
   const dbPath=type==='op'?'notices':'notices2';
   update(ref(db,`${dbPath}/${nid}`),{title,cat,content,slackUrl});
+  saveMentions(title+' '+htmlToPlainText(content), {type:type==='op'?'notice-op':'notice-fn', id:nid}, 'ne'+nid);
   document.getElementById('nedit-'+nid)?.classList.remove('open');
 };
 window._deleteNotice=function(nid,type){
@@ -1883,6 +2625,7 @@ window._addNoticeCmt=function(nid,type){
   const cid='cmt-'+Date.now();
   const cmtPath=type==='op'?'noticeComments':'noticeComments2';
   set(ref(db,`${cmtPath}/${nid}/${cid}`),{text,name:uname,date:today,ts:Date.now()});
+  saveMentions(text, {type:type==='op'?'notice-cmt-op':'notice-cmt-fn', id:nid, cmtId:cid}, 'nc'+cid);
   el.value='';
 };
 document.getElementById('noticeSearchInput')?.addEventListener('input',()=>renderNotices('op'));
@@ -2268,7 +3011,7 @@ function updateCalBadge(){
 }
 
 function addTodo(){ const text=document.getElementById('newText').value.trim(); if(!text) return; const id=`${curTab}-custom-${Date.now()}`, item={id,text,order:todayData[curTab].length,progBy:{},doneBy:null,custom:true}; set(ref(db,`todos/${curTab}/${today}/${id}`),item); set(ref(db,`customItems/${curTab}/${id}`),{id,text,order:item.order}); document.getElementById('newText').value=''; document.getElementById('addForm').classList.remove('open'); }
-function addGoal(){ const title=document.getElementById('goalTitle').value.trim(); if(!title){alert('목표 제목을 입력해 주세요.');return;} const nr=push(ref(db,'goals')); set(nr,{id:nr.key,title,content:rtGet('goalContent'),priority:document.getElementById('goalPriority').value,deadline:document.getElementById('goalDeadline').value||null,slackUrl:document.getElementById('goalSlack').value.trim(),createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,progBy:{},doneBy:null,doneAt:null}); ['goalTitle','goalSlack'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); rtClear('goalContent'); document.getElementById('goalPriority').value='mid'; document.getElementById('goalDeadline').value=''; document.getElementById('goalForm').classList.remove('open'); }
+function addGoal(){ const title=document.getElementById('goalTitle').value.trim(); if(!title){alert('목표 제목을 입력해 주세요.');return;} const nr=push(ref(db,'goals')); const content=rtGet('goalContent'); set(nr,{id:nr.key,title,content,priority:document.getElementById('goalPriority').value,deadline:document.getElementById('goalDeadline').value||null,slackUrl:document.getElementById('goalSlack').value.trim(),createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,progBy:{},doneBy:null,doneAt:null}); saveMentions(title+' '+htmlToPlainText(content), {type:'goal',id:nr.key}, 'g'+nr.key); ['goalTitle','goalSlack'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';}); rtClear('goalContent'); document.getElementById('goalPriority').value='mid'; document.getElementById('goalDeadline').value=''; document.getElementById('goalForm').classList.remove('open'); }
 function addSheet(){ const title=document.getElementById('sheetTitle').value.trim(); if(!title){alert('시트 제목을 입력해 주세요.');return;} const url=document.getElementById('sheetUrl').value.trim(); if(!url){alert('링크 주소를 입력해 주세요.');return;} const nr=push(ref(db,'sheets')); set(nr,{id:nr.key,title,content:document.getElementById('sheetContent').value.trim(),url,createdBy:myName,createdAt:today,lastUpdatedAt:today,prevUpdatedAt:null,order:Object.keys(sheetsData).length}); ['sheetTitle','sheetContent','sheetUrl'].forEach(id=>document.getElementById(id).value=''); document.getElementById('sheetForm').classList.remove('open'); }
 
 // 달력
@@ -2356,7 +3099,7 @@ function renderCalPanel(dateStr){
         <div id="cal-cmts-${e.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.06);">
           <div id="cal-clist-${e.id}"></div>
           <div class="comment-form" style="margin-top:8px;">
-            <input class="comment-input" type="text" id="cal-cinput-${e.id}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._calAddComment('${dateStr}','${e.id}')">
+            <input class="comment-input" type="text" id="cal-cinput-${e.id}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._calAddComment('${dateStr}','${e.id}')">
             <button class="comment-submit" onclick="window._calAddComment('${dateStr}','${e.id}')">등록</button>
           </div>
         </div>
@@ -2366,6 +3109,7 @@ function renderCalPanel(dateStr){
 
   if(!html) html='<div class="cal-no-events">등록된 일정이 없습니다</div>';
   listEl.innerHTML=html;
+  bindAllMentionInputs();
 }
 
 window._goToGoals=function(goalId){
@@ -2399,8 +3143,10 @@ window._calSelectDate=function(dateStr){
 function addCalEvent(){
   const title=document.getElementById('calEventTitle').value.trim(); if(!title){alert('일정 제목을 입력해 주세요.');return;}
   if(!selectedCalDate) return;
+  const content=document.getElementById('calEventContent').value.trim();
   const nr=push(ref(db,`calendarEvents/${selectedCalDate}`));
-  set(nr,{id:nr.key,title,content:document.getElementById('calEventContent').value.trim(),createdBy:myName,createdAt:kstDateTimeStr()});
+  set(nr,{id:nr.key,title,content,createdBy:myName,createdAt:kstDateTimeStr()});
+  saveMentions(title+' '+content, {type:'cal',id:nr.key,date:selectedCalDate}, 'c'+nr.key);
   document.getElementById('calEventTitle').value=''; document.getElementById('calEventContent').value='';
 }
 window._calDeleteEvent=function(dateStr,eventId){ if(!confirm('일정을 삭제할까요?')) return; remove(ref(db,`calendarEvents/${dateStr}/${eventId}`)); remove(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); };
@@ -2419,7 +3165,7 @@ window._calToggleComments=function(dateStr,eventId){
   el.style.display=isOpen?'none':'block';
   if(!isOpen) renderCalComments(dateStr,eventId);
 };
-window._calAddComment=function(dateStr,eventId){ const inp=document.getElementById('cal-cinput-'+eventId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); inp.value=''; };
+window._calAddComment=function(dateStr,eventId){ const inp=document.getElementById('cal-cinput-'+eventId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`calendarEventComments/${dateStr}/${eventId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); saveMentions(text, {type:'cal-cmt',id:eventId,cmtId:nr.key,date:dateStr}, 'cc'+nr.key); inp.value=''; };
 window._calEditComment=function(dateStr,eventId,commentId){ const el=document.getElementById('cal-ctext-'+commentId); if(!el) return; const cur=calCommentsData[dateStr]?.[eventId]?.[commentId]; if(!cur) return; el.innerHTML=`<input style="width:100%;padding:4px 8px;border-radius:6px;border:0.5px solid #185fa5;background:#f9f8f5;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none;" id="cal-cedit-${commentId}" value="${cur.text.replace(/"/g,'&quot;')}"><div style="display:flex;gap:6px;margin-top:4px;"><button class="comment-btn" onclick="window._calSaveComment('${dateStr}','${eventId}','${commentId}')">저장</button><button class="comment-btn" onclick="renderCalComments('${dateStr}','${eventId}')">취소</button></div>`; document.getElementById('cal-cedit-'+commentId)?.focus(); };
 window._calSaveComment=function(dateStr,eventId,commentId){ const inp=document.getElementById('cal-cedit-'+commentId); if(!inp) return; const val=inp.value.trim(); if(!val) return; update(ref(db,`calendarEventComments/${dateStr}/${eventId}/${commentId}`),{text:val,editedAt:kstDateTimeStr()}); };
 window._calDeleteComment=function(dateStr,eventId,commentId){ if(!confirm('댓글을 삭제할까요?')) return; remove(ref(db,`calendarEventComments/${dateStr}/${eventId}/${commentId}`)); };
@@ -2470,11 +3216,12 @@ function renderGoals(){
       }).join('');
       const sliderCol=progColor(prog||0);
       const progSection=`<div class="gb-section"><div class="gb-label">진행률</div><div class="prog-ctrl-wrap"><div class="prog-quick-row">${progQuickBtns}</div><div class="prog-slider-row"><input type="range" class="prog-slider" min="0" max="100" step="5" value="${prog||0}" style="accent-color:${sliderCol}" oninput="window._updateProgDisplay(this,'${g.id}')" onchange="window._setGoalProgress('${g.id}',parseInt(this.value))"><span class="prog-slider-val" id="pval-${g.id}" style="color:${sliderCol}">${prog||0}%</span></div></div></div>`;
-      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>${progBarHtml}</div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}">${progSection}<div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
+      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>${progBarHtml}</div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}">${progSection}<div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
     }).join('');
     return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`;
   }).join('');
   goals.forEach(g=>{ if(document.getElementById('gbody-'+g.id)?.classList.contains('open')) renderComments(g.id); });
+  bindAllMentionInputs();
 }
 
 window._goalToggle=function(id){ document.getElementById('gchev-'+id)?.classList.toggle('open'); const body=document.getElementById('gbody-'+id); if(body){body.classList.toggle('open');if(body.classList.contains('open')) renderComments(id);} };
@@ -2491,7 +3238,7 @@ window._updateProgDisplay=function(el,id){
 };
 
 function renderComments(goalId){ const el=document.getElementById('comments-'+goalId); if(!el) return; const cmts=Object.values(commentsData[goalId]||{}).sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||'')); if(!cmts.length){el.innerHTML='<div style="font-size:12px;color:#888780;margin-bottom:8px">첫 댓글을 남겨보세요</div>';return;} el.innerHTML=cmts.map(c=>{ const isMe=c.author===myName; return `<div class="comment-item"><div class="comment-avatar">${c.author.slice(0,1).toUpperCase()}</div><div class="comment-body"><div class="comment-meta"><strong>${c.author}</strong> · ${c.createdAt||''}${c.editedAt?' (수정됨)':''}</div><div class="comment-text" id="ctext-${c.id}">${c.text}</div>${isMe?`<div class="comment-actions"><button class="comment-btn" onclick="window._editComment('${goalId}','${c.id}')">수정</button><button class="comment-btn" onclick="window._deleteComment('${goalId}','${c.id}')">삭제</button></div>`:''}</div></div>`; }).join(''); }
-window._addComment=function(goalId){ const inp=document.getElementById('cinput-'+goalId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`goalComments/${goalId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); inp.value=''; };
+window._addComment=function(goalId){ const inp=document.getElementById('cinput-'+goalId); if(!inp) return; const text=inp.value.trim(); if(!text) return; const nr=push(ref(db,`goalComments/${goalId}`)); set(nr,{id:nr.key,text,author:myName,createdAt:kstDateTimeStr(),editedAt:null}); saveMentions(text, {type:'goal-cmt',id:goalId,cmtId:nr.key}, 'gc'+nr.key); inp.value=''; };
 window._editComment=function(goalId,commentId){ const el=document.getElementById('ctext-'+commentId); if(!el) return; const cur=commentsData[goalId]?.[commentId]; if(!cur) return; el.innerHTML=`<input style="width:100%;padding:4px 8px;border-radius:6px;border:0.5px solid #185fa5;background:#f9f8f5;font-size:13px;color:#2c2c2a;font-family:inherit;outline:none;" id="cedit-${commentId}" value="${cur.text.replace(/"/g,'&quot;')}"><div style="display:flex;gap:6px;margin-top:4px;"><button class="comment-btn" onclick="window._saveComment('${goalId}','${commentId}')">저장</button><button class="comment-btn" onclick="renderComments('${goalId}')">취소</button></div>`; document.getElementById('cedit-'+commentId)?.focus(); };
 window._saveComment=function(goalId,commentId){ const inp=document.getElementById('cedit-'+commentId); if(!inp) return; const val=inp.value.trim(); if(!val) return; update(ref(db,`goalComments/${goalId}/${commentId}`),{text:val,editedAt:kstDateTimeStr()}); };
 window._deleteComment=function(goalId,commentId){ if(!confirm('댓글을 삭제할까요?')) return; remove(ref(db,`goalComments/${goalId}/${commentId}`)); };
