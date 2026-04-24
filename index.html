@@ -696,8 +696,8 @@ body.dark .prog-quick-btn { background: #1a1a1a; border-color: rgba(255,255,255,
 <div class="header">
   <div class="header-left">
     <h1 id="pageTitle">주간 업무 확인</h1>
-    <div class="subdate" id="dateLabel"></div>
     <div style="font-size:12px;color:#b4b2a9;margin-top:2px;display:none" id="pageDesc"></div>
+    <div class="subdate" id="dateLabel"></div>
     <div class="uname" id="usernameTag"></div>
   </div>
   <div class="header-right">
@@ -1266,14 +1266,14 @@ function switchTab(tab){
     document.getElementById('btnAdd').style.display='inline-block';
     document.getElementById('btnAdd').className='btn-primary btn-sheet';
     document.getElementById('btnAdd').textContent='+ 공지 작성';
-    document.getElementById('pageTitle').textContent='운영 공지'; setDateLabel(); setPageDesc('운영과 관련된 공지사항입니다.');
+    document.getElementById('pageTitle').textContent='운영 공지'; setPageDesc('운영과 관련된 공지사항입니다.'); setDateLabel();
     renderNotices('op');
   } else if(tab==='notice2'){
     document.getElementById('noticePage2').style.display='block';
     document.getElementById('btnAdd').style.display='inline-block';
     document.getElementById('btnAdd').className='btn-primary btn-sheet';
     document.getElementById('btnAdd').textContent='+ 공지 작성';
-    document.getElementById('pageTitle').textContent='기능 공지'; setDateLabel(); setPageDesc('업데이트 및 기능에 관한 공지사항입니다.');
+    document.getElementById('pageTitle').textContent='기능 공지'; setPageDesc('업데이트 및 기능에 관한 공지사항입니다.'); setDateLabel();
     renderNotices('fn');
   }
 }
