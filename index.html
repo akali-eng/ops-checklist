@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>단테의 어른 놀이터</title>
+<title>단테의 이안 팬클럽</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9f8f5; color: #2c2c2a; min-height: 100vh; transition: background 0.2s, color 0.2s; }
@@ -830,6 +830,29 @@ body.spring:not(.dark) #appPage { background: transparent; }
 }
 /* 다크 + 봄: 꽃잎 약간 진하게 */
 body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) brightness(1.1); }
+
+/* ===== v2.3.0 이안 테마 🌙 ===== */
+.btn-ian { background: linear-gradient(135deg, #2a3658, #4a5b8a); color: #d8e0f5; border: 0.5px solid #5a6a9a; border-radius: 9px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.btn-ian:hover { background: linear-gradient(135deg, #354570, #5a6ea8); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(74,91,138,0.4); }
+.btn-ian.active { background: linear-gradient(135deg, #5b6db0, #7a8dcf); color: #fff; border-color: #7a8dcf; box-shadow: 0 0 0 2px rgba(122,141,207,0.3); }
+body.dark .btn-ian { background: linear-gradient(135deg, #1a2440, #2a3658); color: #b8c4e0; border-color: #3a4868; }
+body.dark .btn-ian:hover { background: linear-gradient(135deg, #283358, #3a4870); }
+
+/* 이안 모드: 배경 이미지 */
+body.ian { background-image: url('https://raw.githubusercontent.com/akali-eng/ops-checklist/main/ian1.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat; }
+/* 가독성 보장: 배경 위에 어두운 오버레이 (라이트는 약하게, 다크는 진하게) */
+body.ian::before { content: ''; position: fixed; inset: 0; background: rgba(255,255,255,0.55); z-index: -1; pointer-events: none; backdrop-filter: blur(2px); }
+body.ian.dark::before { background: rgba(15,18,30,0.65); }
+body.ian .content-box, body.ian #appPage { background: transparent; }
+/* 카드 등에 미세한 배경 추가해 가독성 ↑ */
+body.ian:not(.dark) .dash-section,
+body.ian:not(.dark) .memo-card,
+body.ian:not(.dark) .goal-card,
+body.ian:not(.dark) .notice-card { background: rgba(255,255,255,0.92); backdrop-filter: blur(4px); }
+body.ian.dark .dash-section,
+body.ian.dark .memo-card,
+body.ian.dark .goal-card,
+body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: blur(4px); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -837,7 +860,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
 
 <div id="loginPage">
   <div class="login-card">
-    <h1>CLO - Check Log Operations</h1>
+    <h1>단테의 이안 팬클럽</h1>
     <p>계속하려면 로그인해 주세요</p>
     <div class="lf"><label>이메일</label><input type="email" id="loginEmail" placeholder="이메일 입력"></div>
     <div class="lf"><label>비밀번호</label><input type="password" id="loginPw" placeholder="비밀번호 입력"></div>
@@ -855,6 +878,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge" style="background:#3a4868;color:#d8e0f5">v2.3.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌙 이안 테마 추가 (배경 이미지 + 가독성 오버레이) · 사이트명을 '단테의 이안 팬클럽'으로 변경 · 페이지 타이틀 동시 변경</td></tr>
         <tr><td><span class="ver-badge">v2.2.6</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>메모 댓글 등록 후 댓글 영역이 닫히던 문제 수정 (재렌더링 시 펼침 상태 + 입력 포커스 보존)</td></tr>
         <tr><td><span class="ver-badge">v2.2.5</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>메모 시간 표시: 오늘 포함 항상 날짜+시간(M/D HH:MM)으로 통일</td></tr>
         <tr><td><span class="ver-badge">v2.2.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>① 메모 작성 시간 표시 (오늘은 시:분, 다른 날은 월/일 시:분) ② 개인 메모에 댓글 기능 추가 (본인 메모에 본인이 추가 메모를 다는 형태)</td></tr>
@@ -980,7 +1004,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.6</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.3.0</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -998,6 +1022,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
       </div>
       <button class="btn-dark" id="btnDark">다크</button>
       <button class="btn-spring" id="btnSpring" title="봄 테마 🌸">🌸 봄</button>
+      <button class="btn-ian" id="btnIan" title="이안 테마 🌙">🌙 이안</button>
       <button class="btn-reset" id="btnReset">체크 초기화</button>
       <button id="btnAdd" class="btn-primary btn-day">+ 항목 추가</button>
       <button class="btn-logout" id="btnLogout">로그아웃</button>
@@ -1453,7 +1478,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.2.6";
+const CURRENT_VERSION = "2.3.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1617,6 +1642,21 @@ document.getElementById('btnSpring')?.addEventListener('click',()=>{
   try{localStorage.setItem('clo_spring', on?'1':'0');}catch(e){}
 });
 
+// ===== 이안 테마 🌙 =====
+function applyIanState(on){
+  document.body.classList.toggle('ian', !!on);
+  const btn=document.getElementById('btnIan');
+  if(btn){
+    btn.classList.toggle('active', !!on);
+    btn.textContent = on ? '🌙 이안 ON' : '🌙 이안';
+  }
+}
+document.getElementById('btnIan')?.addEventListener('click',()=>{
+  const on=!document.body.classList.contains('ian');
+  applyIanState(on);
+  try{localStorage.setItem('clo_ian', on?'1':'0');}catch(e){}
+});
+
 // 저장된 테마 상태 복원 (로그인 페이지에서도 반영)
 (function restoreThemes(){
   try{
@@ -1626,6 +1666,9 @@ document.getElementById('btnSpring')?.addEventListener('click',()=>{
     }
     if(localStorage.getItem('clo_spring')==='1'){
       applySpringState(true);
+    }
+    if(localStorage.getItem('clo_ian')==='1'){
+      applyIanState(true);
     }
   }catch(e){}
 })();
