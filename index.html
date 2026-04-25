@@ -54,8 +54,24 @@ body.dark .edit-modal input, body.dark .edit-modal textarea, body.dark .edit-mod
 .edit-modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .edit-modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
 
-.tab-row { display: flex; align-items: center; margin-bottom: 1.5rem; gap: 8px; flex-wrap: wrap; }
+.tab-row { display: flex; align-items: center; margin-bottom: 1.5rem; gap: 8px; flex-wrap: wrap; position: relative; z-index: 100; }
 .tab-sw { display: flex; background: #ece9e2; border-radius: 12px; padding: 4px; position: relative; }
+/* 상위 탭 그룹 (드롭다운 스타일) */
+.tab-group { position: relative; display: inline-flex; }
+.tab-group .tab-sw { cursor: pointer; }
+.tab-group-children { position: absolute; top: calc(100% + 6px); left: 0; display: none; gap: 6px; padding: 6px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); white-space: nowrap; z-index: 200; }
+body.dark .tab-group-children { background: #1f1f1f; border-color: rgba(255,255,255,0.08); box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
+.tab-group.open > .tab-group-children,
+.tab-group:hover > .tab-group-children { display: inline-flex; }
+.tab-group .tab-group-children .tab-btn { background: #fff; padding: 7px 13px; font-size: 12.5px; border-radius: 8px; }
+body.dark .tab-group .tab-group-children .tab-btn { background: #2a2a2a; }
+.tab-group .tab-group-children .tab-btn:hover { background: #e6f1fb; }
+body.dark .tab-group .tab-group-children .tab-btn:hover { background: #1a3a5c; }
+.tab-group.parent-active > .tab-sw { box-shadow: inset 0 0 0 1px #185fa5; }
+.tab-group-chev { display: inline-block; margin-left: 4px; font-size: 10px; opacity: 0.5; transition: transform 0.15s; }
+.tab-group:hover .tab-group-chev,
+.tab-group.open .tab-group-chev { transform: rotate(180deg); }
+.group-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 5px; margin-left: 6px; background: #e24b4a; color: #fff; font-size: 10px; font-weight: 600; border-radius: 99px; line-height: 1; }
 .tab-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; border-radius: 99px; font-size: 10px; font-weight: 500; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; pointer-events: none; z-index: 1; }
 body.dark .tab-sw { background: #2e2e2e; }
 .tab-btn { padding: 8px 14px; border-radius: 9px; border: none; font-size: 13px; font-weight: 400; color: #888780; background: transparent; cursor: pointer; font-family: inherit; transition: all 0.18s; white-space: nowrap; }
@@ -674,6 +690,78 @@ body.dark .dash-item-title { color: #e8e6df; }
 .dash-cal-when.dash-cal-today { background: #185fa5; color: #fff; }
 body.dark .dash-cal-when { background: #2a2a2a; color: #c4b892; }
 body.dark .dash-cal-when.dash-cal-today { background: #3a7bc2; color: #fff; }
+
+/* ===== 메모 시스템 ===== */
+.memo-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.memo-search-input { flex: 1; min-width: 200px; padding: 9px 14px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; background: #f9f8f5; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; }
+.memo-search-input:focus { border-color: #185fa5; }
+body.dark .memo-search-input { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+.memo-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.memo-filter-btn { padding: 6px 12px; font-size: 12px; border: 0.5px solid rgba(0,0,0,0.12); background: #fff; color: #2c2c2a; border-radius: 8px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.memo-filter-btn:hover { background: #f5f3ec; }
+.memo-filter-btn.active { background: #185fa5; color: #fff; border-color: #185fa5; }
+body.dark .memo-filter-btn { background: #1a1a1a; color: #e8e6df; border-color: rgba(255,255,255,0.12); }
+body.dark .memo-filter-btn:hover { background: #2a2a2a; }
+body.dark .memo-filter-btn.active { background: #3a7bc2; border-color: #3a7bc2; }
+
+.memo-add-form { display: none; background: #f9f8f5; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+.memo-add-form.open { display: block; }
+body.dark .memo-add-form { background: #1a1a1a; border-color: rgba(255,255,255,0.08); }
+.memo-add-form label { display: block; font-size: 12px; color: #888780; margin: 6px 0 4px; }
+.memo-add-form input[type="text"], .memo-add-form textarea { width: 100%; box-sizing: border-box; padding: 9px 12px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; background: #fff; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; }
+.memo-add-form textarea { min-height: 100px; resize: vertical; }
+.memo-add-form input[type="text"]:focus, .memo-add-form textarea:focus { border-color: #185fa5; }
+body.dark .memo-add-form input[type="text"], body.dark .memo-add-form textarea { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
+.memo-options { display: flex; gap: 18px; margin: 10px 0 6px; }
+.memo-opt { font-size: 12px; color: #2c2c2a; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 5px; }
+body.dark .memo-opt { color: #e8e6df; }
+.memo-form-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+
+.memo-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+.memo-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+body.dark .memo-card { background: #1a1a1a; border-color: rgba(255,255,255,0.08); }
+.memo-card.fav { border-left: 3px solid #ef9f27; }
+.memo-card.done { opacity: 0.6; }
+.memo-card.done .memo-title { text-decoration: line-through; color: #888780; }
+.memo-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.memo-title { font-size: 14px; font-weight: 500; color: #2c2c2a; flex: 1; }
+body.dark .memo-title { color: #e8e6df; }
+.memo-meta { font-size: 11px; color: #888780; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.memo-content { font-size: 13px; color: #2c2c2a; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 8px; }
+body.dark .memo-content { color: #e8e6df; }
+.memo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.memo-act-btn { padding: 4px 10px; font-size: 11px; border: 0.5px solid rgba(0,0,0,0.12); background: #fff; color: #2c2c2a; border-radius: 6px; cursor: pointer; font-family: inherit; transition: all 0.12s; }
+.memo-act-btn:hover { background: #f5f3ec; }
+body.dark .memo-act-btn { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
+body.dark .memo-act-btn:hover { background: #2a2a2a; }
+.memo-act-btn.danger:hover { background: #ffe6e6; color: #e24b4a; border-color: #e24b4a; }
+.memo-fav-toggle { background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.45; transition: opacity 0.12s; padding: 0 2px; }
+.memo-fav-toggle.on { opacity: 1; }
+.memo-fav-toggle:hover { opacity: 0.85; }
+.memo-done-toggle { font-size: 12px; }
+.memo-empty { font-size: 13px; color: #888780; padding: 32px 0; text-align: center; }
+.memo-tag { font-size: 10px; padding: 1px 7px; border-radius: 99px; background: #e6f1fb; color: #185fa5; font-weight: 500; }
+body.dark .memo-tag { background: #1a3a5c; color: #8cc5ff; }
+.memo-tag.tag-done { background: #e0f5e8; color: #1a7c4d; }
+body.dark .memo-tag.tag-done { background: #143a25; color: #6dd49a; }
+
+/* 댓글 (공유 메모) */
+.memo-cmt-toggle { font-size: 11px; color: #185fa5; background: none; border: none; cursor: pointer; padding: 4px 6px; border-radius: 5px; }
+.memo-cmt-toggle:hover { background: #e6f1fb; }
+body.dark .memo-cmt-toggle:hover { background: #1a3a5c; }
+.memo-cmts { margin-top: 10px; padding-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.08); display: none; }
+.memo-cmts.open { display: block; }
+body.dark .memo-cmts { border-color: rgba(255,255,255,0.08); }
+.memo-cmt-item { font-size: 12px; padding: 6px 0; border-bottom: 0.5px dashed rgba(0,0,0,0.05); }
+body.dark .memo-cmt-item { border-color: rgba(255,255,255,0.08); }
+.memo-cmt-item:last-child { border-bottom: none; }
+.memo-cmt-author { font-weight: 500; color: #185fa5; margin-right: 6px; }
+.memo-cmt-time { color: #b4b2a9; font-size: 10px; margin-left: 6px; }
+.memo-cmt-text { color: #2c2c2a; }
+body.dark .memo-cmt-text { color: #e8e6df; }
+.memo-cmt-form { display: flex; gap: 6px; margin-top: 8px; }
+.memo-cmt-input { flex: 1; padding: 6px 10px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 8px; background: #fff; font-size: 12px; outline: none; font-family: inherit; }
+body.dark .memo-cmt-input { background: #0f0f0f; color: #e8e6df; border-color: rgba(255,255,255,0.15); }
 .rich-toolbar { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; padding: 6px 8px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.12); border-bottom: none; border-radius: 10px 10px 0 0; }
 body.dark .rich-toolbar { background: #1a1a1a; border-color: rgba(255,255,255,0.12); }
 .rt-btn { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 6px; padding: 3px 9px; font-size: 12px; color: #2c2c2a; cursor: pointer; font-family: inherit; min-width: 26px; line-height: 1.4; transition: all 0.15s; }
@@ -764,6 +852,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.2.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>탭 구조 통합 + 메모 추가</strong> — ① 상위 탭으로 그룹화 (홈 / 업무: 주간·야간·주문현황 / 관리: 센터 목표·일정 / 공유: 운영·기능 공지·시트 / 메모) — 호버 시 펼침, 클릭 시 고정 ② 상위 탭에 통합 뱃지 표시 ③ 📝 메모 시스템 신설 (개인: ⭐즐겨찾기·✅완료, 공유: 게시판·댓글·멘션 지원) ④ 📌 대시보드 '내 메모' 섹션 (즐겨찾기+미완료 메모 자동 노출) ⑤ 멘션 종 알림이 메모 위치도 지원</td></tr>
         <tr><td><span class="ver-badge">v2.1.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🔔 멘션 종 아이콘 위치 변경 — 헤더 버튼 그룹의 맨 왼쪽으로 이동 (다크/봄/체크 초기화/항목 추가/로그아웃보다 앞)</td></tr>
         <tr><td><span class="ver-badge" style="background:#ffe4ec;color:#b24a66">v2.1.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌸 봄 테마 추가 — 헤더에 '봄' 토글 버튼 (다크 옆), 라이트 모드에서 핑크 그라디언트 배경 + 꽃잎 애니메이션, 다크+봄 공존(달밤의 벚꽃), 새로고침 후에도 설정 유지</td></tr>
         <tr><td><span class="ver-badge">v2.0.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>대시보드 개선 — 페이지 제목 '대시보드' 표시, 섹션별 이동 링크 제거(아이템 클릭만으로 이동), 📆 오늘·내일 일정 섹션 추가 (일정 있을 때만 표시), 홈에서도 실시간 갱신</td></tr>
@@ -829,22 +918,47 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
 <div class="tab-row">
   <div class="tab-sw"><button class="tab-btn goals" id="tabHome">🏠 홈</button></div>
   <div class="tab-div"></div>
-  <div class="tab-sw">
-    <button class="tab-btn day active" id="tabDay">주간</button>
-    <button class="tab-btn night" id="tabNight">야간</button>
+
+  <!-- 업무 그룹: 주간 | 야간 | 주문현황 -->
+  <div class="tab-group" data-group="work">
+    <div class="tab-sw"><button class="tab-btn day" id="tabGroupWork">업무 <span class="tab-group-chev">▾</span><span class="group-badge" id="badgeGroupWork" style="display:none">0</span></button></div>
+    <div class="tab-group-children">
+      <button class="tab-btn day active" id="tabDay">주간</button>
+      <button class="tab-btn night" id="tabNight">야간</button>
+      <button class="tab-btn trend" id="tabTrend">주문현황</button>
+    </div>
   </div>
   <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn trend" id="tabTrend">주문현황</button></div>
+
+  <!-- 관리 그룹: 센터 목표 | 센터 일정 -->
+  <div class="tab-group" data-group="manage">
+    <div class="tab-sw"><button class="tab-btn goals" id="tabGroupManage">관리 <span class="tab-group-chev">▾</span><span class="group-badge" id="badgeGroupManage" style="display:none">0</span></button></div>
+    <div class="tab-group-children">
+      <button class="tab-btn goals" id="tabGoals">센터 목표</button>
+      <button class="tab-btn calendar" id="tabCalendar">센터 일정</button>
+    </div>
+  </div>
   <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn goals" id="tabGoals">센터 목표</button></div>
+
+  <!-- 공유 그룹: 운영 공지 | 기능 공지 | 공유 시트 -->
+  <div class="tab-group" data-group="share">
+    <div class="tab-sw"><button class="tab-btn notice" id="tabGroupShare">공유 <span class="tab-group-chev">▾</span><span class="group-badge" id="badgeGroupShare" style="display:none">0</span></button></div>
+    <div class="tab-group-children">
+      <button class="tab-btn notice" id="tabNotice">운영 공지</button>
+      <button class="tab-btn notice" id="tabNotice2">기능 공지</button>
+      <button class="tab-btn sheets" id="tabSheets">공유 시트</button>
+    </div>
+  </div>
   <div class="tab-div"></div>
-  <div class="tab-sw" id="calTabSw"><button class="tab-btn calendar" id="tabCalendar">센터 일정</button></div>
-  <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn notice" id="tabNotice">운영 공지</button></div>
-  <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn notice" id="tabNotice2">기능 공지</button></div>
-  <div class="tab-div"></div>
-  <div class="tab-sw"><button class="tab-btn sheets" id="tabSheets">공유 시트</button></div>
+
+  <!-- 메모 그룹: 개인 | 공유 -->
+  <div class="tab-group" data-group="memo">
+    <div class="tab-sw"><button class="tab-btn sheets" id="tabGroupMemo">메모 <span class="tab-group-chev">▾</span></button></div>
+    <div class="tab-group-children">
+      <button class="tab-btn sheets" id="tabMemoP">개인</button>
+      <button class="tab-btn sheets" id="tabMemoS">공유</button>
+    </div>
+  </div>
 </div>
 
 <!-- 헤더 -->
@@ -857,7 +971,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.1.1</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.0</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -934,6 +1048,12 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
       <div class="dash-sec-title">📢 읽지 않은 공지 <span class="dash-sec-count" id="dashUnreadCount">0</span></div>
     </div>
     <div id="dashUnreadList"></div>
+  </div>
+  <div class="dash-section" id="dashMyMemos">
+    <div class="dash-sec-hdr">
+      <div class="dash-sec-title">📌 내 메모 <span class="dash-sec-count" id="dashMyMemosCount">0</span></div>
+    </div>
+    <div id="dashMyMemosList"></div>
   </div>
 </div>
 
@@ -1111,6 +1231,48 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   <div class="sheet-list" id="sheetList"><div class="sheets-empty">시트를 불러오는 중...</div></div>
 </div>
 
+<!-- 메모 - 개인 -->
+<div id="memoPersonalPage" style="display:none">
+  <div class="memo-toolbar">
+    <input type="text" class="memo-search-input" id="memoPSearch" placeholder="제목 또는 내용으로 검색...">
+    <div class="memo-filters">
+      <button class="memo-filter-btn active" data-filter="all" onclick="window._memoPFilter('all')">전체</button>
+      <button class="memo-filter-btn" data-filter="fav" onclick="window._memoPFilter('fav')">⭐ 즐겨찾기</button>
+      <button class="memo-filter-btn" data-filter="active" onclick="window._memoPFilter('active')">진행 중</button>
+      <button class="memo-filter-btn" data-filter="done" onclick="window._memoPFilter('done')">완료</button>
+    </div>
+  </div>
+  <div class="memo-add-form" id="memoPAddForm">
+    <label>제목</label><input type="text" id="memoPTitle" placeholder="메모 제목...">
+    <label>내용</label><textarea id="memoPContent" placeholder="메모 내용..."></textarea>
+    <div class="memo-options">
+      <label class="memo-opt"><input type="checkbox" id="memoPFav"> ⭐ 즐겨찾기</label>
+      <label class="memo-opt"><input type="checkbox" id="memoPDone"> ✅ 완료</label>
+    </div>
+    <div class="memo-form-btns">
+      <button class="btn-cancel-sm" onclick="document.getElementById('memoPAddForm').classList.remove('open')">취소</button>
+      <button class="btn-save-sheet" onclick="window._addMemoP()">저장</button>
+    </div>
+  </div>
+  <div id="memoPList"><div class="memo-empty">메모를 불러오는 중...</div></div>
+</div>
+
+<!-- 메모 - 공유 -->
+<div id="memoSharedPage" style="display:none">
+  <div class="memo-toolbar">
+    <input type="text" class="memo-search-input" id="memoSSearch" placeholder="제목 또는 내용으로 검색...">
+  </div>
+  <div class="memo-add-form" id="memoSAddForm">
+    <label>제목</label><input type="text" id="memoSTitle" placeholder="메모 제목...">
+    <label>내용</label><textarea id="memoSContent" placeholder="메모 내용..." data-mention="1"></textarea>
+    <div class="memo-form-btns">
+      <button class="btn-cancel-sm" onclick="document.getElementById('memoSAddForm').classList.remove('open')">취소</button>
+      <button class="btn-save-sheet" onclick="window._addMemoS()">저장</button>
+    </div>
+  </div>
+  <div id="memoSList"><div class="memo-empty">메모를 불러오는 중...</div></div>
+</div>
+
 <!-- 주문추세 -->
 <div id="trendPage" style="display:none">
   <div class="trend-sub-tabs">
@@ -1282,7 +1444,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.1.1";
+const CURRENT_VERSION = "2.2.0";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -1368,6 +1530,8 @@ onAuthStateChanged(auth, user => {
     listenHistory(); listenGoals(); listenSheets(); listenComments(); listenCalendar(); listenCalComments(); listenTrend(); listenCalcData(); listenNotices();
     // v2.0.0 멘션 시스템
     registerUser(); listenUsers(); listenMentions();
+    // v2.2.0 메모 시스템
+    listenMemoPersonal(); listenMemoShared();
     // 데이터 로드 후 뱃지 재계산 (비동기 타이밍 보장)
     setTimeout(()=>updateNoticeBadge(), 800);
     // customItems와 savedOrder가 모두 로드된 후에 listenToday 실행 (race condition 방지)
@@ -1803,6 +1967,18 @@ window._navigateToMention = function(mid){
         }
       }, 120);
       break;
+    case 'memo-shared':
+    case 'memo-shared-cmt':
+      switchTab('memos');
+      setTimeout(()=>{
+        const card = document.getElementById('memos-'+loc.id);
+        if(card){
+          // 댓글 멘션이면 댓글 영역 펼침
+          if(loc.type==='memo-shared-cmt') document.getElementById('msc-'+loc.id)?.classList.add('open');
+          card.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      }, 120);
+      break;
   }
 };
 
@@ -2080,6 +2256,7 @@ function renderDashboard(){
   renderDashUrgent();
   renderDashCalendar();
   renderDashUnreadNotices();
+  renderDashMyMemos();
 }
 
 // 내 진행 중 목표 (progBy에 내 이름, doneBy 없음)
@@ -2239,6 +2416,34 @@ window._openNoticeFromDash = function(nid, type){
   }, 120);
 };
 
+// 📌 내 메모 (즐겨찾기 + 미완료)
+function renderDashMyMemos(){
+  const list = document.getElementById('dashMyMemosList');
+  const cnt  = document.getElementById('dashMyMemosCount');
+  if(!list||!cnt) return;
+  const items = Object.values(memoPersonalData||{})
+    .filter(m=>m.fav && !m.done)
+    .sort((a,b)=>(b.ts||0)-(a.ts||0));
+  cnt.textContent = items.length;
+  if(!items.length){ list.innerHTML='<div class="dash-empty">즐겨찾기한 메모가 없습니다 (메모 - 개인에서 ⭐ 체크)</div>'; return; }
+  list.innerHTML = items.slice(0,10).map(m=>{
+    const date = new Date(m.ts||Date.now());
+    const d = (date.getMonth()+1)+'/'+date.getDate();
+    const preview = (m.content||'').slice(0,40);
+    return `<div class="dash-item" onclick="window._openMemoPFromDash('${m.id}')">
+      <span class="dash-item-pri" style="background:#fff3d6;color:#854f0b">⭐</span>
+      <div class="dash-item-title">${escHtml(m.title||'')}${preview?` <span style="color:#888780;font-size:11px;margin-left:6px">${escHtml(preview)}${m.content && m.content.length>40?'…':''}</span>`:''}</div>
+      <span class="dash-item-meta">${d}</span>
+    </div>`;
+  }).join('');
+}
+window._openMemoPFromDash = function(id){
+  switchTab('memop');
+  setTimeout(()=>{
+    document.getElementById('memop-'+id)?.scrollIntoView({behavior:'smooth',block:'start'});
+  }, 120);
+};
+
 // ===== 멘션 드롭다운 =====
 window._toggleMentionDropdown = function(e){
   e?.stopPropagation();
@@ -2272,7 +2477,8 @@ function renderMentionDropdown(){
     'goal':'센터 목표','goal-cmt':'목표 댓글',
     'notice-op':'운영 공지','notice-cmt-op':'운영 공지 댓글',
     'notice-fn':'기능 공지','notice-cmt-fn':'기능 공지 댓글',
-    'cal':'센터 일정','cal-cmt':'일정 댓글'
+    'cal':'센터 일정','cal-cmt':'일정 댓글',
+    'memo-shared':'공유 메모','memo-shared-cmt':'메모 댓글'
   };
   list.innerHTML = all.map(([mid,m])=>{
     const lbl = locLabel[m.loc?.type]||'알림';
@@ -2287,12 +2493,18 @@ function renderMentionDropdown(){
 }
 
 // 탭
-const PAGES=['homePage','todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage','noticePage2'];
+const PAGES=['homePage','todoPage','goalsPage','calendarPage','sheetsPage','trendPage','noticePage','noticePage2','memoPersonalPage','memoSharedPage'];
+// 탭 → 부모 그룹 매핑
+const TAB_PARENT={day:'work',night:'work',trend:'work',goals:'manage',calendar:'manage',notice:'share',notice2:'share',sheets:'share',memop:'memo',memos:'memo'};
 function switchTab(tab){
   curTab=tab;
-  ['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
+  ['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2','MemoP','MemoS'].forEach(t=>document.getElementById('tab'+t)?.classList.remove('active'));
+  // 그룹 부모 active 표시
+  document.querySelectorAll('.tab-group').forEach(g=>g.classList.remove('parent-active'));
+  const parentGroup=TAB_PARENT[tab];
+  if(parentGroup) document.querySelector(`.tab-group[data-group="${parentGroup}"]`)?.classList.add('parent-active');
   document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add('active');
-  PAGES.forEach(p=>document.getElementById(p).style.display='none');
+  PAGES.forEach(p=>{const el=document.getElementById(p); if(el) el.style.display='none';});
   setPageDesc('');
   ['addForm','goalForm','sheetForm'].forEach(f=>document.getElementById(f).classList.remove('open'));
   document.getElementById('btnReset').style.display='none';
@@ -2356,9 +2568,40 @@ function switchTab(tab){
     document.getElementById('btnAdd').textContent='+ 공지 작성';
     document.getElementById('pageTitle').textContent='기능 공지'; setPageDesc('업데이트 및 기능에 관한 공지사항입니다.'); setDateLabel();
     renderNotices('fn');
+  } else if(tab==='memop'){
+    document.getElementById('memoPersonalPage').style.display='block';
+    document.getElementById('btnAdd').style.display='inline-block';
+    document.getElementById('btnAdd').className='btn-primary btn-sheet';
+    document.getElementById('btnAdd').textContent='+ 메모 작성';
+    document.getElementById('pageTitle').textContent='메모 (개인)'; setPageDesc('나만 볼 수 있는 메모입니다.'); setDateLabel();
+    renderMemosPersonal();
+  } else if(tab==='memos'){
+    document.getElementById('memoSharedPage').style.display='block';
+    document.getElementById('btnAdd').style.display='inline-block';
+    document.getElementById('btnAdd').className='btn-primary btn-sheet';
+    document.getElementById('btnAdd').textContent='+ 메모 작성';
+    document.getElementById('pageTitle').textContent='메모 (공유)'; setPageDesc('팀원 모두가 볼 수 있는 메모입니다.'); setDateLabel();
+    renderMemosShared();
   }
 }
-['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
+['Home','Day','Night','Goals','Calendar','Sheets','Trend','Notice','Notice2','MemoP','MemoS'].forEach(t=>{ document.getElementById('tab'+t)?.addEventListener('click',()=>switchTab(t.toLowerCase())); });
+
+// 상위 그룹 탭 클릭 → 펼침 고정 토글 (페이지 이동 없음)
+document.querySelectorAll('.tab-group > .tab-sw').forEach(sw=>{
+  sw.addEventListener('click', e=>{
+    const grp = sw.parentElement;
+    const wasOpen = grp.classList.contains('open');
+    // 다른 그룹 핀 해제
+    document.querySelectorAll('.tab-group.open').forEach(g=>{ if(g!==grp) g.classList.remove('open'); });
+    grp.classList.toggle('open', !wasOpen);
+    e.stopPropagation();
+  });
+});
+// 외부 클릭 시 핀 해제
+document.addEventListener('click', e=>{
+  if(e.target.closest('.tab-group')) return;
+  document.querySelectorAll('.tab-group.open').forEach(g=>g.classList.remove('open'));
+});
 
 // 추가 버튼
 document.getElementById('btnAdd').addEventListener('click',()=>{
@@ -2366,6 +2609,8 @@ document.getElementById('btnAdd').addEventListener('click',()=>{
   else if(curTab==='sheets'){ document.getElementById('sheetForm').classList.toggle('open'); if(document.getElementById('sheetForm').classList.contains('open')) document.getElementById('sheetTitle').focus(); }
   else if(curTab==='notice'){ document.getElementById('noticeAddForm').classList.toggle('open'); if(document.getElementById('noticeAddForm').classList.contains('open')) document.getElementById('noticeTitle').focus(); }
   else if(curTab==='notice2'){ document.getElementById('noticeAddForm2').classList.toggle('open'); if(document.getElementById('noticeAddForm2').classList.contains('open')) document.getElementById('noticeTitle2').focus(); }
+  else if(curTab==='memop'){ document.getElementById('memoPAddForm').classList.toggle('open'); if(document.getElementById('memoPAddForm').classList.contains('open')) document.getElementById('memoPTitle').focus(); }
+  else if(curTab==='memos'){ document.getElementById('memoSAddForm').classList.toggle('open'); if(document.getElementById('memoSAddForm').classList.contains('open')) document.getElementById('memoSTitle').focus(); }
   else { document.getElementById('addForm').classList.toggle('open'); if(document.getElementById('addForm').classList.contains('open')){ document.getElementById('newText').value=''; document.getElementById('newText').focus(); } }
 });
 document.getElementById('btnCancel').addEventListener('click',()=>document.getElementById('addForm').classList.remove('open'));
@@ -2466,6 +2711,214 @@ function listenToday(tab){ onValue(ref(db,`todos/${tab}/${today}`),s=>{ const v=
 function listenHistory(){ ['day','night'].forEach(tab=>{ onValue(ref(db,`todos/${tab}`),s=>{ allHistory[tab]=s.val()||{}; if(curTab==='day'||curTab==='night') renderHistory(); }); }); }
 function listenGoals(){ onValue(ref(db,'goals'),s=>{ goalsData=s.val()||{}; if(curTab==='goals'){renderGoalStats();renderGoals();} updateCalBadge(); if(curTab==='home'){ renderDashMyProgress(); renderDashUrgent(); } }); }
 function listenSheets(){ onValue(ref(db,'sheets'),s=>{ sheetsData=s.val()||{}; if(curTab==='sheets') renderSheets(); }); }
+
+// ========== 메모 시스템 ==========
+let memoPersonalData = {};   // 본인 uid 하위
+let memoSharedData = {};
+let memoCommentsData = {};
+let memoPFilter = 'all';     // all | fav | active | done
+
+function listenMemoPersonal(){
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  onValue(ref(db,`memos/personal/${uid}`), s=>{
+    memoPersonalData = s.val()||{};
+    if(curTab==='memop') renderMemosPersonal();
+    if(curTab==='home') renderDashMyMemos();
+  });
+}
+function listenMemoShared(){
+  onValue(ref(db,'memos/shared'), s=>{
+    memoSharedData = s.val()||{};
+    if(curTab==='memos') renderMemosShared();
+  });
+  onValue(ref(db,'memoComments'), s=>{
+    memoCommentsData = s.val()||{};
+    if(curTab==='memos') renderMemosShared();
+  });
+}
+
+// ----- 개인 메모 -----
+window._memoPFilter = function(f){
+  memoPFilter = f;
+  document.querySelectorAll('#memoPersonalPage .memo-filter-btn').forEach(b=>b.classList.toggle('active', b.dataset.filter===f));
+  renderMemosPersonal();
+};
+window._addMemoP = function(){
+  const title = document.getElementById('memoPTitle').value.trim();
+  if(!title){ alert('제목을 입력해 주세요.'); return; }
+  const content = document.getElementById('memoPContent').value.trim();
+  const fav = document.getElementById('memoPFav').checked;
+  const done = document.getElementById('memoPDone').checked;
+  if(!currentUser?.uid){ alert('로그인이 필요합니다.'); return; }
+  const uid = currentUser.uid.replace(/\./g,'_');
+  const id = 'mp-'+Date.now();
+  set(ref(db,`memos/personal/${uid}/${id}`), { id, title, content, fav, done, ts: Date.now(), updatedAt: Date.now() });
+  document.getElementById('memoPTitle').value=''; document.getElementById('memoPContent').value=''; document.getElementById('memoPFav').checked=false; document.getElementById('memoPDone').checked=false;
+  document.getElementById('memoPAddForm').classList.remove('open');
+};
+window._toggleMemoPFav = function(id){
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  const cur = memoPersonalData[id]?.fav;
+  update(ref(db,`memos/personal/${uid}/${id}`), { fav: !cur, updatedAt: Date.now() });
+};
+window._toggleMemoPDone = function(id){
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  const cur = memoPersonalData[id]?.done;
+  update(ref(db,`memos/personal/${uid}/${id}`), { done: !cur, updatedAt: Date.now() });
+};
+window._deleteMemoP = function(id){
+  if(!confirm('이 메모를 삭제할까요?')) return;
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  remove(ref(db,`memos/personal/${uid}/${id}`));
+};
+window._editMemoP = function(id){
+  const m = memoPersonalData[id]; if(!m) return;
+  const newTitle = prompt('제목 수정:', m.title||'');
+  if(newTitle===null) return;
+  const newContent = prompt('내용 수정:', m.content||'');
+  if(newContent===null) return;
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  update(ref(db,`memos/personal/${uid}/${id}`), { title:newTitle.trim(), content:newContent, updatedAt:Date.now() });
+};
+
+function renderMemosPersonal(){
+  const list = document.getElementById('memoPList'); if(!list) return;
+  const q = (document.getElementById('memoPSearch')?.value||'').toLowerCase();
+  let items = Object.values(memoPersonalData||{});
+  if(memoPFilter==='fav') items = items.filter(m=>m.fav);
+  else if(memoPFilter==='active') items = items.filter(m=>!m.done);
+  else if(memoPFilter==='done') items = items.filter(m=>m.done);
+  if(q) items = items.filter(m=>(m.title||'').toLowerCase().includes(q)||(m.content||'').toLowerCase().includes(q));
+  // 즐겨찾기 우선 + 최신순
+  items.sort((a,b)=>{
+    if(!!b.fav - !!a.fav !== 0) return (b.fav?1:0) - (a.fav?1:0);
+    return (b.ts||0) - (a.ts||0);
+  });
+  if(!items.length){ list.innerHTML = '<div class="memo-empty">'+(q||memoPFilter!=='all'?'검색 결과가 없습니다':'등록된 메모가 없습니다')+'</div>'; return; }
+  list.innerHTML = items.map(m=>{
+    const favCls = m.fav?'on':'';
+    const cardCls = (m.fav?'fav ':'')+(m.done?'done':'');
+    const date = new Date(m.ts||Date.now());
+    const d = (date.getMonth()+1)+'/'+date.getDate();
+    return `<div class="memo-card ${cardCls}" id="memop-${m.id}">
+      <div class="memo-head">
+        <button class="memo-fav-toggle ${favCls}" onclick="window._toggleMemoPFav('${m.id}')" title="즐겨찾기">⭐</button>
+        <div class="memo-title">${escHtml(m.title||'')}</div>
+        ${m.done?'<span class="memo-tag tag-done">완료</span>':''}
+        <span class="memo-meta">${d}</span>
+      </div>
+      ${m.content?`<div class="memo-content">${escHtml(m.content)}</div>`:''}
+      <div class="memo-actions">
+        <button class="memo-act-btn memo-done-toggle" onclick="window._toggleMemoPDone('${m.id}')">${m.done?'↩ 미완료로':'✅ 완료'}</button>
+        <button class="memo-act-btn" onclick="window._editMemoP('${m.id}')">수정</button>
+        <button class="memo-act-btn danger" onclick="window._deleteMemoP('${m.id}')">삭제</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ----- 공유 메모 -----
+window._addMemoS = function(){
+  const title = document.getElementById('memoSTitle').value.trim();
+  if(!title){ alert('제목을 입력해 주세요.'); return; }
+  const content = document.getElementById('memoSContent').value.trim();
+  const id = 'ms-'+Date.now();
+  set(ref(db,`memos/shared/${id}`), {
+    id, title, content,
+    author: myName, authorId: currentUser?.uid||'',
+    ts: Date.now(), updatedAt: Date.now()
+  });
+  saveMentions(title+' '+content, {type:'memo-shared', id}, 'ms'+id);
+  document.getElementById('memoSTitle').value=''; document.getElementById('memoSContent').value='';
+  document.getElementById('memoSAddForm').classList.remove('open');
+};
+window._editMemoS = function(id){
+  const m = memoSharedData[id]; if(!m) return;
+  if(m.authorId && m.authorId !== currentUser?.uid && currentUser?.email !== ADMIN_EMAIL){ alert('작성자만 수정할 수 있습니다.'); return; }
+  const newTitle = prompt('제목 수정:', m.title||'');
+  if(newTitle===null) return;
+  const newContent = prompt('내용 수정:', m.content||'');
+  if(newContent===null) return;
+  update(ref(db,`memos/shared/${id}`), { title:newTitle.trim(), content:newContent, updatedAt:Date.now() });
+  saveMentions(newTitle+' '+newContent, {type:'memo-shared', id}, 'mse'+id);
+};
+window._deleteMemoS = function(id){
+  const m = memoSharedData[id]; if(!m) return;
+  if(m.authorId && m.authorId !== currentUser?.uid && currentUser?.email !== ADMIN_EMAIL){ alert('작성자만 삭제할 수 있습니다.'); return; }
+  if(!confirm('이 메모를 삭제할까요?')) return;
+  remove(ref(db,`memos/shared/${id}`));
+  remove(ref(db,`memoComments/${id}`));
+};
+window._toggleMemoSCmts = function(id){
+  document.getElementById('msc-'+id)?.classList.toggle('open');
+};
+window._addMemoSCmt = function(id){
+  const inp = document.getElementById('msci-'+id); if(!inp) return;
+  const text = inp.value.trim(); if(!text) return;
+  const cid = 'mc-'+Date.now();
+  set(ref(db,`memoComments/${id}/${cid}`), { id:cid, text, author:myName, authorId:currentUser?.uid||'', ts:Date.now() });
+  saveMentions(text, {type:'memo-shared-cmt', id, cmtId:cid}, 'msc'+cid);
+  inp.value='';
+};
+window._deleteMemoSCmt = function(memoId, cmtId){
+  const c = memoCommentsData[memoId]?.[cmtId]; if(!c) return;
+  if(c.authorId && c.authorId !== currentUser?.uid && currentUser?.email !== ADMIN_EMAIL){ alert('작성자만 삭제할 수 있습니다.'); return; }
+  if(!confirm('댓글을 삭제할까요?')) return;
+  remove(ref(db,`memoComments/${memoId}/${cmtId}`));
+};
+
+function renderMemosShared(){
+  const list = document.getElementById('memoSList'); if(!list) return;
+  const q = (document.getElementById('memoSSearch')?.value||'').toLowerCase();
+  let items = Object.values(memoSharedData||{});
+  if(q) items = items.filter(m=>(m.title||'').toLowerCase().includes(q)||(m.content||'').toLowerCase().includes(q)||(m.author||'').toLowerCase().includes(q));
+  items.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(!items.length){ list.innerHTML = '<div class="memo-empty">'+(q?'검색 결과가 없습니다':'등록된 메모가 없습니다')+'</div>'; return; }
+  list.innerHTML = items.map(m=>{
+    const date = new Date(m.ts||Date.now());
+    const d = (date.getMonth()+1)+'/'+date.getDate()+' '+String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
+    const cmts = memoCommentsData[m.id]||{};
+    const cmtList = Object.values(cmts).sort((a,b)=>(a.ts||0)-(b.ts||0));
+    const cmtCount = cmtList.length;
+    return `<div class="memo-card" id="memos-${m.id}">
+      <div class="memo-head">
+        <div class="memo-title">${escHtml(m.title||'')}</div>
+      </div>
+      <div class="memo-meta"><span>${escHtml(m.author||'')}</span><span>·</span><span>${d}</span></div>
+      ${m.content?`<div class="memo-content">${highlightMentionsText(m.content)}</div>`:''}
+      <div class="memo-actions">
+        <button class="memo-cmt-toggle" onclick="window._toggleMemoSCmts('${m.id}')">💬 댓글 ${cmtCount}</button>
+        <button class="memo-act-btn" onclick="window._editMemoS('${m.id}')">수정</button>
+        <button class="memo-act-btn danger" onclick="window._deleteMemoS('${m.id}')">삭제</button>
+      </div>
+      <div class="memo-cmts" id="msc-${m.id}">
+        ${cmtList.map(c=>{
+          const cd = new Date(c.ts||Date.now());
+          const ct = (cd.getMonth()+1)+'/'+cd.getDate()+' '+String(cd.getHours()).padStart(2,'0')+':'+String(cd.getMinutes()).padStart(2,'0');
+          return `<div class="memo-cmt-item">
+            <span class="memo-cmt-author">${escHtml(c.author||'')}</span>
+            <span class="memo-cmt-text">${highlightMentionsText(c.text||'')}</span>
+            <span class="memo-cmt-time">${ct}</span>
+            ${(c.authorId===currentUser?.uid||currentUser?.email===ADMIN_EMAIL)?`<button class="memo-act-btn danger" style="float:right;font-size:10px;padding:1px 6px" onclick="window._deleteMemoSCmt('${m.id}','${c.id}')">×</button>`:''}
+          </div>`;
+        }).join('')}
+        <div class="memo-cmt-form">
+          <input class="memo-cmt-input" id="msci-${m.id}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._addMemoSCmt('${m.id}')">
+          <button class="memo-act-btn" onclick="window._addMemoSCmt('${m.id}')">등록</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  bindAllMentionInputs();
+}
+
+// HTML escape 유틸 (없으면 추가)
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── 주간/야간 서브탭 (기록보기) ────────────────────────────────
 window._todoSub=function(mode){
@@ -2606,6 +3059,36 @@ function updateNoticeBadge(){
       btn.appendChild(b);
     }
   });
+  updateGroupBadges();
+}
+
+// 그룹 상위 뱃지: 하위 탭 뱃지 합산
+function updateGroupBadges(){
+  if(!currentUser||!currentUser.uid){
+    ['Work','Manage','Share'].forEach(g=>{const b=document.getElementById('badgeGroup'+g); if(b) b.style.display='none';});
+    return;
+  }
+  const uid=currentUser.uid.replace(/\./g,'_');
+  // 공유 그룹 = 운영공지 + 기능공지 미확인
+  const opCnt=Object.keys(noticesData.op||{}).filter(nid=>!(noticeReadsData.op[nid]||{})[uid]).length;
+  const fnCnt=Object.keys(noticesData.fn||{}).filter(nid=>!(noticeReadsData.fn[nid]||{})[uid]).length;
+  setGroupBadge('Share', opCnt+fnCnt);
+  // 관리 그룹 = 센터 일정 (오늘+내일 일정 수, 기존 calBadge와 동일 계산)
+  let manageCnt=0;
+  if(typeof calendarData==='object'){
+    const todayStr=today;
+    const tmr=new Date(new Date(todayStr).getTime()+86400000).toISOString().split('T')[0];
+    [todayStr,tmr].forEach(d=>{ manageCnt += Object.keys(calendarData[d]||{}).length; });
+  }
+  setGroupBadge('Manage', manageCnt);
+  // 업무 그룹은 별도 뱃지 안 씀 (필요해지면 확장)
+  setGroupBadge('Work', 0);
+}
+function setGroupBadge(name, n){
+  const b=document.getElementById('badgeGroup'+name);
+  if(!b) return;
+  if(n>0){ b.textContent=n; b.style.display='inline-flex'; }
+  else b.style.display='none';
 }
 
 function renderNotices(type){
@@ -2775,6 +3258,8 @@ window._addNoticeCmt=function(nid,type){
 };
 document.getElementById('noticeSearchInput')?.addEventListener('input',()=>renderNotices('op'));
 document.getElementById('noticeSearchInput2')?.addEventListener('input',()=>renderNotices('fn'));
+document.getElementById('memoPSearch')?.addEventListener('input', ()=>renderMemosPersonal());
+document.getElementById('memoSSearch')?.addEventListener('input', ()=>renderMemosShared());
 
 // ── 주문추세 ──────────────────────────────────────────────────
 const TREND_HOURS=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,0,1,2];
@@ -3117,42 +3602,8 @@ function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.va
 function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); if(curTab==='home') renderDashCalendar(); }); }
 
 function updateCalBadge(){
-  const sw=document.getElementById('calTabSw'); if(!sw) return;
-  sw.querySelectorAll('.tab-badge').forEach(b=>b.remove());
-  const thr3=new Date(baseDate.getTime()+3*86400000).toISOString().split('T')[0];
-  const thr7=new Date(baseDate.getTime()+7*86400000).toISOString().split('T')[0];
-  let cnt3=0, cnt7=0;
-  Object.entries(calendarData).forEach(([date,events])=>{
-    if(date<today) return;
-    const cnt=Object.keys(events||{}).length;
-    if(date<=thr3) cnt3+=cnt;
-    else if(date<=thr7) cnt7+=cnt;
-  });
-  // 마감 목표도 포함
-  Object.values(goalsData).forEach(g=>{
-    if(!g.deadline||g.doneBy) return;
-    if(g.deadline<today) return;
-    if(g.deadline<=thr3) cnt3++;
-    else if(g.deadline<=thr7) cnt7++;
-  });
-  if(cnt3>0&&cnt7>0){
-    const b3=document.createElement('div');
-    b3.className='tab-badge'; b3.textContent=cnt3;
-    b3.style.cssText='background:#e24b4a;top:-5px;right:-5px;';
-    sw.appendChild(b3);
-    const b7=document.createElement('div');
-    b7.className='tab-badge'; b7.textContent=cnt7;
-    b7.style.cssText='background:#ef9f27;top:-5px;right:18px;';
-    sw.appendChild(b7);
-  } else if(cnt3>0){
-    const b=document.createElement('div');
-    b.className='tab-badge'; b.textContent=cnt3;
-    b.style.background='#e24b4a'; sw.appendChild(b);
-  } else if(cnt7>0){
-    const b=document.createElement('div');
-    b.className='tab-badge'; b.textContent=cnt7;
-    b.style.background='#ef9f27'; sw.appendChild(b);
-  }
+  // 새 탭 구조에서는 직접 calTabSw에 뱃지를 붙이지 않고 updateGroupBadges가 관리 그룹 뱃지를 처리
+  if(typeof updateGroupBadges==='function') updateGroupBadges();
 }
 
 function addTodo(){ const text=document.getElementById('newText').value.trim(); if(!text) return; const id=`${curTab}-custom-${Date.now()}`, item={id,text,order:todayData[curTab].length,progBy:{},doneBy:null,custom:true}; set(ref(db,`todos/${curTab}/${today}/${id}`),item); set(ref(db,`customItems/${curTab}/${id}`),{id,text,order:item.order}); document.getElementById('newText').value=''; document.getElementById('addForm').classList.remove('open'); }
