@@ -60,6 +60,8 @@ body.dark .edit-modal input, body.dark .edit-modal textarea, body.dark .edit-mod
 .tab-group { position: relative; display: inline-flex; }
 .tab-group .tab-sw { cursor: pointer; }
 .tab-group-children { position: absolute; top: calc(100% + 6px); left: 0; display: none; gap: 6px; padding: 6px; background: #f5f3ec; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); white-space: nowrap; z-index: 200; }
+/* hover 끊김 방지: 상위 탭과 하위 메뉴 사이 6px 갭을 투명한 다리로 연결 */
+.tab-group-children::before { content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 10px; background: transparent; }
 body.dark .tab-group-children { background: #1f1f1f; border-color: rgba(255,255,255,0.08); box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
 .tab-group.open > .tab-group-children,
 .tab-group:hover > .tab-group-children { display: inline-flex; }
@@ -852,6 +854,8 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.2.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 일정 뱃지(빨강 3일·주황 7일 임박) 복구, 관리 상위 탭에 임박 일정·목표 수 뱃지 표시</td></tr>
+        <tr><td><span class="ver-badge">v2.2.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>상위 탭 → 하위 메뉴로 마우스 이동 시 드롭다운이 닫히던 문제 수정 (간격 영역에 투명 호버 다리 추가)</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.2.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>탭 구조 통합 + 메모 추가</strong> — ① 상위 탭으로 그룹화 (홈 / 업무: 주간·야간·주문현황 / 관리: 센터 목표·일정 / 공유: 운영·기능 공지·시트 / 메모) — 호버 시 펼침, 클릭 시 고정 ② 상위 탭에 통합 뱃지 표시 ③ 📝 메모 시스템 신설 (개인: ⭐즐겨찾기·✅완료, 공유: 게시판·댓글·멘션 지원) ④ 📌 대시보드 '내 메모' 섹션 (즐겨찾기+미완료 메모 자동 노출) ⑤ 멘션 종 알림이 메모 위치도 지원</td></tr>
         <tr><td><span class="ver-badge">v2.1.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🔔 멘션 종 아이콘 위치 변경 — 헤더 버튼 그룹의 맨 왼쪽으로 이동 (다크/봄/체크 초기화/항목 추가/로그아웃보다 앞)</td></tr>
         <tr><td><span class="ver-badge" style="background:#ffe4ec;color:#b24a66">v2.1.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌸 봄 테마 추가 — 헤더에 '봄' 토글 버튼 (다크 옆), 라이트 모드에서 핑크 그라디언트 배경 + 꽃잎 애니메이션, 다크+봄 공존(달밤의 벚꽃), 새로고침 후에도 설정 유지</td></tr>
@@ -971,7 +975,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.0</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.2</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1444,7 +1448,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.2.0";
+const CURRENT_VERSION = "2.2.2";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -3073,15 +3077,9 @@ function updateGroupBadges(){
   const opCnt=Object.keys(noticesData.op||{}).filter(nid=>!(noticeReadsData.op[nid]||{})[uid]).length;
   const fnCnt=Object.keys(noticesData.fn||{}).filter(nid=>!(noticeReadsData.fn[nid]||{})[uid]).length;
   setGroupBadge('Share', opCnt+fnCnt);
-  // 관리 그룹 = 센터 일정 (오늘+내일 일정 수, 기존 calBadge와 동일 계산)
-  let manageCnt=0;
-  if(typeof calendarData==='object'){
-    const todayStr=today;
-    const tmr=new Date(new Date(todayStr).getTime()+86400000).toISOString().split('T')[0];
-    [todayStr,tmr].forEach(d=>{ manageCnt += Object.keys(calendarData[d]||{}).length; });
-  }
-  setGroupBadge('Manage', manageCnt);
-  // 업무 그룹은 별도 뱃지 안 씀 (필요해지면 확장)
+  // 관리 그룹 = 센터 일정 빨강 뱃지 수 (3일 이내 임박, updateCalBadge가 계산해 둔 값)
+  setGroupBadge('Manage', window._manageBadgeCnt||0);
+  // 업무 그룹은 별도 뱃지 안 씀
   setGroupBadge('Work', 0);
 }
 function setGroupBadge(name, n){
@@ -3602,7 +3600,50 @@ function listenComments(){ onValue(ref(db,'goalComments'),s=>{ commentsData=s.va
 function listenCalendar(){ onValue(ref(db,'calendarEvents'),s=>{ calendarData=s.val()||{}; if(curTab==='calendar') renderCalendar(); if(selectedCalDate) renderCalPanel(selectedCalDate); updateCalBadge(); if(curTab==='home') renderDashCalendar(); }); }
 
 function updateCalBadge(){
-  // 새 탭 구조에서는 직접 calTabSw에 뱃지를 붙이지 않고 updateGroupBadges가 관리 그룹 뱃지를 처리
+  // 센터 일정 하위 탭 버튼에 직접 뱃지 부착 (3일 임박: 빨강, 7일 임박: 주황)
+  const btn=document.getElementById('tabCalendar');
+  if(btn){
+    btn.querySelectorAll('.tab-badge').forEach(b=>b.remove());
+    btn.style.position='relative';
+    const thr3=new Date(baseDate.getTime()+3*86400000).toISOString().split('T')[0];
+    const thr7=new Date(baseDate.getTime()+7*86400000).toISOString().split('T')[0];
+    let cnt3=0, cnt7=0;
+    Object.entries(calendarData||{}).forEach(([date,events])=>{
+      if(date<today) return;
+      const cnt=Object.keys(events||{}).length;
+      if(date<=thr3) cnt3+=cnt;
+      else if(date<=thr7) cnt7+=cnt;
+    });
+    // 마감 임박 목표도 포함
+    Object.values(goalsData||{}).forEach(g=>{
+      if(!g.deadline||g.doneBy) return;
+      if(g.deadline<today) return;
+      if(g.deadline<=thr3) cnt3++;
+      else if(g.deadline<=thr7) cnt7++;
+    });
+    if(cnt3>0&&cnt7>0){
+      const b3=document.createElement('span');
+      b3.className='tab-badge';
+      b3.style.cssText='background:#e24b4a;top:-5px;right:-5px;';
+      b3.textContent=cnt3; btn.appendChild(b3);
+      const b7=document.createElement('span');
+      b7.className='tab-badge';
+      b7.style.cssText='background:#ef9f27;top:-5px;right:18px;';
+      b7.textContent=cnt7; btn.appendChild(b7);
+    } else if(cnt3>0){
+      const b=document.createElement('span');
+      b.className='tab-badge';
+      b.style.cssText='background:#e24b4a;top:-5px;right:-5px;';
+      b.textContent=cnt3; btn.appendChild(b);
+    } else if(cnt7>0){
+      const b=document.createElement('span');
+      b.className='tab-badge';
+      b.style.cssText='background:#ef9f27;top:-5px;right:-5px;';
+      b.textContent=cnt7; btn.appendChild(b);
+    }
+    // 관리 그룹에는 임박(3일 이내) 수만 합산해서 빨강 뱃지로 표시
+    window._manageBadgeCnt = cnt3;
+  }
   if(typeof updateGroupBadges==='function') updateGroupBadges();
 }
 
