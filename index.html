@@ -953,6 +953,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.4.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>① 공지 카테고리 필터(B2C/B2B/입고...) 동작 안 하던 문제 수정 (중복 정의로 함수가 덮어써지던 버그) ② 채팅 인덱스 미설정 시 fallback 로드 추가 (전체 가져와 클라이언트에서 정렬)</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.4.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>대화 + 사용성 개선</strong> — ① 💬 채팅방 (우측 하단 플로팅, 100개 로드+스크롤 추가, 이모지 반응 8종, 본인 메시지 삭제, 멘션 시 종 알림) ② 다른 탭 hover 시 클릭 핀 자동 해제 ③ 공지·메모 수정 모달화 (제목+내용 동시 편집) ④ 대시보드 '🔔 나를 멘션한 글' 섹션 (읽지 않은 멘션 있을 때만 맨 위 표시)</td></tr>
         <tr><td><span class="ver-badge" style="background:#3a4868;color:#d8e0f5">v2.3.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🌙 이안 테마 추가 (배경 이미지 + 가독성 오버레이) · 사이트명을 '단테의 이안 팬클럽'으로 변경 · 페이지 타이틀 동시 변경</td></tr>
         <tr><td><span class="ver-badge">v2.2.6</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>메모 댓글 등록 후 댓글 영역이 닫히던 문제 수정 (재렌더링 시 펼침 상태 + 입력 포커스 보존)</td></tr>
@@ -1118,7 +1119,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.4.0</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.4.1</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1598,7 +1599,7 @@ import { getDatabase, ref, onValue, set, update, remove, push, query, limitToLas
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.4.0";
+const CURRENT_VERSION = "2.4.1";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -3285,30 +3286,56 @@ function listenChatLastSeen(){
 // 최근 100개 로드
 async function loadInitialChatMessages(){
   try{
-    const q = query(ref(db,'chat'), orderByChild('ts'), limitToLast(CHAT_PAGE_SIZE));
-    const snap = await get(q);
-    const data = snap.val()||{};
+    let data = {};
+    try{
+      // 1차 시도: ts 정렬 인덱스 사용
+      const q = query(ref(db,'chat'), orderByChild('ts'), limitToLast(CHAT_PAGE_SIZE));
+      const snap = await get(q);
+      data = snap.val()||{};
+    }catch(idxErr){
+      // 인덱스 없으면 전체 로드 후 클라이언트에서 정렬
+      console.warn('chat 인덱스 없음, 전체 로드:', idxErr?.message||idxErr);
+      const snap = await get(ref(db,'chat'));
+      const all = snap.val()||{};
+      // ts 기준 정렬해 최근 100개만
+      const entries = Object.entries(all).sort((a,b)=>(a[1]?.ts||0)-(b[1]?.ts||0));
+      const sliced = entries.slice(-CHAT_PAGE_SIZE);
+      data = Object.fromEntries(sliced);
+    }
     chatMessages = data;
-    const tsList = Object.values(data).map(m=>m.ts||0);
+    const tsList = Object.values(data).map(m=>m?.ts||0).filter(t=>t>0);
     chatOldestTs = tsList.length ? Math.min(...tsList) : null;
     chatAllLoaded = Object.keys(data).length < CHAT_PAGE_SIZE;
     chatInitialLoaded = true;
     renderChat();
     setupChatRealtimeListener();
   }catch(e){
+    console.error('chat 로드 실패:', e);
     const body=document.getElementById('chatBody');
-    if(body) body.innerHTML='<div class="chat-empty">메시지를 불러오지 못했습니다</div>';
+    if(body) body.innerHTML='<div class="chat-empty">메시지를 불러오지 못했습니다<br><small style="color:#888;font-size:11px">'+escHtml(e?.message||String(e))+'</small></div>';
   }
 }
 // 신규 메시지 실시간 리스너 (초기 로드 이후의 새 메시지만 catch)
 function setupChatRealtimeListener(){
   if(chatNewMsgListenerSet) return;
   chatNewMsgListenerSet = true;
-  // 가장 큰 ts 기준으로 그 이후 변경 감지: 단순화를 위해 마지막 100개를 onValue로 감시
-  const q = query(ref(db,'chat'), orderByChild('ts'), limitToLast(CHAT_PAGE_SIZE));
+  // 인덱스 사용 가능하면 limitToLast로 최근 100개만, 안 되면 전체 onValue
+  let useIndex = true;
+  let q;
+  try{
+    q = query(ref(db,'chat'), orderByChild('ts'), limitToLast(CHAT_PAGE_SIZE));
+  }catch(e){
+    useIndex = false;
+    q = ref(db,'chat');
+  }
   onValue(q, s=>{
-    const data = s.val()||{};
-    // 기존 데이터에 병합 (옛 메시지 손실 방지)
+    let data = s.val()||{};
+    // 인덱스 못 쓴 경우 클라이언트에서 최근 100개만 사용
+    if(!useIndex){
+      const entries = Object.entries(data).sort((a,b)=>(a[1]?.ts||0)-(b[1]?.ts||0));
+      data = Object.fromEntries(entries.slice(-CHAT_PAGE_SIZE));
+    }
+    // 기존 데이터에 병합
     let changed = false;
     Object.keys(data).forEach(id=>{
       if(JSON.stringify(chatMessages[id])!==JSON.stringify(data[id])){
@@ -3316,10 +3343,11 @@ function setupChatRealtimeListener(){
         changed = true;
       }
     });
-    // 삭제 감지: 기존 메시지 중 새 데이터에 없는 것 중 최근 100개 범위에 있어야 했던 것
+    // 삭제 감지
+    const minTs = Object.values(data).map(x=>x?.ts||0).filter(t=>t>0).sort((a,b)=>a-b)[0]||0;
     Object.keys(chatMessages).forEach(id=>{
       const m = chatMessages[id];
-      if(!data[id] && m && m.ts && m.ts >= (Object.values(data).map(x=>x.ts||0).sort((a,b)=>a-b)[0]||0)){
+      if(!data[id] && m && m.ts && m.ts >= minTs){
         delete chatMessages[id];
         changed = true;
       }
@@ -3330,27 +3358,41 @@ function setupChatRealtimeListener(){
       // 패널이 열린 상태면 자동 읽음 처리
       if(chatPanelOpen) chatMarkAsRead();
     }
+  }, err=>{
+    console.error('chat 실시간 리스너 오류:', err);
   });
 }
 async function loadOlderChatMessages(){
   if(chatAllLoaded || !chatOldestTs) return;
   try{
-    const q = query(ref(db,'chat'), orderByChild('ts'), endBefore(chatOldestTs), limitToLast(CHAT_PAGE_SIZE));
-    const snap = await get(q);
-    const data = snap.val()||{};
+    let data = {};
+    try{
+      const q = query(ref(db,'chat'), orderByChild('ts'), endBefore(chatOldestTs), limitToLast(CHAT_PAGE_SIZE));
+      const snap = await get(q);
+      data = snap.val()||{};
+    }catch(idxErr){
+      // 인덱스 없으면 전체에서 oldestTs 이전 것 중 최근 100개
+      const snap = await get(ref(db,'chat'));
+      const all = snap.val()||{};
+      const entries = Object.entries(all)
+        .filter(([,m])=>m && m.ts && m.ts < chatOldestTs)
+        .sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
+      data = Object.fromEntries(entries.slice(-CHAT_PAGE_SIZE));
+    }
     const newKeys = Object.keys(data);
     if(newKeys.length===0){ chatAllLoaded = true; renderChat(); return; }
     Object.assign(chatMessages, data);
-    const tsList = Object.values(data).map(m=>m.ts||0);
+    const tsList = Object.values(data).map(m=>m?.ts||0).filter(t=>t>0);
     chatOldestTs = tsList.length ? Math.min(...tsList) : chatOldestTs;
     if(newKeys.length < CHAT_PAGE_SIZE) chatAllLoaded = true;
-    chatPendingScrollToBottom = false; // 스크롤 위치 유지
+    chatPendingScrollToBottom = false;
     const body = document.getElementById('chatBody');
     const prevHeight = body?.scrollHeight||0;
     renderChat();
-    // 추가 로드 후 스크롤 위치 보존 (높이 차이만큼 보정)
     if(body){ body.scrollTop = body.scrollHeight - prevHeight; }
-  }catch(e){}
+  }catch(e){
+    console.error('이전 메시지 로드 실패:', e);
+  }
 }
 
 function chatDayKey(ts){
@@ -3679,14 +3721,6 @@ window._setNoticeFilter=function(type,cat){
     b.classList.toggle('active', b.textContent===(cat||'전체'));
   });
   renderNotices(type);
-};
-
-window._setNoticeFilter=function(cat){
-  noticeCatFilter=cat;
-  document.querySelectorAll('.notice-filter-btn').forEach(b=>{
-    b.classList.toggle('active', b.textContent===(cat||'전체'));
-  });
-  renderNotices();
 };
 
 function updateNoticeBadge(){
