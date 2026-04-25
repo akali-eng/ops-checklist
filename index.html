@@ -73,7 +73,8 @@ body.dark .tab-group .tab-group-children .tab-btn:hover { background: #1a3a5c; }
 .tab-group-chev { display: inline-block; margin-left: 4px; font-size: 10px; opacity: 0.5; transition: transform 0.15s; }
 .tab-group:hover .tab-group-chev,
 .tab-group.open .tab-group-chev { transform: rotate(180deg); }
-.group-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 5px; margin-left: 6px; background: #e24b4a; color: #fff; font-size: 10px; font-weight: 600; border-radius: 99px; line-height: 1; }
+.tab-group > .tab-sw > .tab-btn { position: relative; }
+.group-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; background: #e24b4a; color: #fff; font-size: 10px; font-weight: 500; border-radius: 99px; line-height: 1; align-items: center; justify-content: center; pointer-events: none; z-index: 2; }
 .tab-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; border-radius: 99px; font-size: 10px; font-weight: 500; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; pointer-events: none; z-index: 1; }
 body.dark .tab-sw { background: #2e2e2e; }
 .tab-btn { padding: 8px 14px; border-radius: 9px; border: none; font-size: 13px; font-weight: 400; color: #888780; background: transparent; cursor: pointer; font-family: inherit; transition: all 0.18s; white-space: nowrap; }
@@ -854,6 +855,8 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.2.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>① 메모 작성 시간 표시 (오늘은 시:분, 다른 날은 월/일 시:분) ② 개인 메모에 댓글 기능 추가 (본인 메모에 본인이 추가 메모를 다는 형태)</td></tr>
+        <tr><td><span class="ver-badge">v2.2.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>관리·공유 상위 탭 뱃지를 우측 상단 절대 위치로 변경 (하위 탭 뱃지와 동일한 스타일)</td></tr>
         <tr><td><span class="ver-badge">v2.2.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 일정 뱃지(빨강 3일·주황 7일 임박) 복구, 관리 상위 탭에 임박 일정·목표 수 뱃지 표시</td></tr>
         <tr><td><span class="ver-badge">v2.2.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>상위 탭 → 하위 메뉴로 마우스 이동 시 드롭다운이 닫히던 문제 수정 (간격 영역에 투명 호버 다리 추가)</td></tr>
         <tr><td><span class="ver-badge" style="background:#fff0e4;color:#b24a0b">v2.2.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td><strong>탭 구조 통합 + 메모 추가</strong> — ① 상위 탭으로 그룹화 (홈 / 업무: 주간·야간·주문현황 / 관리: 센터 목표·일정 / 공유: 운영·기능 공지·시트 / 메모) — 호버 시 펼침, 클릭 시 고정 ② 상위 탭에 통합 뱃지 표시 ③ 📝 메모 시스템 신설 (개인: ⭐즐겨찾기·✅완료, 공유: 게시판·댓글·멘션 지원) ④ 📌 대시보드 '내 메모' 섹션 (즐겨찾기+미완료 메모 자동 노출) ⑤ 멘션 종 알림이 메모 위치도 지원</td></tr>
@@ -975,7 +978,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.2</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.4</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1448,7 +1451,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.2.2";
+const CURRENT_VERSION = "2.2.4";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -2718,6 +2721,7 @@ function listenSheets(){ onValue(ref(db,'sheets'),s=>{ sheetsData=s.val()||{}; i
 
 // ========== 메모 시스템 ==========
 let memoPersonalData = {};   // 본인 uid 하위
+let memoPersonalCommentsData = {};  // 본인 uid 하위 (자기 메모 자기 댓글)
 let memoSharedData = {};
 let memoCommentsData = {};
 let memoPFilter = 'all';     // all | fav | active | done
@@ -2729,6 +2733,10 @@ function listenMemoPersonal(){
     memoPersonalData = s.val()||{};
     if(curTab==='memop') renderMemosPersonal();
     if(curTab==='home') renderDashMyMemos();
+  });
+  onValue(ref(db,`memoPersonalComments/${uid}`), s=>{
+    memoPersonalCommentsData = s.val()||{};
+    if(curTab==='memop') renderMemosPersonal();
   });
 }
 function listenMemoShared(){
@@ -2778,6 +2786,25 @@ window._deleteMemoP = function(id){
   if(!currentUser?.uid) return;
   const uid = currentUser.uid.replace(/\./g,'_');
   remove(ref(db,`memos/personal/${uid}/${id}`));
+  remove(ref(db,`memoPersonalComments/${uid}/${id}`));
+};
+window._toggleMemoPCmts = function(id){
+  document.getElementById('mpc-'+id)?.classList.toggle('open');
+};
+window._addMemoPCmt = function(memoId){
+  if(!currentUser?.uid) return;
+  const inp = document.getElementById('mpci-'+memoId); if(!inp) return;
+  const text = inp.value.trim(); if(!text) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  const cid = 'mpc-'+Date.now();
+  set(ref(db,`memoPersonalComments/${uid}/${memoId}/${cid}`), { id:cid, text, ts:Date.now() });
+  inp.value='';
+};
+window._deleteMemoPCmt = function(memoId, cmtId){
+  if(!confirm('댓글을 삭제할까요?')) return;
+  if(!currentUser?.uid) return;
+  const uid = currentUser.uid.replace(/\./g,'_');
+  remove(ref(db,`memoPersonalComments/${uid}/${memoId}/${cmtId}`));
 };
 window._editMemoP = function(id){
   const m = memoPersonalData[id]; if(!m) return;
@@ -2807,20 +2834,37 @@ function renderMemosPersonal(){
   list.innerHTML = items.map(m=>{
     const favCls = m.fav?'on':'';
     const cardCls = (m.fav?'fav ':'')+(m.done?'done':'');
-    const date = new Date(m.ts||Date.now());
-    const d = (date.getMonth()+1)+'/'+date.getDate();
+    const t = fmtMemoTime(m.ts);
+    const cmts = memoPersonalCommentsData[m.id]||{};
+    const cmtList = Object.values(cmts).sort((a,b)=>(a.ts||0)-(b.ts||0));
+    const cmtCount = cmtList.length;
     return `<div class="memo-card ${cardCls}" id="memop-${m.id}">
       <div class="memo-head">
         <button class="memo-fav-toggle ${favCls}" onclick="window._toggleMemoPFav('${m.id}')" title="즐겨찾기">⭐</button>
         <div class="memo-title">${escHtml(m.title||'')}</div>
         ${m.done?'<span class="memo-tag tag-done">완료</span>':''}
-        <span class="memo-meta">${d}</span>
+        <span class="memo-meta">${t}</span>
       </div>
       ${m.content?`<div class="memo-content">${escHtml(m.content)}</div>`:''}
       <div class="memo-actions">
+        <button class="memo-cmt-toggle" onclick="window._toggleMemoPCmts('${m.id}')">💬 댓글 ${cmtCount}</button>
         <button class="memo-act-btn memo-done-toggle" onclick="window._toggleMemoPDone('${m.id}')">${m.done?'↩ 미완료로':'✅ 완료'}</button>
         <button class="memo-act-btn" onclick="window._editMemoP('${m.id}')">수정</button>
         <button class="memo-act-btn danger" onclick="window._deleteMemoP('${m.id}')">삭제</button>
+      </div>
+      <div class="memo-cmts" id="mpc-${m.id}">
+        ${cmtList.map(c=>{
+          const ct = fmtMemoTime(c.ts);
+          return `<div class="memo-cmt-item">
+            <span class="memo-cmt-text">${escHtml(c.text||'')}</span>
+            <span class="memo-cmt-time">${ct}</span>
+            <button class="memo-act-btn danger" style="float:right;font-size:10px;padding:1px 6px" onclick="window._deleteMemoPCmt('${m.id}','${c.id}')">×</button>
+          </div>`;
+        }).join('')}
+        <div class="memo-cmt-form">
+          <input class="memo-cmt-input" id="mpci-${m.id}" placeholder="메모 추가..." onkeydown="if(event.key==='Enter')window._addMemoPCmt('${m.id}')">
+          <button class="memo-act-btn" onclick="window._addMemoPCmt('${m.id}')">등록</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2884,8 +2928,7 @@ function renderMemosShared(){
   items.sort((a,b)=>(b.ts||0)-(a.ts||0));
   if(!items.length){ list.innerHTML = '<div class="memo-empty">'+(q?'검색 결과가 없습니다':'등록된 메모가 없습니다')+'</div>'; return; }
   list.innerHTML = items.map(m=>{
-    const date = new Date(m.ts||Date.now());
-    const d = (date.getMonth()+1)+'/'+date.getDate()+' '+String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
+    const d = fmtMemoTime(m.ts);
     const cmts = memoCommentsData[m.id]||{};
     const cmtList = Object.values(cmts).sort((a,b)=>(a.ts||0)-(b.ts||0));
     const cmtCount = cmtList.length;
@@ -2902,8 +2945,7 @@ function renderMemosShared(){
       </div>
       <div class="memo-cmts" id="msc-${m.id}">
         ${cmtList.map(c=>{
-          const cd = new Date(c.ts||Date.now());
-          const ct = (cd.getMonth()+1)+'/'+cd.getDate()+' '+String(cd.getHours()).padStart(2,'0')+':'+String(cd.getMinutes()).padStart(2,'0');
+          const ct = fmtMemoTime(c.ts);
           return `<div class="memo-cmt-item">
             <span class="memo-cmt-author">${escHtml(c.author||'')}</span>
             <span class="memo-cmt-text">${highlightMentionsText(c.text||'')}</span>
@@ -2923,6 +2965,17 @@ function renderMemosShared(){
 
 // HTML escape 유틸 (없으면 추가)
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// 메모 시간 포맷: 오늘이면 HH:MM, 아니면 M/D HH:MM
+function fmtMemoTime(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const now = new Date();
+  const sameDay = d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate();
+  if(sameDay) return `${hh}:${mm}`;
+  return `${d.getMonth()+1}/${d.getDate()} ${hh}:${mm}`;
+}
 
 // ── 주간/야간 서브탭 (기록보기) ────────────────────────────────
 window._todoSub=function(mode){
