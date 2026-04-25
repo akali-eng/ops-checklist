@@ -855,6 +855,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
     <table class="ver-table">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody>
+        <tr><td><span class="ver-badge">v2.2.6</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>메모 댓글 등록 후 댓글 영역이 닫히던 문제 수정 (재렌더링 시 펼침 상태 + 입력 포커스 보존)</td></tr>
         <tr><td><span class="ver-badge">v2.2.5</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>메모 시간 표시: 오늘 포함 항상 날짜+시간(M/D HH:MM)으로 통일</td></tr>
         <tr><td><span class="ver-badge">v2.2.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>① 메모 작성 시간 표시 (오늘은 시:분, 다른 날은 월/일 시:분) ② 개인 메모에 댓글 기능 추가 (본인 메모에 본인이 추가 메모를 다는 형태)</td></tr>
         <tr><td><span class="ver-badge">v2.2.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>관리·공유 상위 탭 뱃지를 우측 상단 절대 위치로 변경 (하위 탭 뱃지와 동일한 스타일)</td></tr>
@@ -979,7 +980,7 @@ body.dark .sakura { filter: drop-shadow(0 1px 3px rgba(255,180,210,0.35)) bright
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.5</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.2.6</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1452,7 +1453,7 @@ import { getDatabase, ref, onValue, set, update, remove, push } from "https://ww
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.2.5";
+const CURRENT_VERSION = "2.2.6";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -2820,6 +2821,15 @@ window._editMemoP = function(id){
 
 function renderMemosPersonal(){
   const list = document.getElementById('memoPList'); if(!list) return;
+  // 현재 펼쳐진 댓글 영역 기억 (재렌더 후 복원)
+  const openCmts = new Set();
+  list.querySelectorAll('.memo-cmts.open').forEach(el=>{ if(el.id) openCmts.add(el.id); });
+  // 현재 포커스/입력 중인 댓글창 기억
+  const ae = document.activeElement;
+  let focusId = null, focusVal = '';
+  if(ae && ae.classList && ae.classList.contains('memo-cmt-input') && list.contains(ae)){
+    focusId = ae.id; focusVal = ae.value;
+  }
   const q = (document.getElementById('memoPSearch')?.value||'').toLowerCase();
   let items = Object.values(memoPersonalData||{});
   if(memoPFilter==='fav') items = items.filter(m=>m.fav);
@@ -2869,6 +2879,15 @@ function renderMemosPersonal(){
       </div>
     </div>`;
   }).join('');
+  // 펼침 상태 복원
+  openCmts.forEach(id=>document.getElementById(id)?.classList.add('open'));
+  // 포커스/입력값 복원
+  if(focusId){
+    const el = document.getElementById(focusId);
+    if(el){ el.value = focusVal; el.focus();
+      try{ el.setSelectionRange(focusVal.length, focusVal.length); }catch(e){}
+    }
+  }
 }
 
 // ----- 공유 메모 -----
@@ -2923,6 +2942,15 @@ window._deleteMemoSCmt = function(memoId, cmtId){
 
 function renderMemosShared(){
   const list = document.getElementById('memoSList'); if(!list) return;
+  // 현재 펼쳐진 댓글 영역 기억 (재렌더 후 복원)
+  const openCmts = new Set();
+  list.querySelectorAll('.memo-cmts.open').forEach(el=>{ if(el.id) openCmts.add(el.id); });
+  // 현재 포커스/입력 중인 댓글창 기억
+  const ae = document.activeElement;
+  let focusId = null, focusVal = '';
+  if(ae && ae.classList && ae.classList.contains('memo-cmt-input') && list.contains(ae)){
+    focusId = ae.id; focusVal = ae.value;
+  }
   const q = (document.getElementById('memoSSearch')?.value||'').toLowerCase();
   let items = Object.values(memoSharedData||{});
   if(q) items = items.filter(m=>(m.title||'').toLowerCase().includes(q)||(m.content||'').toLowerCase().includes(q)||(m.author||'').toLowerCase().includes(q));
@@ -2962,6 +2990,15 @@ function renderMemosShared(){
     </div>`;
   }).join('');
   bindAllMentionInputs();
+  // 펼침 상태 복원
+  openCmts.forEach(id=>document.getElementById(id)?.classList.add('open'));
+  // 포커스/입력값 복원
+  if(focusId){
+    const el = document.getElementById(focusId);
+    if(el){ el.value = focusVal; el.focus();
+      try{ el.setSelectionRange(focusVal.length, focusVal.length); }catch(e){}
+    }
+  }
 }
 
 // HTML escape 유틸 (없으면 추가)
