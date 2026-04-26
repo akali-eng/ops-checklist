@@ -712,6 +712,16 @@ body.dark .dash-urgent-badge { background: #4a1a1a; color: #ffb4b4; border-color
 .dash-item.is-urgent { background: linear-gradient(90deg, #fff5f5, transparent); border-left: 2px solid #e24b4a; padding-left: 8px; }
 body.dark .dash-item.is-urgent { background: linear-gradient(90deg, #2a1515, transparent); border-left-color: #c4302b; }
 
+/* 카드 내 긴급 토글 버튼 */
+.btn-urgent-toggle { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 7px; padding: 4px 10px; font-size: 11px; color: #888780; cursor: pointer; font-family: inherit; transition: all 0.12s; white-space: nowrap; opacity: 0.6; }
+.btn-urgent-toggle:hover { background: #fff4e0; border-color: #f0c890; color: #b24a0b; opacity: 1; }
+.btn-urgent-toggle.urgent-on { background: #ffe2e2; border-color: #f0a0a0; color: #c4302b; font-weight: 500; opacity: 1; }
+.btn-urgent-toggle.urgent-on:hover { background: #ffd0d0; border-color: #e24b4a; }
+body.dark .btn-urgent-toggle { background: #1a1a1a; color: #888780; border-color: rgba(255,255,255,0.12); }
+body.dark .btn-urgent-toggle:hover { background: #3a2a1a; color: #f0c890; }
+body.dark .btn-urgent-toggle.urgent-on { background: #4a1a1a; color: #ffb4b4; border-color: #6a2a2a; }
+body.dark .btn-urgent-toggle.urgent-on:hover { background: #5a1a1a; }
+
 /* ===== 메모 시스템 ===== */
 .memo-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
 .memo-search-input { flex: 1; min-width: 200px; padding: 9px 14px; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 10px; background: #f9f8f5; font-size: 13px; color: #2c2c2a; font-family: inherit; outline: none; }
@@ -970,6 +980,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
     <table class="ver-table" id="verTable">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody id="verTbody">
+        <tr><td><span class="ver-badge">v2.5.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표 카드에 🚨 긴급 토글 버튼 추가 — 수정 모달 진입 없이 카드에서 바로 켜고 끄기</td></tr>
         <tr><td><span class="ver-badge">v2.5.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>업데이트 히스토리에 페이지네이션 추가 — 페이지당 10개씩 표시 (이전/다음 버튼)</td></tr>
         <tr><td><span class="ver-badge">v2.5.0</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>🚨 센터 목표에 '긴급' 체크박스 추가 — 체크 시 기한 무관 대시보드 '기한 임박 목표'에 노출 + 긴급 배지 표시 + 정렬 우선</td></tr>
         <tr><td><span class="ver-badge">v2.4.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>채팅방: 원형 아바타(첫 글자)를 닉네임 전체 표시로 변경, 본인 메시지에도 이름 표시</td></tr>
@@ -1145,7 +1156,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.1</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.2</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1626,7 +1637,7 @@ import { getDatabase, ref, onValue, set, update, remove, push, query, limitToLas
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.5.1";
+const CURRENT_VERSION = "2.5.2";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -4607,7 +4618,7 @@ function renderGoals(){
       }).join('');
       const sliderCol=progColor(prog||0);
       const progSection=`<div class="gb-section"><div class="gb-label">진행률</div><div class="prog-ctrl-wrap"><div class="prog-quick-row">${progQuickBtns}</div><div class="prog-slider-row"><input type="range" class="prog-slider" min="0" max="100" step="5" value="${prog||0}" style="accent-color:${sliderCol}" oninput="window._updateProgDisplay(this,'${g.id}')" onchange="window._setGoalProgress('${g.id}',parseInt(this.value))"><span class="prog-slider-val" id="pval-${g.id}" style="color:${sliderCol}">${prog||0}%</span></div></div></div>`;
-      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>${progBarHtml}</div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}">${progSection}<div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
+      return `<div class="goal-card ${isDone?'done-card':''}"><div class="goal-header"><div class="goal-dot ${dotCls}"></div><div class="goal-title-wrap" onclick="window._goalToggle('${g.id}')"><div class="goal-title ${isDone?'done-title':''}">${isUrgent?URGENT_ICO:''}${g.title}${cntStr}</div><div class="goal-meta"><span class="${pri.cls} pri-badge">${pri.label}</span>${deadlineStr?`<span>${deadlineStr}</span>`:''}<span>${metaParts.join(' · ')}</span></div>${progBarHtml}</div><div class="goal-right"><span class="goal-badge ${badgeCls}">${badgeTxt}</span><button class="btn-update" onclick="window._itemUpdate('goal','${g.id}')">업데이트</button>${canUndo?`<button class="btn-undo" onclick="window._itemUndo('goal','${g.id}')">${UNDO_ICO}</button>`:''}<span class="goal-chev" id="gchev-${g.id}" onclick="window._goalToggle('${g.id}')">▾</span></div></div><div class="goal-body" id="gbody-${g.id}">${progSection}<div class="gb-section"><div class="gb-label">필요 작업 내용</div><div class="gb-text">${g.content||'내용 없음'}</div></div><div class="gb-section"><div class="gb-label">관련 슬랙 채널</div>${slackBtn}</div><div class="goal-actions"><div class="gchk-group"><div class="gchk-wrap"><div class="gchk-box ${progChecked?'gchk-prog':''}" onclick="window._goalToggleProg('${g.id}')">${progChecked?CHK:''}</div><span>진행</span></div><div class="gchk-wrap"><div class="gchk-box ${isDone?'gchk-done':''} ${doneDisabled?'disabled':''}" onclick="window._goalToggleDone('${g.id}')">${isDone?CHK:''}</div><span>완료</span></div></div><div class="gnames">${nameTags}</div><button class="btn-urgent-toggle ${g.urgent?'urgent-on':''}" onclick="event.stopPropagation();window._goalToggleUrgent('${g.id}')" title="${g.urgent?'긴급 해제':'긴급으로 표시'}">${g.urgent?'🚨 긴급':'🚨 긴급'}</button><button class="btn-edit-sm" onclick="openGoalEdit('${g.id}')">수정</button><button class="btn-del-sm" onclick="window._goalDelete('${g.id}')">×</button></div><div class="comment-section"><div class="comment-section-label">댓글</div><div id="comments-${g.id}"></div><div class="comment-form"><input class="comment-input" type="text" id="cinput-${g.id}" placeholder="댓글 입력..." data-mention="1" onkeydown="if(event.key==='Enter')window._addComment('${g.id}')"><button class="comment-submit" onclick="window._addComment('${g.id}')">등록</button></div></div></div></div>`;
     }).join('');
     return `<div class="date-group-hdr"><span>${dateLabel}</span></div>${cards}`;
   }).join('');
@@ -4617,6 +4628,7 @@ function renderGoals(){
 
 window._goalToggle=function(id){ document.getElementById('gchev-'+id)?.classList.toggle('open'); const body=document.getElementById('gbody-'+id); if(body){body.classList.toggle('open');if(body.classList.contains('open')) renderComments(id);} };
 window._goalToggleProg=function(id){ const g=goalsData[id]; if(!g||g.doneBy) return; const k=myName.replace(/[.#$[\]]/g,'_'), pb=g.progBy||{}; if(pb[k]) remove(ref(db,`goals/${id}/progBy/${k}`)); else update(ref(db,`goals/${id}/progBy`),{[k]:myName}); };
+window._goalToggleUrgent=function(id){ const g=goalsData[id]; if(!g) return; update(ref(db,`goals/${id}`),{urgent: !g.urgent}); };
 window._goalToggleDone=function(id){ const g=goalsData[id]; if(!g) return; if(g.doneBy&&g.doneBy!==myName){alert(`'${g.doneBy}'님이 이미 완료 처리했습니다.`);return;} update(ref(db,`goals/${id}`),g.doneBy===myName?{doneBy:null,doneAt:null}:{doneBy:myName,doneAt:today}); };
 window._goalDelete=function(id){ if(!confirm('목표를 삭제할까요?')) return; remove(ref(db,`goals/${id}`)); remove(ref(db,`goalComments/${id}`)); };
 window._setGoalProgress=function(id,val){ update(ref(db,`goals/${id}`),{progress:val}); };
