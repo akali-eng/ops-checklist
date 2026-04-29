@@ -987,6 +987,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
     <table class="ver-table" id="verTable">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody id="verTbody">
+        <tr><td><span class="ver-badge">v2.5.5</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>주문현황 오늘 탭에서 어제 잔존 데이터(특히 새벽 02시)가 표시되던 문제 수정 — ts 기반 운영일(KST 05:00~익일 04:59) 검증 필터 추가</td></tr>
         <tr><td><span class="ver-badge">v2.5.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>주문현황(오늘 탭) 테이블에 '누적주문' 컬럼 추가 — 시간과 주문인입 사이에 위치, 해당 시점의 (total - cancel) 값으로 계산</td></tr>
         <tr><td><span class="ver-badge">v2.5.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>@전체 멘션 추가 — 모든 팀원에게 한 번에 알림 발송, 자동완성·강조 표시 모두 지원 (빨간 톤으로 구분)</td></tr>
         <tr><td><span class="ver-badge">v2.5.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표 카드에 🚨 긴급 토글 버튼 추가 — 수정 모달 진입 없이 카드에서 바로 켜고 끄기</td></tr>
@@ -1165,7 +1166,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.4</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.5</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1646,7 +1647,7 @@ import { getDatabase, ref, onValue, set, update, remove, push, query, limitToLas
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.5.4";
+const CURRENT_VERSION = "2.5.5";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -4080,13 +4081,18 @@ function calcTrendMetrics(date,hi){
   const hk=String(h).padStart(2,'0');
   const cur=trendData[date]?.[hk];
   if(!cur) return null;
+  // 운영일 검증: ts가 해당 날짜 운영일(KST 05:00 ~ 익일 04:59)에 속하는지
+  const opStartMs = new Date(date+'T00:00:00Z').getTime() - 9*3600000 + 5*3600000;
+  const opEndMs   = opStartMs + 24*3600000;
+  const isInOpDay = (row) => row && (!row.ts || (row.ts >= opStartMs && row.ts < opEndMs));
+  if(!isInOpDay(cur)) return null;
   const{total,done,waiting,pack,cancel}=cur;
   let pt=null,pd=null,prevPack=null;
   if(hi>0){
     const ph=TREND_HOURS[hi-1];
     const phk=String(ph).padStart(2,'0');
     const prev=trendData[date]?.[phk];
-    if(prev){pt=prev.total;pd=prev.done;prevPack=prev.pack;}
+    if(prev && isInOpDay(prev)){pt=prev.total;pd=prev.done;prevPack=prev.pack;}
   }
   const rem=waiting!==undefined?waiting:(total-done);
   const hd=pd!==null?done-pd:null;
@@ -4176,8 +4182,20 @@ function renderTrendToday(){
   html+='</tr></thead><tbody>';
   // 오늘 탭: 운영 시간(08~02시)에 해당하는 데이터만 표시
   // TREND_HOURS 순서 기준으로 정렬하고, 해당 배열에 없는 시간(03~07시)은 제외
+  // ★ 어제 잔존 데이터 제거: ts(저장 시점)가 오늘 운영일(05:00~익일 04:59 KST)에 속하는지 검증
+  // 운영일 시작 KST 05:00 = today 00:00 UTC + 5 - 9 = (today-04:00 UTC) → 단순화: today의 KST 05:00의 epoch ms
+  const opStartMs = new Date(today+'T00:00:00Z').getTime() - 9*3600000 + 5*3600000; // today KST 05:00
+  const opEndMs   = opStartMs + 24*3600000; // 다음날 KST 05:00
   const sortedHours=Object.keys(todayRows).map(Number)
     .filter(h=>TREND_HOURS.includes(h))
+    .filter(h=>{
+      const hk=String(h).padStart(2,'0');
+      const row=todayRows[hk];
+      if(!row) return false;
+      // ts 없는 옛 데이터는 일단 포함 (호환성)
+      if(!row.ts) return true;
+      return row.ts >= opStartMs && row.ts < opEndMs;
+    })
     .sort((a,b)=>{ const oi=TREND_HOURS.indexOf(a),oj=TREND_HOURS.indexOf(b); return oi-oj; });
   sortedHours.forEach((h,i)=>{
     const hk=String(h).padStart(2,'0');
