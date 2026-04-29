@@ -14,7 +14,9 @@
  *   done    : 도착보장완료 + 일반완료
  *   waiting : 도착보장출고대기 + 일반출고대기  ← 잔여물량에 표시
  *   pack    : 현재 운영중인 패킹장 수 (예측실패 포맷에서는 0)
- *   ts      : 저장 시각 (KST)
+ *   cancel  : 도착보장취소 + 일반취소
+ *   ts      : 저장 시점 epoch (밀리초) — 사이트에서 운영일 검증에 사용
+ *   tsLabel : 사람이 읽는 시각 ("2026-04-24 11:35 KST")
  */
 
 const SLACK_TOKEN     = process.env.SLACK_TOKEN;
@@ -26,6 +28,7 @@ function kstNow() {
   return new Date(Date.now() + 9 * 3_600_000);
 }
 
+// 운영일 계산: 오전 5시 미만이면 전날
 function opDate(kst) {
   const d = kst.getUTCHours() < 5
     ? new Date(kst.getTime() - 86_400_000)
@@ -33,11 +36,12 @@ function opDate(kst) {
   return d.toISOString().slice(0, 10);
 }
 
+// 슬랙 메시지의 ts(초) → KST Date
+function slackTsToKstDate(slackTs) {
+  return new Date(parseFloat(slackTs) * 1000 + 9 * 3_600_000);
+}
+
 // ── 메시지 파싱 ───────────────────────────────────────────────
-// 지원 포맷:
-// [일반]  도착보장 : 총 N건 / 출고대기 N건 / 출고완료 N건 / 취소 N건
-//         운영 가이드 섹션에 패킹장 정보 있음
-// [예측실패] 출고대기가 0건, 패킹장 항목 없음, "예측에 실패하였습니다" 텍스트 포함
 function parseMsg(text) {
   if (!text) return null;
   if (!text.includes('출고 현황') && !text.includes('출고 운영 가이드')) return null;
@@ -102,14 +106,14 @@ async function main() {
     process.exit(1);
   }
 
-  const now   = kstNow();
-  const kstH  = now.getUTCHours();
-  const date  = opDate(now);
-  const tsStr = now.toISOString().replace('T', ' ').slice(0, 16) + ' KST';
-  console.log(`  실행 시각: ${tsStr} (KST ${kstH}시) / 운영일자: ${date}`);
+  const now      = kstNow();
+  const kstH     = now.getUTCHours();
+  const date     = opDate(now);
+  const tsLabel  = now.toISOString().replace('T', ' ').slice(0, 16) + ' KST';
+  const tsEpoch  = Date.now();
+  console.log(`  실행 시각: ${tsLabel} (KST ${kstH}시) / 운영일자: ${date}`);
 
-  // 봇을 채널에 자동 입장 (public 채널 + channels:join 스코프 필요)
-  // 이미 멤버인 경우에도 에러 없이 통과됨
+  // 봇을 채널에 자동 입장
   const joinRes  = await fetch('https://slack.com/api/conversations.join', {
     method : 'POST',
     headers: { Authorization: `Bearer ${SLACK_TOKEN}`, 'Content-Type': 'application/json' },
@@ -131,18 +135,35 @@ async function main() {
   if (!slackJson.ok) { console.error('Slack API 오류:', slackJson.error); process.exit(1); }
   console.log(`  슬랙 메시지 ${slackJson.messages?.length ?? 0}개 수신`);
 
-  // 현재 KST 시각에 가장 가까운 메시지 선택 (최대 3시간 이내)
-  let parsed = null, bestDiff = 99;
+  // ★ 핵심 수정: 메시지의 슬랙 ts(작성 시각)도 함께 검사
+  // 1) 메시지가 작성된 운영일과 현재 운영일이 일치해야 함 (어제 메시지 차단)
+  // 2) 그 중 현재 KST 시각과 가장 가까운 메시지 선택
+  let parsed = null, bestDiff = 99, parsedSlackTs = null;
   for (const msg of slackJson.messages ?? []) {
     const p = parseMsg(msg.text ?? '');
     if (!p) continue;
+
+    // 슬랙 메시지 작성 시점의 운영일 검증
+    if (msg.ts) {
+      const msgKst    = slackTsToKstDate(msg.ts);
+      const msgOpDate = opDate(msgKst);
+      if (msgOpDate !== date) {
+        console.log(`  [스킵] ${p.hour}시 메시지 — 작성 운영일(${msgOpDate})이 오늘(${date})과 다름`);
+        continue;
+      }
+    }
+
     const diff = ((kstH - p.hour) + 24) % 24;
-    if (diff < bestDiff) { bestDiff = diff; parsed = p; }
+    if (diff < bestDiff) { bestDiff = diff; parsed = p; parsedSlackTs = msg.ts; }
     if (diff === 0) break;
   }
 
-  if (!parsed)         { console.log('  파싱 가능한 메시지 없음 — 스킵'); process.exit(0); }
+  if (!parsed)         { console.log('  파싱 가능한 (오늘 운영일) 메시지 없음 — 스킵'); process.exit(0); }
   if (bestDiff > 3)    { console.log(`  최근 메시지가 현재 시각과 ${bestDiff}시간 이상 차이 — 스킵`); process.exit(0); }
+
+  // ★ 추가 안전장치: 메시지 안의 hour 값도 운영일에 합당한지 검증
+  // 운영일은 그 날짜 KST 05:00 ~ 익일 04:59. 시간(hour) 단독으론 검증 어려우니
+  // 위에서 슬랙 ts로 이미 운영일 검증을 마쳤으므로 여기서는 추가 작업 없음
 
   const hourKey = String(parsed.hour).padStart(2, '0');
   await fbPut(`ops-trend/${date}/${hourKey}`, {
@@ -151,10 +172,11 @@ async function main() {
     waiting: parsed.waiting,
     cancel : parsed.cancel,
     pack   : parsed.pack,
-    ts     : tsStr,
+    ts     : tsEpoch,   // ★ epoch 밀리초로 변경 (사이트 필터에서 사용)
+    tsLabel: tsLabel,   // 사람이 읽기 위한 라벨 (디버깅용)
   });
 
-  console.log(`  Firebase 저장 완료: ops-trend/${date}/${hourKey}`);
+  console.log(`  Firebase 저장 완료: ops-trend/${date}/${hourKey} (ts=${tsEpoch}, ${tsLabel})`);
   console.log('✅ 완료');
 }
 
