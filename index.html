@@ -987,6 +987,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
     <table class="ver-table" id="verTable">
       <thead><tr><th>버전</th><th>날짜</th><th>내용</th></tr></thead>
       <tbody id="verTbody">
+        <tr><td><span class="ver-badge">v2.5.4</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>주문현황(오늘 탭) 테이블에 '누적주문' 컬럼 추가 — 시간과 주문인입 사이에 위치, 해당 시점의 (total - cancel) 값으로 계산</td></tr>
         <tr><td><span class="ver-badge">v2.5.3</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>@전체 멘션 추가 — 모든 팀원에게 한 번에 알림 발송, 자동완성·강조 표시 모두 지원 (빨간 톤으로 구분)</td></tr>
         <tr><td><span class="ver-badge">v2.5.2</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>센터 목표 카드에 🚨 긴급 토글 버튼 추가 — 수정 모달 진입 없이 카드에서 바로 켜고 끄기</td></tr>
         <tr><td><span class="ver-badge">v2.5.1</span></td><td style="white-space:nowrap;color:#888780">2026-04-24</td><td>업데이트 히스토리에 페이지네이션 추가 — 페이지당 10개씩 표시 (이전/다음 버튼)</td></tr>
@@ -1164,7 +1165,7 @@ body.ian.dark .notice-card { background: rgba(26,26,26,0.9); backdrop-filter: bl
   </div>
   <div class="header-right">
     <div class="ver-info">
-      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.3</span>
+      <span id="verLink" style="cursor:pointer;text-decoration:underline;color:#185fa5">v2.5.4</span>
       · 업데이트 2026-04-24 &nbsp;|&nbsp;
       <a id="adminDownload" href="https://raw.githubusercontent.com/akali-eng/ops-checklist/refs/heads/main/index.html" download="업무확인.html" style="display:none">최신버전 다운로드</a>
     </div>
@@ -1645,7 +1646,7 @@ import { getDatabase, ref, onValue, set, update, remove, push, query, limitToLas
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const FC = { apiKey:"AIzaSyDkJl0SSmXbcCeGSWY-lvjkKbeLeXxujw8", authDomain:"ops-checklist-e9790.firebaseapp.com", databaseURL:"https://ops-checklist-e9790-default-rtdb.firebaseio.com", projectId:"ops-checklist-e9790", storageBucket:"ops-checklist-e9790.firebasestorage.app", messagingSenderId:"923814810991", appId:"1:923814810991:web:1573a40b46d8657f68c49a" };
-const CURRENT_VERSION = "2.5.3";
+const CURRENT_VERSION = "2.5.4";
 const VERSION_URL = "https://raw.githubusercontent.com/akali-eng/ops-checklist/main/version.json";
 const ADMIN_EMAIL = "akira@ops.com";
 const app = initializeApp(FC);
@@ -4079,7 +4080,7 @@ function calcTrendMetrics(date,hi){
   const hk=String(h).padStart(2,'0');
   const cur=trendData[date]?.[hk];
   if(!cur) return null;
-  const{total,done,waiting,pack}=cur;
+  const{total,done,waiting,pack,cancel}=cur;
   let pt=null,pd=null,prevPack=null;
   if(hi>0){
     const ph=TREND_HOURS[hi-1];
@@ -4090,10 +4091,12 @@ function calcTrendMetrics(date,hi){
   const rem=waiting!==undefined?waiting:(total-done);
   const hd=pd!==null?done-pd:null;
   const ord=pt!==null?total-pt:null;
+  // 누적주문: 시작물량 + 시간별 주문인입 합 = 해당 시점의 (total - cancel)
+  const cum=(total!==undefined && total!==null) ? (total-(cancel||0)) : null;
   // PPH: 현재 패킹장 0이면 직전 시간 패킹장 수 사용, 둘 다 0이면 null
   let effectivePack=pack>0?pack:(prevPack>0?prevPack:0);
   const pph=(hd!==null&&effectivePack>0)?Math.round(hd/effectivePack*10)/10:null;
-  return{rem,hd,ord,pph,pack,effectivePack};
+  return{rem,hd,ord,cum,pph,pack,effectivePack};
 }
 
 function trendCellOrd(v){
@@ -4169,7 +4172,7 @@ function renderTrendToday(){
     return;
   }
   let html=`<div style="font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px">${trendDateLabel(today)}</div>${TREND_LEGEND_ORD}${TREND_LEGEND_HD}<table class="trend-table" style="width:100%"><thead><tr>`;
-  ['시간','주문인입','시간당 출고완료','잔여물량','PPH'].forEach((h,i)=>{ html+=`<th style="text-align:${i===0?'left':'right'}">${h}</th>`; });
+  ['시간','누적주문','주문인입','시간당 출고완료','잔여물량','PPH'].forEach((h,i)=>{ html+=`<th style="text-align:${i===0?'left':'right'}">${h}</th>`; });
   html+='</tr></thead><tbody>';
   // 오늘 탭: 운영 시간(08~02시)에 해당하는 데이터만 표시
   // TREND_HOURS 순서 기준으로 정렬하고, 해당 배열에 없는 시간(03~07시)은 제외
@@ -4184,7 +4187,7 @@ function renderTrendToday(){
     const isLast=i===sortedHours.length-1;
     html+=`<tr${isLast?' style="background:var(--color-background-secondary,#f9f8f5)"':''}>`;
     html+=`<td style="text-align:left;color:#888780;font-weight:${isLast?500:400}">${h}:00${isLast?' ★':''}</td>`;
-    html+=`<td>${trendCellOrd(m.ord)}</td><td>${trendCellHD(m.hd)}</td><td>${m.rem!==null?m.rem:'-'}</td><td>${trendCellPPH(m.pph)}</td>`;
+    html+=`<td>${m.cum!==null?m.cum:'-'}</td><td>${trendCellOrd(m.ord)}</td><td>${trendCellHD(m.hd)}</td><td>${m.rem!==null?m.rem:'-'}</td><td>${trendCellPPH(m.pph)}</td>`;
     html+='</tr>';
   });
   html+='</tbody></table>';
